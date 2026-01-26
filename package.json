@@ -1,0 +1,22 @@
+{
+  "name": "x-radar",
+  "version": "1.0.0",
+  "description": "X.com tweet scraper for pain points and trending AI topics",
+  "type": "module",
+  "scripts": {
+    "login": "node src/login.mjs",
+    "scrape": "node src/scrape.mjs",
+    "select": "node src/select.mjs",
+    "format": "node src/format.mjs",
+    "comment": "node src/commenter.mjs",
+    "run": "npm run scrape && npm run select && npm run format && npm run comment"
+  },
+  "dependencies": {
+    "playwright": "^1.40.0",
+    "franc": "^6.2.0",
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

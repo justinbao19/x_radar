@@ -1,0 +1,61 @@
+{
+  "pain": [
+    {
+      "name": "gmail-spam-en",
+      "query": "(gmail OR \"gmail app\" OR email OR inbox OR outlook) (spam OR notifications OR noise OR overload OR unsubscribe OR \"can't find\") -filter:retweets",
+      "max": 50
+    },
+    {
+      "name": "gmail-spam-jp",
+      "query": "(gmail OR メール OR 受信トレイ) (迷惑メール OR スパム OR 通知 OR 検索 OR 見つからない OR うざい OR 最悪) -filter:retweets",
+      "max": 50
+    },
+    {
+      "name": "gmail-spam-cn",
+      "query": "(gmail OR 邮件 OR 邮箱 OR 收件箱) (垃圾邮件 OR 通知 OR 太多 OR 搜索 OR 找不到 OR 难用 OR 好烦) -filter:retweets",
+      "max": 50
+    },
+    {
+      "name": "inbox-triage-en",
+      "query": "(\"inbox zero\" OR triage OR newsletter OR unsubscribe) (email OR inbox OR gmail) -filter:retweets",
+      "max": 40
+    },
+    {
+      "name": "inbox-triage-jp",
+      "query": "(受信トレイ OR メルマガ OR 退会 OR 整理) (メール OR gmail) -filter:retweets",
+      "max": 40
+    },
+    {
+      "name": "email-search-pain",
+      "query": "(email OR gmail OR inbox) (search OR find OR looking for) (impossible OR terrible OR hate OR frustrating) -filter:retweets",
+      "max": 40
+    }
+  ],
+  "reach": [
+    {
+      "name": "ai-agents-en",
+      "query": "(\"AI agent\" OR \"AI agents\" OR \"AI assistant\" OR copilot OR automation OR productivity OR workflow OR \"second brain\") -filter:retweets",
+      "max": 60
+    },
+    {
+      "name": "ai-agents-jp",
+      "query": "(AIエージェント OR 生産性 OR 自動化 OR 情報過多 OR AI秘書) -filter:retweets",
+      "max": 50
+    },
+    {
+      "name": "ai-inbox-intersection",
+      "query": "(AI OR agent OR automation OR LLM) (email OR inbox OR newsletters OR gmail OR outlook) -filter:retweets",
+      "max": 60
+    },
+    {
+      "name": "ai-inbox-jp",
+      "query": "(AI OR 自動化) (メール OR 受信トレイ OR 通知) -filter:retweets",
+      "max": 40
+    },
+    {
+      "name": "productivity-tools",
+      "query": "(productivity OR \"task management\" OR \"getting things done\" OR GTD) (app OR tool OR workflow) -filter:retweets",
+      "max": 50
+    }
+  ]
+}
