@@ -1,5 +1,5 @@
 import { franc } from 'franc';
-import { existsSync, mkdirSync, readdirSync, copyFileSync, readFileSync } from 'fs';
+import { existsSync, mkdirSync, readdirSync, copyFileSync, readFileSync, appendFileSync, rmSync, statSync } from 'fs';
 import { join, dirname } from 'path';
 
 // ============ Output Directory Utilities ============
@@ -129,6 +129,112 @@ export function getInputPath(filename, date = null) {
 export function getOutputPath(filename, date = null) {
   const dateDir = ensureOutputDirs(date);
   return join(dateDir, filename);
+}
+
+// ============ Archive & Cleanup ============
+
+const ARCHIVE_FILE = join(OUT_DIR, 'archive.jsonl');
+
+/**
+ * Get archive file path
+ * @returns {string} - Archive file path
+ */
+export function getArchivePath() {
+  return ARCHIVE_FILE;
+}
+
+/**
+ * Append data to permanent archive (JSONL format)
+ * Each line is a complete JSON record with timestamp
+ * @param {object} data - Data object containing runAt, runDate, tweets/sources, stats
+ */
+export function appendToArchive(data) {
+  // Ensure out directory exists
+  if (!existsSync(OUT_DIR)) {
+    mkdirSync(OUT_DIR, { recursive: true });
+  }
+  
+  // Build archive record with clear timestamps
+  const record = {
+    runAt: data.runAt || new Date().toISOString(),
+    runDate: data.runDate || (data.runAt ? data.runAt.split('T')[0] : getTodayDate()),
+    stats: data.stats || {},
+    sources: data.sources || [],
+    archivedAt: new Date().toISOString()
+  };
+  
+  const line = JSON.stringify(record) + '\n';
+  appendFileSync(ARCHIVE_FILE, line, 'utf-8');
+  log('INFO', `Data archived to ${ARCHIVE_FILE}`);
+}
+
+/**
+ * Clean output directories older than retention period
+ * Only removes date-formatted directories (YYYY-MM-DD), preserves latest/ and archive.jsonl
+ * @param {number} retentionDays - Number of days to keep (default: 7)
+ * @returns {string[]} - List of cleaned directories
+ */
+export function cleanOldOutputDirs(retentionDays = 7) {
+  const cleaned = [];
+  
+  if (!existsSync(OUT_DIR)) {
+    return cleaned;
+  }
+  
+  const entries = readdirSync(OUT_DIR);
+  const cutoffDate = new Date();
+  cutoffDate.setDate(cutoffDate.getDate() - retentionDays);
+  cutoffDate.setHours(0, 0, 0, 0); // Start of day
+  
+  for (const entry of entries) {
+    // Only process date-formatted directories (YYYY-MM-DD)
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(entry)) {
+      continue;
+    }
+    
+    const entryPath = join(OUT_DIR, entry);
+    
+    // Skip if not a directory
+    try {
+      if (!statSync(entryPath).isDirectory()) {
+        continue;
+      }
+    } catch (e) {
+      continue;
+    }
+    
+    // Parse date from directory name
+    const dirDate = new Date(entry + 'T00:00:00.000Z');
+    
+    // Delete if older than cutoff
+    if (dirDate < cutoffDate) {
+      try {
+        rmSync(entryPath, { recursive: true, force: true });
+        cleaned.push(entry);
+        log('INFO', `Cleaned old directory: ${entry} (older than ${retentionDays} days)`);
+      } catch (e) {
+        log('WARN', `Failed to clean directory: ${entry}`, { error: e.message });
+      }
+    }
+  }
+  
+  if (cleaned.length > 0) {
+    log('INFO', `Cleanup complete: removed ${cleaned.length} old directories`);
+  }
+  
+  return cleaned;
+}
+
+/**
+ * Print clear output paths summary
+ * @param {string} runDate - Run date string
+ */
+export function logOutputPaths(runDate) {
+  const dateDir = getOutputDir(runDate);
+  console.log('\n📁 数据存储路径:');
+  console.log(`   📂 临时数据: ${dateDir}/ (保留7天)`);
+  console.log(`   📂 最新数据: ${LATEST_DIR}/ (始终最新)`);
+  console.log(`   📄 永久归档: ${ARCHIVE_FILE} (累积存储)\n`);
 }
 
 // ============ Logging ============

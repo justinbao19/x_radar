@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from 'fs';
-import { log, detectLanguage, extractJSON, sleep, getInputPath, getOutputPath, copyToLatest, getOutputDir } from './utils.mjs';
+import { log, detectLanguage, extractJSON, sleep, getInputPath, getOutputPath, copyToLatest, getOutputDir, logOutputPaths } from './utils.mjs';
 import { checkBrandSafety, checkMinFiloFit, MIN_FILO_FIT } from './safety.mjs';
 import { generateHTMLReport } from './html-report.mjs';
 import 'dotenv/config';
@@ -71,6 +71,13 @@ const SYSTEM_PROMPT = `你是一个帮助产品人员撰写 X (Twitter) 回复�
    - 任何听起来像广告或推销的内容
 5. 长度控制：每条回复尽量 <= 220 字符
 6. 每个选项必须包含中文解释 (zh_explain)，说明这条回复的意图和为什么有效
+7. 【重要】评估三个选项，选出最适合当前推文语境的那个，在该选项中标记 "recommended": true
+   - 考虑因素：推文的情绪基调、话题敏感度、作者身份、互动潜力
+   - 【关键】不要机械地总是选择 practical！要真正根据推文特点判断：
+     * 轻松/搞笑/吐槽类推文 → 优先考虑 witty（幽默回应更自然）
+     * 严肃/专业/技术类推文 → 优先考虑 practical（务实回应更合适）
+     * 产品相关/痛点类推文 → 优先考虑 subtle_product（暗示产品更有效）
+   - 只能有一个选项标记为 recommended
 
 输出严格的 JSON 格式，不要有任何其他文字：
 {
@@ -80,7 +87,8 @@ const SYSTEM_PROMPT = `你是一个帮助产品人员撰写 X (Twitter) 回复�
       "comment": "回复内容（用原推文语言）",
       "zh_explain": "中文解释这条回复的意图和效果",
       "angle": "witty|practical|subtle_product",
-      "risk": "low|medium|high"
+      "risk": "low|medium|high",
+      "recommended": true或false
     }
   ]
 }`;
@@ -169,7 +177,8 @@ async function generateComments(tweet, retries = MAX_RETRIES) {
           zh_explain: opt.zh_explain || '',
           angle: opt.angle || 'unknown',
           charCount: (opt.comment || '').length,
-          risk: opt.risk || 'low'
+          risk: opt.risk || 'low',
+          recommended: opt.recommended === true
         }))
       };
       
@@ -408,6 +417,9 @@ async function main() {
   // Copy to latest directory (final step of pipeline)
   copyToLatest(getOutputDir(runDate));
   log('INFO', 'Copied to out/latest/');
+  
+  // Print clear path summary (final step shows all paths)
+  logOutputPaths(runDate);
   
   log('INFO', '=== Comment Generation Complete ===', stats);
 }

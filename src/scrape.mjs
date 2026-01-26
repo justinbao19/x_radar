@@ -3,7 +3,8 @@ import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { 
   log, parseEngagement, buildSearchUrl, ensureAbsoluteUrl, 
   randomBetween, sleep, cleanText, shuffle,
-  getTodayDate, getOutputPath, copyToLatest, getOutputDir
+  getTodayDate, getOutputPath, copyToLatest, getOutputDir,
+  cleanOldOutputDirs, appendToArchive, logOutputPaths
 } from './utils.mjs';
 import 'dotenv/config';
 
@@ -460,6 +461,10 @@ async function main() {
   log('INFO', '=== X Radar Scraper Starting ===');
   log('INFO', `Config: MAX_SOURCES=${MAX_SOURCES_PER_RUN}, SAMPLING_MODE=${SAMPLING_MODE}`);
   
+  // Clean old output directories (keep last 7 days)
+  log('INFO', 'Checking for old data to clean up...');
+  cleanOldOutputDirs(7);
+  
   const runDate = getTodayDate();
   const runAt = new Date().toISOString();
   const outputFile = getOutputPath('raw.json', runDate);
@@ -480,7 +485,9 @@ async function main() {
       errors: []
     };
     writeFileSync(outputFile, JSON.stringify(emptyOutput, null, 2));
+    appendToArchive(emptyOutput);
     copyToLatest(getOutputDir(runDate));
+    logOutputPaths(runDate);
     return;
   }
   
@@ -584,12 +591,19 @@ async function main() {
   };
   
   writeFileSync(outputFile, JSON.stringify(output, null, 2));
-  log('INFO', '=== Scrape Complete ===', stats);
   log('INFO', `Output written to ${outputFile}`);
+  
+  // Archive to permanent storage (JSONL)
+  appendToArchive(output);
   
   // Copy to latest directory
   copyToLatest(getOutputDir(runDate));
   log('INFO', 'Copied to out/latest/');
+  
+  // Print clear path summary
+  logOutputPaths(runDate);
+  
+  log('INFO', '=== Scrape Complete ===', stats);
 }
 
 main().catch(err => {

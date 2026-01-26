@@ -898,32 +898,24 @@ function renderReplySection(tweet, cardIndex) {
     subtle_product: '产品植入'
   };
 
-  // Find the best recommended option based on risk level
-  // Priority: low risk > medium risk > high risk
-  // If same risk, prefer: practical > subtle_product > witty
-  const riskPriority = { low: 0, medium: 1, high: 2 };
-  const anglePriority = { practical: 0, subtle_product: 1, witty: 2 };
-  
-  let bestIndex = 0;
-  let bestScore = Infinity;
-  
-  tweet.comments.options.forEach((opt, i) => {
-    const riskScore = riskPriority[opt.risk] ?? 2;
-    const angleScore = anglePriority[opt.angle] ?? 2;
-    const score = riskScore * 10 + angleScore; // Risk is more important
-    if (score < bestScore) {
-      bestScore = score;
-      bestIndex = i;
-    }
+  // Sort options in fixed order: witty -> practical -> subtle_product
+  const angleOrder = ['witty', 'practical', 'subtle_product'];
+  const sortedOptions = [...tweet.comments.options].sort((a, b) => {
+    return angleOrder.indexOf(a.angle) - angleOrder.indexOf(b.angle);
   });
 
-  const tabs = tweet.comments.options.map((opt, i) => {
+  // Find AI recommended option from sorted data
+  // Fallback to first option if no recommendation found (for old data compatibility)
+  let bestIndex = sortedOptions.findIndex(opt => opt.recommended === true);
+  if (bestIndex === -1) bestIndex = 0;
+
+  const tabs = sortedOptions.map((opt, i) => {
     const isRecommended = i === bestIndex;
     const icon = isRecommended ? aiSparkleIcon : '';
-    return `<button class="tab-btn ${i === bestIndex ? 'active' : ''}" onclick="switchTab(${cardIndex}, ${i})">${icon} ${tabLabels[opt.angle] || opt.angle}</button>`;
+    return `<button class="tab-btn ${isRecommended ? 'active' : ''}" onclick="switchTab(${cardIndex}, ${i})">${icon} ${tabLabels[opt.angle] || opt.angle}</button>`;
   }).join('');
 
-  const contents = tweet.comments.options.map((opt, i) => 
+  const contents = sortedOptions.map((opt, i) => 
     renderReplyOption(opt, cardIndex, i, i === bestIndex)
   ).join('');
 
