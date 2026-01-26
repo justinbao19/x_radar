@@ -248,6 +248,7 @@ function generateMarkdownWithComments(data) {
   lines.push('## Comment Generation Stats');
   lines.push('');
   lines.push(`- **Total tweets:** ${data.commentGenerationStats?.total || 0}`);
+  lines.push(`- **AI Picked:** ${data.commentGenerationStats?.aiPicked || 0}`);
   lines.push(`- **Succeeded:** ${data.commentGenerationStats?.succeeded || 0}`);
   lines.push(`- **Skipped (safety/relevance):** ${data.commentGenerationStats?.skipped || 0}`);
   lines.push(`- **Failed (API error):** ${data.commentGenerationStats?.failed || 0}`);
@@ -273,8 +274,9 @@ function generateMarkdownWithComments(data) {
   // Tweets with comments
   for (const tweet of data.top || []) {
     const groupLabel = tweet.originalGroup === 'kol' ? 'kol/reach' : tweet.group;
+    const aiPickedMark = tweet.aiPicked ? '⭐' : '';
     
-    lines.push(`## #${tweet.rank} [${groupLabel}] ${tweet.author || 'Unknown'}`);
+    lines.push(`## #${tweet.rank} ${aiPickedMark}[${groupLabel}] ${tweet.author || 'Unknown'}`);
     lines.push('');
     const relevanceLabel = tweet.comments?.productRelevance 
       ? `| **产品相关:** ${tweet.comments.productRelevance}` 
@@ -372,8 +374,10 @@ async function main() {
   }
   
   // Stats
+  const aiPickedCount = data.top.filter(t => t.aiPicked).length;
   const stats = {
     total: data.top.length,
+    aiPicked: aiPickedCount,
     succeeded: 0,
     failed: 0,
     skipped: 0,
@@ -381,6 +385,8 @@ async function main() {
     byLanguage: {},
     byProductRelevance: { high: 0, medium: 0, low: 0 }
   };
+  
+  log('INFO', `Processing ${data.top.length} tweets (${aiPickedCount} AI-picked)`);
   
   // Process each tweet
   for (const tweet of data.top) {

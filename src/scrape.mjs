@@ -15,7 +15,7 @@ const INFLUENCERS_FILE = 'influencers.json';
 // ============ Configuration ============
 
 // Sampling configuration (env vars)
-const MAX_SOURCES_PER_RUN = parseInt(process.env.MAX_SOURCES || '8', 10);
+const MAX_SOURCES_PER_RUN = parseInt(process.env.MAX_SOURCES || '12', 10);
 const SAMPLING_MODE = process.env.SAMPLING_MODE || 'random'; // 'random' or 'all'
 
 // Throttling configuration
@@ -26,12 +26,12 @@ const BETWEEN_QUERIES_WAIT_MAX = 30000;
 const SCROLL_WAIT_MIN = 2000;
 const SCROLL_WAIT_MAX = 4000;
 
-// Scroll configuration (limited depth)
-const MAX_SCROLL_ROUNDS = 5;
-const MIN_SCROLL_ROUNDS = 3;
+// Scroll configuration (increased depth for more content)
+const MAX_SCROLL_ROUNDS = 8;
+const MIN_SCROLL_ROUNDS = 5;
 const SCROLL_DISTANCE_MIN = 600;
 const SCROLL_DISTANCE_MAX = 1200;
-const SCROLL_BACK_CHANCE = 0.15; // 15% chance to scroll back
+const SCROLL_BACK_CHANCE = 0.2; // 20% chance to scroll back (more human-like)
 
 // Retry configuration
 const MAX_RETRIES = 1;
@@ -414,10 +414,10 @@ function buildSourceList() {
   const reachSources = allSources.filter(s => s.group === 'reach');
   const kolSources = allSources.filter(s => s.group === 'kol');
   
-  // Allocate: ~30% pain, ~40% reach, ~30% kol (with backfill)
-  let painCount = Math.max(1, Math.floor(MAX_SOURCES_PER_RUN * 0.3));
-  let reachCount = Math.max(1, Math.floor(MAX_SOURCES_PER_RUN * 0.4));
-  let kolCount = Math.max(1, MAX_SOURCES_PER_RUN - painCount - reachCount);
+  // Allocate: ~60% pain, ~25% reach, ~15% kol (pain-first strategy)
+  let painCount = Math.max(2, Math.floor(MAX_SOURCES_PER_RUN * 0.6));
+  let reachCount = Math.max(1, Math.floor(MAX_SOURCES_PER_RUN * 0.25));
+  let kolCount = Math.max(0, MAX_SOURCES_PER_RUN - painCount - reachCount);
   
   // Backfill if a group has fewer sources
   const painAvailable = Math.min(painCount, painSources.length);
@@ -433,14 +433,14 @@ function buildSourceList() {
     ...shuffle(kolSources).slice(0, kolAvailable)
   ];
   
-  // Backfill from groups that have more sources
-  if (remaining > 0 && reachSources.length > reachAvailable) {
-    const extra = shuffle(reachSources).slice(reachAvailable, reachAvailable + remaining);
+  // Backfill from groups that have more sources (pain priority)
+  if (remaining > 0 && painSources.length > painAvailable) {
+    const extra = shuffle(painSources).slice(painAvailable, painAvailable + remaining);
     selectedSources.push(...extra);
     remaining -= extra.length;
   }
-  if (remaining > 0 && painSources.length > painAvailable) {
-    const extra = shuffle(painSources).slice(painAvailable, painAvailable + remaining);
+  if (remaining > 0 && reachSources.length > reachAvailable) {
+    const extra = shuffle(reachSources).slice(reachAvailable, reachAvailable + remaining);
     selectedSources.push(...extra);
     remaining -= extra.length;
   }

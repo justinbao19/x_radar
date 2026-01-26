@@ -10,12 +10,15 @@ import {
   LOW_SIGNAL_PENALTY
 } from './safety.mjs';
 
-// Selection quota
-const QUOTA = {
-  pain: 4,
-  reach: 6, // includes KOL
-  total: 10
+// Quality threshold config (replaces fixed quota)
+const QUALITY_CONFIG = {
+  aiPickTopN: 10,           // Number of AI-picked tweets for quick view
+  kolMinFiloFitScore: 15,   // KOL tweets need at least 3 keywords (15 = 3 * 5)
+  minFinalScore: 30         // Minimum score to be included
 };
+
+// Freshness filter - only keep tweets from last N days
+const MAX_TWEET_AGE_DAYS = 7;
 
 // FiloFit keywords for scoring (used for viralityScore calculation)
 const FILO_KEYWORDS = {
@@ -130,8 +133,29 @@ function selectTop10(rawData) {
   
   log('INFO', `Unique tweets after dedup: ${uniqueTweets.length}`);
   
+  // ============ Freshness Filter ============
+  const now = Date.now();
+  const maxAgeMs = MAX_TWEET_AGE_DAYS * 24 * 60 * 60 * 1000;
+  
+  const freshTweets = uniqueTweets.filter(t => {
+    if (!t.datetime) return true; // Keep if no datetime (can't determine age)
+    
+    const tweetDate = new Date(t.datetime);
+    const ageMs = now - tweetDate.getTime();
+    
+    if (ageMs > maxAgeMs) {
+      log('DEBUG', `Too old (${Math.floor(ageMs / (24 * 60 * 60 * 1000))} days): ${t.url}`);
+      return false;
+    }
+    return true;
+  });
+  
+  const tooOldFiltered = uniqueTweets.length - freshTweets.length;
+  log('INFO', `Freshness filter (${MAX_TWEET_AGE_DAYS} days): ${freshTweets.length} kept, ${tooOldFiltered} filtered`);
+  
   // ============ Three-Tier Brand Safety Gate ============
   const filterStats = {
+    tooOldFiltered,
     hardFiltered: 0,
     hardReasons: {},
     softFiltered: 0,
@@ -143,7 +167,7 @@ function selectTop10(rawData) {
   
   // First pass: score all tweets (needed for soft tier decisions)
   // Pass group for pain bonus calculation
-  const scoredTweets = uniqueTweets.map(t => ({
+  const scoredTweets = freshTweets.map(t => ({
     ...t,
     ...scoreTweet(t, t.group)
   }));
@@ -244,8 +268,40 @@ function selectTop10(rawData) {
   
   log('INFO', `After relevance check: ${relevantTweets.length} (filtered: ${filterStats.relevanceFiltered})`);
   
+  // ============ KOL Strict Relevance Check ============
+  // KOL tweets need higher FiloFit score to be included
+  filterStats.kolRelevanceFiltered = 0;
+  
+  const qualifiedTweets = relevantTweets.filter(t => {
+    // KOL tweets must have higher relevance
+    if (t.originalGroup === 'kol') {
+      if (t.filoFitScore < QUALITY_CONFIG.kolMinFiloFitScore) {
+        filterStats.kolRelevanceFiltered++;
+        log('DEBUG', `KOL relevance too low: ${t.url}`, { 
+          author: t.author,
+          filoFitScore: t.filoFitScore,
+          required: QUALITY_CONFIG.kolMinFiloFitScore
+        });
+        return false;
+      }
+    }
+    
+    // Apply minimum final score threshold
+    if (t.finalScore < QUALITY_CONFIG.minFinalScore) {
+      log('DEBUG', `Score below threshold: ${t.url}`, { 
+        finalScore: t.finalScore,
+        required: QUALITY_CONFIG.minFinalScore
+      });
+      return false;
+    }
+    
+    return true;
+  });
+  
+  log('INFO', `After KOL strict relevance: ${qualifiedTweets.length} (KOL filtered: ${filterStats.kolRelevanceFiltered})`);
+  
   // Handle empty results
-  if (relevantTweets.length === 0) {
+  if (qualifiedTweets.length === 0) {
     log('WARN', 'No tweets passed all filters');
     return {
       runDate: rawData.runDate,
@@ -254,112 +310,72 @@ function selectTop10(rawData) {
         totalCandidates: allTweets.length,
         uniqueAfterDedup: uniqueTweets.length,
         ...filterStats,
-        painSelected: 0,
-        reachSelected: 0,
-        backfilled: 0,
+        qualified: 0,
+        aiPicked: 0,
         warning: 'NO_TWEETS_PASSED_FILTERS'
       },
-      quota: QUOTA,
+      qualityConfig: QUALITY_CONFIG,
       top: []
     };
   }
   
-  // Split by group
-  const painPool = relevantTweets
-    .filter(t => t.group === 'pain')
-    .sort((a, b) => b.finalScore - a.finalScore);
-  
-  const reachPool = relevantTweets
-    .filter(t => t.group === 'reach')
-    .sort((a, b) => b.finalScore - a.finalScore);
-  
-  log('INFO', `Pain pool: ${painPool.length}, Reach pool: ${reachPool.length}`);
-  
-  // Helper: pick from pool with KOL deduplication
-  function pickWithKOLLimit(pool, maxPicks) {
-    const picked = [];
-    const kolCounts = {}; // track how many tweets per KOL handle
-    
-    for (const tweet of pool) {
-      if (picked.length >= maxPicks) break;
+  // ============ KOL Deduplication (max 1 per KOL) ============
+  const kolCounts = {};
+  const dedupedTweets = qualifiedTweets.filter(t => {
+    if (t.originalGroup === 'kol' && t.author) {
+      const handle = t.author.toLowerCase();
+      const currentCount = kolCounts[handle] || 0;
       
-      // Check if this is a KOL tweet (originalGroup === 'kol')
-      if (tweet.originalGroup === 'kol' && tweet.author) {
-        const handle = tweet.author.toLowerCase();
-        const currentCount = kolCounts[handle] || 0;
-        
-        if (currentCount >= MAX_PER_KOL) {
-          log('DEBUG', `KOL limit reached for ${tweet.author}, skipping`, { url: tweet.url });
-          continue;
-        }
-        
-        kolCounts[handle] = currentCount + 1;
+      if (currentCount >= MAX_PER_KOL) {
+        log('DEBUG', `KOL limit reached for ${t.author}, skipping`, { url: t.url });
+        return false;
       }
       
-      picked.push(tweet);
+      kolCounts[handle] = currentCount + 1;
     }
-    
-    return picked;
-  }
+    return true;
+  });
   
-  // Select with quota (with KOL deduplication)
-  const selected = [];
+  log('INFO', `After KOL dedup (max ${MAX_PER_KOL} per KOL): ${dedupedTweets.length}`);
   
-  // Pick from pain (no KOL limit needed, pain pool has no KOL)
-  const painPicked = painPool.slice(0, QUOTA.pain);
-  selected.push(...painPicked);
+  // ============ Final Selection - All Qualified Tweets ============
+  // Sort by score, mark top N as AI-picked
+  const sortedTweets = dedupedTweets.sort((a, b) => b.finalScore - a.finalScore);
   
-  // Pick from reach (with KOL limit)
-  const reachPicked = pickWithKOLLimit(reachPool, QUOTA.reach);
-  selected.push(...reachPicked);
+  const finalSelection = sortedTweets.map((t, idx) => ({
+    rank: idx + 1,
+    aiPicked: idx < QUALITY_CONFIG.aiPickTopN, // Top N are AI-picked
+    group: t.group,
+    originalGroup: t.originalGroup,
+    sourceQuery: t.sourceQuery,
+    url: t.url,
+    author: t.author,
+    datetime: t.datetime,
+    text: t.text,
+    likes: t.likes,
+    retweets: t.retweets,
+    replies: t.replies,
+    // Scoring details
+    rawEngagement: t.rawEngagement,
+    viralityScore: t.viralityScore,
+    filoFitScore: t.filoFitScore,
+    filoFitKeywordCount: t.filoFitKeywordCount,
+    textBonus: t.textBonus,
+    painBonus: t.painBonus,
+    finalScore: t.finalScore,
+    // Safety metadata
+    safetyTier: t.safetyTier,
+    lowSignalPenalty: t.lowSignalPenalty || false,
+    relevanceKeywords: t.relevanceKeywords || []
+  }));
   
-  // Calculate backfill needed
-  let backfilled = 0;
-  const remaining = QUOTA.total - selected.length;
+  // Count stats by group
+  const painCount = finalSelection.filter(t => t.group === 'pain').length;
+  const reachCount = finalSelection.filter(t => t.group === 'reach').length;
+  const kolCount = finalSelection.filter(t => t.originalGroup === 'kol').length;
+  const aiPickedCount = finalSelection.filter(t => t.aiPicked).length;
   
-  if (remaining > 0) {
-    if (painPicked.length < QUOTA.pain) {
-      const extraFromReach = reachPool.slice(reachPicked.length, reachPicked.length + remaining);
-      selected.push(...extraFromReach);
-      backfilled += extraFromReach.length;
-    } else if (reachPicked.length < QUOTA.reach) {
-      const extraFromPain = painPool.slice(painPicked.length, painPicked.length + remaining);
-      selected.push(...extraFromPain);
-      backfilled += extraFromPain.length;
-    }
-  }
-  
-  // Final sort by score and add rank
-  const finalSelection = selected
-    .sort((a, b) => b.finalScore - a.finalScore)
-    .slice(0, QUOTA.total)
-    .map((t, idx) => ({
-      rank: idx + 1,
-      group: t.group,
-      originalGroup: t.originalGroup,
-      sourceQuery: t.sourceQuery,
-      url: t.url,
-      author: t.author,
-      datetime: t.datetime,
-      text: t.text,
-      likes: t.likes,
-      retweets: t.retweets,
-      replies: t.replies,
-      // Scoring details
-      rawEngagement: t.rawEngagement,
-      viralityScore: t.viralityScore,
-      filoFitScore: t.filoFitScore,
-      filoFitKeywordCount: t.filoFitKeywordCount,
-      textBonus: t.textBonus,
-      painBonus: t.painBonus,
-      finalScore: t.finalScore,
-      // Safety metadata
-      safetyTier: t.safetyTier,
-      lowSignalPenalty: t.lowSignalPenalty || false,
-      relevanceKeywords: t.relevanceKeywords || []
-    }));
-  
-  // Count distinct KOLs in final selection
+  // Count distinct KOLs
   const kolsInFinal = finalSelection
     .filter(t => t.originalGroup === 'kol')
     .map(t => t.author?.toLowerCase())
@@ -369,15 +385,16 @@ function selectTop10(rawData) {
   const stats = {
     totalCandidates: allTweets.length,
     uniqueAfterDedup: uniqueTweets.length,
+    freshAfterAgeFilter: freshTweets.length,
     ...filterStats,
-    qualifiedAfterFilters: relevantTweets.length,
-    painPool: painPool.length,
-    reachPool: reachPool.length,
-    painSelected: finalSelection.filter(t => t.group === 'pain').length,
-    reachSelected: finalSelection.filter(t => t.group === 'reach').length,
-    kolSelected: kolsInFinal.length,
-    distinctKOLs,
-    backfilled
+    qualified: finalSelection.length,
+    aiPicked: aiPickedCount,
+    byGroup: {
+      pain: painCount,
+      reach: reachCount,
+      kol: kolCount
+    },
+    distinctKOLs
   };
   
   log('INFO', 'Selection complete', stats);
@@ -386,7 +403,7 @@ function selectTop10(rawData) {
     runDate: rawData.runDate,
     runAt: rawData.runAt,
     selectionStats: stats,
-    quota: QUOTA,
+    qualityConfig: QUALITY_CONFIG,
     top: finalSelection
   };
 }

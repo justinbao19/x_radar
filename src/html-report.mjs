@@ -160,6 +160,104 @@ function getStyles() {
       color: var(--text-muted);
     }
 
+    /* View Toggle */
+    .view-toggle-wrapper {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--border-strong);
+      transition: 0.3s;
+      border-radius: 24px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.3s;
+      border-radius: 50%;
+    }
+
+    .toggle-switch input:checked + .toggle-slider {
+      background-color: var(--purple);
+    }
+
+    .toggle-switch input:checked + .toggle-slider:before {
+      transform: translateX(20px);
+    }
+
+    .toggle-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .toggle-label.active {
+      color: var(--purple);
+    }
+
+    /* AI Picked Badge */
+    .ai-picked-badge {
+      position: absolute;
+      top: -1px;
+      right: 32px;
+      background: var(--purple);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 0 0 10px 10px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      letter-spacing: 0.3px;
+    }
+
+    .ai-picked-badge svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    /* Not AI-picked cards (hidden by default in AI view) */
+    .tweet-card.not-ai-picked {
+      display: none;
+    }
+
+    body.show-all .tweet-card.not-ai-picked {
+      display: block;
+      opacity: 0.85;
+    }
+
+    body.show-all .tweet-card.not-ai-picked .card-number {
+      background: var(--text-muted);
+    }
+
     /* Main */
     .main {
       max-width: 800px;
@@ -819,6 +917,25 @@ function getScripts() {
         toast.classList.remove('show');
       }, 2000);
     }
+
+    function toggleView() {
+      const toggle = document.getElementById('viewToggle');
+      const showAll = !toggle.checked;
+      document.body.classList.toggle('show-all', showAll);
+      
+      // Update label
+      const labels = document.querySelectorAll('.toggle-label');
+      labels[0].classList.toggle('active', !showAll);
+      labels[1].classList.toggle('active', showAll);
+      
+      // Update stats display
+      const aiPickedStat = document.getElementById('stat-ai-picked');
+      const allStat = document.getElementById('stat-all');
+      if (aiPickedStat && allStat) {
+        aiPickedStat.style.display = showAll ? 'none' : 'flex';
+        allStat.style.display = showAll ? 'flex' : 'none';
+      }
+    }
   </script>`;
 }
 
@@ -843,19 +960,27 @@ function renderHeader(data) {
 
 function renderStats(data) {
   const stats = data.commentGenerationStats || {};
+  const selectionStats = data.selectionStats || {};
   const langs = stats.byLanguage 
     ? Object.entries(stats.byLanguage).map(([k, v]) => `${k.toUpperCase()} ${v}`).join(' / ')
     : '';
+  
+  const aiPickedCount = selectionStats.aiPicked || data.top?.filter(t => t.aiPicked).length || 0;
+  const totalCount = selectionStats.qualified || data.top?.length || 0;
 
   return `
   <div class="stats-bar">
     <div class="stats-inner">
-      <div class="stat-item">
-        <span class="stat-value">${stats.total || 0}</span>
-        <span class="stat-label">推文</span>
+      <div class="stat-item" id="stat-ai-picked">
+        <span class="stat-value">${aiPickedCount}</span>
+        <span class="stat-label">AI 精选</span>
+      </div>
+      <div class="stat-item" id="stat-all" style="display: none;">
+        <span class="stat-value">${totalCount}</span>
+        <span class="stat-label">全部推文</span>
       </div>
       <div class="stat-item">
-        <span class="stat-value">${stats.succeeded || 0}</span>
+        <span class="stat-value">${stats.succeeded || totalCount}</span>
         <span class="stat-label">已生成</span>
       </div>
       ${langs ? `
@@ -864,6 +989,14 @@ function renderStats(data) {
         <span class="stat-label">语言</span>
       </div>
       ` : ''}
+      <div class="view-toggle-wrapper">
+        <span class="toggle-label active">AI 精选</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="viewToggle" checked onchange="toggleView()">
+          <span class="toggle-slider"></span>
+        </label>
+        <span class="toggle-label">全部</span>
+      </div>
     </div>
   </div>`;
 }
@@ -1016,10 +1149,21 @@ function renderTweetCard(tweet, index) {
   const relevanceClass = `tag-relevance-${relevance}`;
   const relevanceLabels = { high: '高相关', medium: '中相关', low: '低相关' };
   const relevanceLabel = relevanceLabels[relevance] || relevance;
+  
+  // AI picked status
+  const isAiPicked = tweet.aiPicked !== false; // Default to true for backward compatibility
+  const cardClass = isAiPicked ? '' : 'not-ai-picked';
+  const aiPickedBadge = isAiPicked ? `
+    <div class="ai-picked-badge">
+      ${aiSparkleSmall}
+      AI 精选
+    </div>
+  ` : '';
 
   return `
-  <article class="tweet-card" id="card-${index}">
+  <article class="tweet-card ${cardClass}" id="card-${index}">
     <div class="card-number"># ${tweet.rank}</div>
+    ${aiPickedBadge}
     <div class="tweet-header">
       <div class="tweet-author">
         <div class="author-avatar">${initial}</div>
