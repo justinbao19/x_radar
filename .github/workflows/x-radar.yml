@@ -34,12 +34,17 @@ jobs:
 
       # ===== Restore X Auth State =====
       - name: Restore X auth state
-        if: ${{ secrets.X_STORAGE_STATE_B64 != '' }}
+        env:
+          X_STORAGE_STATE_B64: ${{ secrets.X_STORAGE_STATE_B64 }}
         run: |
-          echo "Restoring auth state from secret..."
-          mkdir -p auth
-          echo "${{ secrets.X_STORAGE_STATE_B64 }}" | base64 -d > auth/state.json
-          echo "Auth state restored successfully"
+          if [ -n "$X_STORAGE_STATE_B64" ]; then
+            echo "Restoring auth state from secret..."
+            mkdir -p auth
+            echo "$X_STORAGE_STATE_B64" | base64 -d > auth/state.json
+            echo "Auth state restored successfully"
+          else
+            echo "No X_STORAGE_STATE_B64 secret found, skipping auth restore"
+          fi
 
       - name: Check auth state
         run: |
