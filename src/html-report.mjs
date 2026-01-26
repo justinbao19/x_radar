@@ -272,6 +272,21 @@ function getStyles() {
       color: var(--text-secondary);
     }
 
+    .tag-relevance-high {
+      background: var(--green-light);
+      color: #047857;
+    }
+
+    .tag-relevance-medium {
+      background: var(--yellow-light);
+      color: #b45309;
+    }
+
+    .tag-relevance-low {
+      background: var(--bg-muted);
+      color: var(--text-muted);
+    }
+
     .tweet-score {
       text-align: right;
     }
@@ -304,6 +319,41 @@ function getStyles() {
       padding: 16px 20px;
       border-radius: var(--radius-sm);
       border-left: 4px solid var(--border-strong);
+    }
+
+    .tweet-translation {
+      margin-top: 12px;
+      padding: 14px 18px;
+      background: linear-gradient(135deg, var(--blue-light) 0%, #e0f2fe 100%);
+      border-radius: var(--radius-sm);
+      border-left: 4px solid var(--blue);
+    }
+
+    .translation-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .translation-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #1d4ed8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .translation-label svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .translation-text {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      white-space: pre-wrap;
     }
 
     .tweet-metrics {
@@ -818,10 +868,33 @@ function renderStats(data) {
   </div>`;
 }
 
+// Translation icon
+const translateIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 19l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/></svg>`;
+
 // AI Sparkle icon
 const aiSparkleIcon = `<svg class="ai-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2Z"/></svg>`;
 
 const aiSparkleSmall = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2Z"/></svg>`;
+
+function renderTranslation(tweet) {
+  // Only show translation for non-Chinese tweets that have a translation
+  const translation = tweet.comments?.tweetTranslationZh;
+  const lang = tweet.detectedLanguage || tweet.comments?.language;
+  
+  // Don't show translation for Chinese tweets
+  if (lang === 'zh' || !translation || translation.trim() === '') {
+    return '';
+  }
+  
+  return `
+  <div class="tweet-translation">
+    <div class="translation-header">
+      ${translateIcon}
+      <span class="translation-label">中文翻译</span>
+    </div>
+    <div class="translation-text">${escapeHtml(translation)}</div>
+  </div>`;
+}
 
 function renderReplyOption(opt, cardIndex, tabIndex, isRecommended = false) {
   const riskClass = opt.risk === 'low' ? 'risk-low' : opt.risk === 'medium' ? 'risk-medium' : 'risk-high';
@@ -937,6 +1010,12 @@ function renderTweetCard(tweet, index) {
     ? `https://x.com/${authorHandle.slice(1)}` 
     : `https://x.com/${authorHandle}`;
   const initial = authorHandle.replace('@', '').charAt(0).toUpperCase();
+  
+  // Product relevance tag
+  const relevance = tweet.comments?.productRelevance || 'medium';
+  const relevanceClass = `tag-relevance-${relevance}`;
+  const relevanceLabels = { high: '高相关', medium: '中相关', low: '低相关' };
+  const relevanceLabel = relevanceLabels[relevance] || relevance;
 
   return `
   <article class="tweet-card" id="card-${index}">
@@ -949,6 +1028,7 @@ function renderTweetCard(tweet, index) {
           <div class="author-tags">
             <span class="tag ${groupClass}">${groupLabel}</span>
             <span class="tag tag-lang">${tweet.detectedLanguage?.toUpperCase() || 'N/A'}</span>
+            <span class="tag ${relevanceClass}">${relevanceLabel}</span>
           </div>
         </div>
       </div>
@@ -960,6 +1040,7 @@ function renderTweetCard(tweet, index) {
     
     <div class="tweet-content">
       <div class="tweet-text">${escapeHtml(tweet.text || '无内容')}</div>
+      ${renderTranslation(tweet)}
       
       <div class="tweet-metrics">
         <div class="metric">

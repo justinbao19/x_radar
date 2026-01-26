@@ -79,9 +79,35 @@ const SYSTEM_PROMPT = `你是一个帮助产品人员撰写 X (Twitter) 回复�
      * 产品相关/痛点类推文 → 优先考虑 subtle_product（暗示产品更有效）
    - 只能有一个选项标记为 recommended
 
+8. 【自然关联原则 - 极其重要】即使推文不直接涉及邮件/效率话题，也要找到自然的连接点：
+   - 可以从这些角度切入：信息管理、注意力、效率、沟通、时间管理、信息过载、工作流
+   - 可以用自然的过渡方式：
+     * "这让我想到..." / "This reminds me of..."
+     * "作为天天处理邮件的人..." / "As someone who deals with inbox chaos..."
+     * "说到信息过载..." / "Speaking of information overload..."
+   - 【核心目标】让人感觉到你是一个关注效率、信息管理、AI工具的人，即使不提产品
+   - 如果推文实在无法关联（纯娱乐/完全无关），在 zh_explain 中标注"低产品相关"
+
+9. 【回复质量标准】好的回复应该：
+   - 让人觉得有意思、有见地，愿意点赞或互动
+   - 即使不提产品，也让人感觉到你在效率/AI/信息管理领域有思考
+   - 避免空洞的赞美、无意义的附和、或者纯粹的"哈哈好笑"
+   - 增加互动潜力：可以提问、分享观点、或引发讨论
+
+10. 【产品相关性评估】评估这条推文与我们产品领域（邮件、效率、AI）的相关程度：
+    - high: 直接讨论邮件/收件箱/通知/效率/AI工具
+    - medium: 可以自然联系到信息管理/工作流/时间管理
+    - low: 需要较牵强的关联或完全无关
+
+11. 【推文翻译】如果原推文不是中文，必须提供中文翻译：
+    - 翻译要准确、自然，保持原文语气
+    - 如果原推文已经是中文，则 tweet_translation_zh 为空字符串或省略
+
 输出严格的 JSON 格式，不要有任何其他文字：
 {
   "language": "en|ja|zh|other",
+  "product_relevance": "high|medium|low",
+  "tweet_translation_zh": "推文的中文翻译（仅非中文推文需要，中文推文留空）",
   "options": [
     {
       "comment": "回复内容（用原推文语言）",
@@ -169,8 +195,14 @@ async function generateComments(tweet, retries = MAX_RETRIES) {
         log('WARN', `Expected 3 options, got ${parsed.options.length}`);
       }
       
+      // Only include translation if language is not Chinese
+      const needsTranslation = parsed.language !== 'zh' && detectedLang !== 'zh';
+      const translation = needsTranslation ? (parsed.tweet_translation_zh || '') : '';
+      
       return {
         language: parsed.language || detectedLang,
+        productRelevance: parsed.product_relevance || 'medium',
+        tweetTranslationZh: translation,
         generatedAt: new Date().toISOString(),
         options: parsed.options.map(opt => ({
           comment: opt.comment || '',
@@ -244,7 +276,10 @@ function generateMarkdownWithComments(data) {
     
     lines.push(`## #${tweet.rank} [${groupLabel}] ${tweet.author || 'Unknown'}`);
     lines.push('');
-    lines.push(`**Score:** ${tweet.finalScore} | **FiloFit:** ${tweet.filoFitKeywordCount || 0} keywords | **Lang:** ${tweet.detectedLanguage || 'unknown'}`);
+    const relevanceLabel = tweet.comments?.productRelevance 
+      ? `| **产品相关:** ${tweet.comments.productRelevance}` 
+      : '';
+    lines.push(`**Score:** ${tweet.finalScore} | **FiloFit:** ${tweet.filoFitKeywordCount || 0} keywords | **Lang:** ${tweet.detectedLanguage || 'unknown'} ${relevanceLabel}`);
     lines.push('');
     lines.push('> ' + (tweet.text || '*No text*').split('\n').join('\n> '));
     lines.push('');
@@ -343,7 +378,8 @@ async function main() {
     failed: 0,
     skipped: 0,
     skipReasons: {},
-    byLanguage: {}
+    byLanguage: {},
+    byProductRelevance: { high: 0, medium: 0, low: 0 }
   };
   
   // Process each tweet
@@ -380,9 +416,14 @@ async function main() {
       const lang = comments.language || detectedLang;
       stats.byLanguage[lang] = (stats.byLanguage[lang] || 0) + 1;
       
+      // Track product relevance
+      const relevance = comments.productRelevance || 'medium';
+      stats.byProductRelevance[relevance] = (stats.byProductRelevance[relevance] || 0) + 1;
+      
       log('INFO', `Generated comments for tweet #${tweet.rank}`, { 
         lang, 
-        options: comments.options.length 
+        options: comments.options.length,
+        productRelevance: relevance
       });
     } else {
       tweet.comments = null;

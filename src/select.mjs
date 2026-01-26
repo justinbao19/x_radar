@@ -59,24 +59,43 @@ function countKeywordMatches(text) {
   return count;
 }
 
+// Pain group bonus multiplier (pain tweets are more valuable for engagement)
+const PAIN_GROUP_BONUS = 3;
+
+// Max tweets per KOL in final selection (prevent single KOL domination)
+const MAX_PER_KOL = 1;
+
 /**
  * Calculate scores for a tweet
+ * Uses logarithmic compression for viralityScore to reduce KOL dominance
  */
-function scoreTweet(tweet) {
-  const viralityScore = (tweet.likes || 0) * 2 + 
+function scoreTweet(tweet, group = null) {
+  // Raw engagement score
+  const rawEngagement = (tweet.likes || 0) * 2 + 
                         (tweet.retweets || 0) * 2 + 
                         (tweet.replies || 0) * 1.5;
+  
+  // Apply logarithmic compression to reduce KOL advantage
+  // log10(1 + 14938) * 100 ≈ 417, log10(1 + 31) * 100 ≈ 149
+  const viralityScore = Math.log10(1 + rawEngagement) * 100;
   
   const keywordMatchCount = countKeywordMatches(tweet.text);
   const filoFitScore = keywordMatchCount * 5;
   const textBonus = (tweet.text && tweet.text.length > 20) ? 5 : 0;
-  const finalScore = viralityScore + filoFitScore + textBonus;
+  
+  let finalScore = viralityScore + filoFitScore + textBonus;
+  
+  // Apply pain group bonus (pain tweets are more valuable)
+  const painBonus = (group === 'pain') ? PAIN_GROUP_BONUS : 1;
+  finalScore = finalScore * painBonus;
   
   return {
     viralityScore: Math.round(viralityScore * 10) / 10,
+    rawEngagement: Math.round(rawEngagement * 10) / 10,
     filoFitScore,
     filoFitKeywordCount: keywordMatchCount,
     textBonus,
+    painBonus,
     finalScore: Math.round(finalScore * 10) / 10
   };
 }
@@ -123,9 +142,10 @@ function selectTop10(rawData) {
   };
   
   // First pass: score all tweets (needed for soft tier decisions)
+  // Pass group for pain bonus calculation
   const scoredTweets = uniqueTweets.map(t => ({
     ...t,
-    ...scoreTweet(t)
+    ...scoreTweet(t, t.group)
   }));
   
   // Apply three-tier filtering
@@ -255,15 +275,42 @@ function selectTop10(rawData) {
   
   log('INFO', `Pain pool: ${painPool.length}, Reach pool: ${reachPool.length}`);
   
-  // Select with quota
+  // Helper: pick from pool with KOL deduplication
+  function pickWithKOLLimit(pool, maxPicks) {
+    const picked = [];
+    const kolCounts = {}; // track how many tweets per KOL handle
+    
+    for (const tweet of pool) {
+      if (picked.length >= maxPicks) break;
+      
+      // Check if this is a KOL tweet (originalGroup === 'kol')
+      if (tweet.originalGroup === 'kol' && tweet.author) {
+        const handle = tweet.author.toLowerCase();
+        const currentCount = kolCounts[handle] || 0;
+        
+        if (currentCount >= MAX_PER_KOL) {
+          log('DEBUG', `KOL limit reached for ${tweet.author}, skipping`, { url: tweet.url });
+          continue;
+        }
+        
+        kolCounts[handle] = currentCount + 1;
+      }
+      
+      picked.push(tweet);
+    }
+    
+    return picked;
+  }
+  
+  // Select with quota (with KOL deduplication)
   const selected = [];
   
-  // Pick from pain
+  // Pick from pain (no KOL limit needed, pain pool has no KOL)
   const painPicked = painPool.slice(0, QUOTA.pain);
   selected.push(...painPicked);
   
-  // Pick from reach
-  const reachPicked = reachPool.slice(0, QUOTA.reach);
+  // Pick from reach (with KOL limit)
+  const reachPicked = pickWithKOLLimit(reachPool, QUOTA.reach);
   selected.push(...reachPicked);
   
   // Calculate backfill needed
@@ -298,16 +345,26 @@ function selectTop10(rawData) {
       likes: t.likes,
       retweets: t.retweets,
       replies: t.replies,
+      // Scoring details
+      rawEngagement: t.rawEngagement,
       viralityScore: t.viralityScore,
       filoFitScore: t.filoFitScore,
       filoFitKeywordCount: t.filoFitKeywordCount,
       textBonus: t.textBonus,
+      painBonus: t.painBonus,
       finalScore: t.finalScore,
       // Safety metadata
       safetyTier: t.safetyTier,
       lowSignalPenalty: t.lowSignalPenalty || false,
       relevanceKeywords: t.relevanceKeywords || []
     }));
+  
+  // Count distinct KOLs in final selection
+  const kolsInFinal = finalSelection
+    .filter(t => t.originalGroup === 'kol')
+    .map(t => t.author?.toLowerCase())
+    .filter(Boolean);
+  const distinctKOLs = new Set(kolsInFinal).size;
   
   const stats = {
     totalCandidates: allTweets.length,
@@ -318,6 +375,8 @@ function selectTop10(rawData) {
     reachPool: reachPool.length,
     painSelected: finalSelection.filter(t => t.group === 'pain').length,
     reachSelected: finalSelection.filter(t => t.group === 'reach').length,
+    kolSelected: kolsInFinal.length,
+    distinctKOLs,
     backfilled
   };
   
