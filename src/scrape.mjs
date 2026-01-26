@@ -1,10 +1,13 @@
 import { chromium } from 'playwright';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { log, parseEngagement, buildSearchUrl, ensureAbsoluteUrl, randomBetween, sleep, cleanText, shuffle } from './utils.mjs';
+import { 
+  log, parseEngagement, buildSearchUrl, ensureAbsoluteUrl, 
+  randomBetween, sleep, cleanText, shuffle,
+  getTodayDate, getOutputPath, copyToLatest, getOutputDir
+} from './utils.mjs';
 import 'dotenv/config';
 
 const AUTH_STATE_FILE = 'auth/state.json';
-const OUTPUT_FILE = 'out/raw.json';
 const QUERIES_FILE = 'queries.json';
 const INFLUENCERS_FILE = 'influencers.json';
 
@@ -456,7 +459,12 @@ function buildSourceList() {
 async function main() {
   log('INFO', '=== X Radar Scraper Starting ===');
   log('INFO', `Config: MAX_SOURCES=${MAX_SOURCES_PER_RUN}, SAMPLING_MODE=${SAMPLING_MODE}`);
+  
+  const runDate = getTodayDate();
   const runAt = new Date().toISOString();
+  const outputFile = getOutputPath('raw.json', runDate);
+  
+  log('INFO', `Output directory: ${getOutputDir(runDate)}`);
   
   // Build source list
   const sources = buildSourceList();
@@ -464,12 +472,15 @@ async function main() {
   
   if (sources.length === 0) {
     log('WARN', 'No sources to scrape');
-    writeFileSync(OUTPUT_FILE, JSON.stringify({
+    const emptyOutput = {
+      runDate,
       runAt,
       stats: { totalSources: 0, totalTweets: 0, byGroup: {} },
       sources: [],
       errors: []
-    }, null, 2));
+    };
+    writeFileSync(outputFile, JSON.stringify(emptyOutput, null, 2));
+    copyToLatest(getOutputDir(runDate));
     return;
   }
   
@@ -565,15 +576,20 @@ async function main() {
   
   // Write output (always, even if some sources failed)
   const output = {
+    runDate,
     runAt,
     stats,
     sources: results,
     errors: globalErrors
   };
   
-  writeFileSync(OUTPUT_FILE, JSON.stringify(output, null, 2));
+  writeFileSync(outputFile, JSON.stringify(output, null, 2));
   log('INFO', '=== Scrape Complete ===', stats);
-  log('INFO', `Output written to ${OUTPUT_FILE}`);
+  log('INFO', `Output written to ${outputFile}`);
+  
+  // Copy to latest directory
+  copyToLatest(getOutputDir(runDate));
+  log('INFO', 'Copied to out/latest/');
 }
 
 main().catch(err => {

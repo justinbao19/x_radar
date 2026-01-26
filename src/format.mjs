@@ -1,8 +1,5 @@
 import { readFileSync, writeFileSync } from 'fs';
-import { log, truncate } from './utils.mjs';
-
-const INPUT_FILE = 'out/top10.json';
-const OUTPUT_FILE = 'out/top10.md';
+import { log, truncate, getInputPath, getOutputPath, copyToLatest, getOutputDir } from './utils.mjs';
 
 /**
  * Format number with K/M suffix
@@ -87,18 +84,31 @@ function generateMarkdown(data) {
 }
 
 async function main() {
-  log('INFO', 'Starting format process');
+  log('INFO', '=== Starting Format Process ===');
   
-  // Read input data
-  const data = JSON.parse(readFileSync(INPUT_FILE, 'utf-8'));
-  log('INFO', `Loaded data from ${INPUT_FILE}`, { tweets: data.top?.length });
+  // Read input data from latest (or date-specific directory)
+  const inputFile = getInputPath('top10.json');
+  const data = JSON.parse(readFileSync(inputFile, 'utf-8'));
+  
+  // Use runDate from data to ensure consistent directory
+  const runDate = data.runDate;
+  const outputFile = getOutputPath('top10.md', runDate);
+  
+  log('INFO', `Loaded data from ${inputFile}`, { 
+    tweets: data.top?.length,
+    runDate: runDate 
+  });
   
   // Generate markdown
   const markdown = generateMarkdown(data);
   
   // Write output
-  writeFileSync(OUTPUT_FILE, markdown);
-  log('INFO', `Markdown written to ${OUTPUT_FILE}`);
+  writeFileSync(outputFile, markdown);
+  log('INFO', `Markdown written to ${outputFile}`);
+  
+  // Copy to latest directory
+  copyToLatest(getOutputDir(runDate));
+  log('INFO', 'Copied to out/latest/');
 }
 
 main().catch(err => {

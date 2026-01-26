@@ -1,4 +1,135 @@
 import { franc } from 'franc';
+import { existsSync, mkdirSync, readdirSync, copyFileSync, readFileSync } from 'fs';
+import { join, dirname } from 'path';
+
+// ============ Output Directory Utilities ============
+
+const OUT_DIR = 'out';
+const LATEST_DIR = join(OUT_DIR, 'latest');
+
+/**
+ * Get today's date in YYYY-MM-DD format
+ */
+export function getTodayDate() {
+  return new Date().toISOString().split('T')[0];
+}
+
+/**
+ * Get output directory for a specific date
+ * @param {string} date - Date string in YYYY-MM-DD format (defaults to today)
+ * @returns {string} - Directory path like 'out/2026-01-26'
+ */
+export function getOutputDir(date = null) {
+  const dateStr = date || getTodayDate();
+  return join(OUT_DIR, dateStr);
+}
+
+/**
+ * Get the run date from raw.json or use current date
+ * This ensures all pipeline steps use the same date directory
+ * @returns {string} - Date string in YYYY-MM-DD format
+ */
+export function getRunDate() {
+  // Try to read from latest raw.json to get consistent date across pipeline
+  const latestRaw = join(LATEST_DIR, 'raw.json');
+  if (existsSync(latestRaw)) {
+    try {
+      const data = JSON.parse(readFileSync(latestRaw, 'utf-8'));
+      if (data.runDate) {
+        return data.runDate;
+      }
+      // Fallback: extract date from runAt timestamp
+      if (data.runAt) {
+        return data.runAt.split('T')[0];
+      }
+    } catch (e) {
+      // Ignore and use today
+    }
+  }
+  return getTodayDate();
+}
+
+/**
+ * Ensure output directories exist (date dir + latest dir)
+ * @param {string} date - Date string in YYYY-MM-DD format (defaults to today)
+ * @returns {string} - The date directory path
+ */
+export function ensureOutputDirs(date = null) {
+  const dateStr = date || getTodayDate();
+  const dateDir = getOutputDir(dateStr);
+  
+  // Create date directory
+  if (!existsSync(dateDir)) {
+    mkdirSync(dateDir, { recursive: true });
+  }
+  
+  // Create latest directory
+  if (!existsSync(LATEST_DIR)) {
+    mkdirSync(LATEST_DIR, { recursive: true });
+  }
+  
+  return dateDir;
+}
+
+/**
+ * Copy all files from source directory to latest directory
+ * @param {string} sourceDir - Source directory path
+ */
+export function copyToLatest(sourceDir) {
+  if (!existsSync(sourceDir)) {
+    return;
+  }
+  
+  // Ensure latest directory exists
+  if (!existsSync(LATEST_DIR)) {
+    mkdirSync(LATEST_DIR, { recursive: true });
+  }
+  
+  // Copy all files
+  const files = readdirSync(sourceDir);
+  for (const file of files) {
+    const srcPath = join(sourceDir, file);
+    const destPath = join(LATEST_DIR, file);
+    try {
+      copyFileSync(srcPath, destPath);
+    } catch (e) {
+      // Ignore copy errors
+    }
+  }
+}
+
+/**
+ * Get input file path (checks date dir first, then latest)
+ * @param {string} filename - File name like 'raw.json'
+ * @param {string} date - Optional date string
+ * @returns {string} - Full file path
+ */
+export function getInputPath(filename, date = null) {
+  // If date specified, use that directory
+  if (date) {
+    return join(getOutputDir(date), filename);
+  }
+  
+  // Try to find in latest first
+  const latestPath = join(LATEST_DIR, filename);
+  if (existsSync(latestPath)) {
+    return latestPath;
+  }
+  
+  // Fallback to today's directory
+  return join(getOutputDir(), filename);
+}
+
+/**
+ * Get output file path for current run
+ * @param {string} filename - File name like 'raw.json'
+ * @param {string} date - Optional date string (defaults to today)
+ * @returns {string} - Full file path
+ */
+export function getOutputPath(filename, date = null) {
+  const dateDir = ensureOutputDirs(date);
+  return join(dateDir, filename);
+}
 
 // ============ Logging ============
 

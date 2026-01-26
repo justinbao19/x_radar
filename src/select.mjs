@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from 'fs';
-import { log } from './utils.mjs';
+import { log, getInputPath, getOutputPath, copyToLatest, getOutputDir } from './utils.mjs';
 import { 
   checkBrandSafety,
   checkMinFiloFit,
@@ -9,9 +9,6 @@ import {
   MIN_FILO_FIT,
   LOW_SIGNAL_PENALTY
 } from './safety.mjs';
-
-const INPUT_FILE = 'out/raw.json';
-const OUTPUT_FILE = 'out/top10.json';
 
 // Selection quota
 const QUOTA = {
@@ -231,6 +228,7 @@ function selectTop10(rawData) {
   if (relevantTweets.length === 0) {
     log('WARN', 'No tweets passed all filters');
     return {
+      runDate: rawData.runDate,
       runAt: rawData.runAt,
       selectionStats: {
         totalCandidates: allTweets.length,
@@ -326,6 +324,7 @@ function selectTop10(rawData) {
   log('INFO', 'Selection complete', stats);
   
   return {
+    runDate: rawData.runDate,
     runAt: rawData.runAt,
     selectionStats: stats,
     quota: QUOTA,
@@ -337,10 +336,17 @@ async function main() {
   log('INFO', '=== Starting Selection Process ===');
   log('INFO', `Config: MIN_FILO_FIT=${MIN_FILO_FIT}`);
   
-  // Read raw data
-  const rawData = JSON.parse(readFileSync(INPUT_FILE, 'utf-8'));
-  log('INFO', `Loaded raw data from ${INPUT_FILE}`, { 
+  // Read raw data from latest (or date-specific directory)
+  const inputFile = getInputPath('raw.json');
+  const rawData = JSON.parse(readFileSync(inputFile, 'utf-8'));
+  
+  // Use runDate from raw data to ensure consistent directory
+  const runDate = rawData.runDate;
+  const outputFile = getOutputPath('top10.json', runDate);
+  
+  log('INFO', `Loaded raw data from ${inputFile}`, { 
     sources: rawData.sources?.length,
+    runDate: runDate,
     runAt: rawData.runAt 
   });
   
@@ -348,10 +354,14 @@ async function main() {
   const result = selectTop10(rawData);
   
   // Write output
-  writeFileSync(OUTPUT_FILE, JSON.stringify(result, null, 2));
-  log('INFO', `Output written to ${OUTPUT_FILE}`, { 
+  writeFileSync(outputFile, JSON.stringify(result, null, 2));
+  log('INFO', `Output written to ${outputFile}`, { 
     selected: result.top.length 
   });
+  
+  // Copy to latest directory
+  copyToLatest(getOutputDir(runDate));
+  log('INFO', 'Copied to out/latest/');
 }
 
 main().catch(err => {

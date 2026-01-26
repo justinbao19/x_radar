@@ -1,11 +1,8 @@
 import { readFileSync, writeFileSync } from 'fs';
-import { log, detectLanguage, extractJSON, sleep } from './utils.mjs';
+import { log, detectLanguage, extractJSON, sleep, getInputPath, getOutputPath, copyToLatest, getOutputDir } from './utils.mjs';
 import { checkBrandSafety, checkMinFiloFit, MIN_FILO_FIT } from './safety.mjs';
+import { generateHTMLReport } from './html-report.mjs';
 import 'dotenv/config';
-
-const INPUT_FILE = 'out/top10.json';
-const OUTPUT_JSON = 'out/top10_with_comments.json';
-const OUTPUT_MD = 'out/top10_with_comments.md';
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY_BASE = 2000;
@@ -307,14 +304,26 @@ async function main() {
     process.exit(1);
   }
   
-  // Read input data
-  const data = JSON.parse(readFileSync(INPUT_FILE, 'utf-8'));
-  log('INFO', `Loaded data from ${INPUT_FILE}`, { tweets: data.top?.length });
+  // Read input data from latest (or date-specific directory)
+  const inputFile = getInputPath('top10.json');
+  const data = JSON.parse(readFileSync(inputFile, 'utf-8'));
+  
+  // Use runDate from data to ensure consistent directory
+  const runDate = data.runDate;
+  const outputJsonFile = getOutputPath('top10_with_comments.json', runDate);
+  const outputMdFile = getOutputPath('top10_with_comments.md', runDate);
+  
+  log('INFO', `Loaded data from ${inputFile}`, { 
+    tweets: data.top?.length,
+    runDate: runDate 
+  });
   
   if (!data.top || data.top.length === 0) {
     log('WARN', 'No tweets to process');
-    writeFileSync(OUTPUT_JSON, JSON.stringify({ ...data, commentGenerationStats: { total: 0 } }, null, 2));
-    writeFileSync(OUTPUT_MD, '# X Radar Report\n\n*No tweets found*\n');
+    writeFileSync(outputJsonFile, JSON.stringify({ ...data, commentGenerationStats: { total: 0 } }, null, 2));
+    writeFileSync(outputMdFile, '# X Radar Report\n\n*No tweets found*\n');
+    copyToLatest(getOutputDir(runDate));
+    log('INFO', 'Copied to out/latest/');
     return;
   }
   
@@ -383,12 +392,22 @@ async function main() {
     commentGenerationStats: stats
   };
   
-  writeFileSync(OUTPUT_JSON, JSON.stringify(output, null, 2));
-  log('INFO', `JSON output written to ${OUTPUT_JSON}`);
+  writeFileSync(outputJsonFile, JSON.stringify(output, null, 2));
+  log('INFO', `JSON output written to ${outputJsonFile}`);
   
   const markdown = generateMarkdownWithComments(output);
-  writeFileSync(OUTPUT_MD, markdown);
-  log('INFO', `Markdown output written to ${OUTPUT_MD}`);
+  writeFileSync(outputMdFile, markdown);
+  log('INFO', `Markdown output written to ${outputMdFile}`);
+  
+  // Generate HTML report
+  const outputHtmlFile = getOutputPath('top10_with_comments.html');
+  const html = generateHTMLReport(output);
+  writeFileSync(outputHtmlFile, html);
+  log('INFO', `HTML report written to ${outputHtmlFile}`);
+  
+  // Copy to latest directory (final step of pipeline)
+  copyToLatest(getOutputDir(runDate));
+  log('INFO', 'Copied to out/latest/');
   
   log('INFO', '=== Comment Generation Complete ===', stats);
 }
