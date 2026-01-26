@@ -1,5 +1,14 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { log } from './utils.mjs';
+import { 
+  checkBrandSafety,
+  checkMinFiloFit,
+  checkPainRelevance,
+  checkReachRelevance,
+  countFiloFitKeywords,
+  MIN_FILO_FIT,
+  LOW_SIGNAL_PENALTY
+} from './safety.mjs';
 
 const INPUT_FILE = 'out/raw.json';
 const OUTPUT_FILE = 'out/top10.json';
@@ -11,7 +20,7 @@ const QUOTA = {
   total: 10
 };
 
-// FiloFit keywords for scoring
+// FiloFit keywords for scoring (used for viralityScore calculation)
 const FILO_KEYWORDS = {
   en: [
     'inbox', 'email', 'gmail', 'newsletter', 'newsletters', 'notifications', 'notification',
@@ -30,7 +39,6 @@ const FILO_KEYWORDS = {
   ]
 };
 
-// All keywords flattened for matching
 const ALL_KEYWORDS = [
   ...FILO_KEYWORDS.en.map(k => k.toLowerCase()),
   ...FILO_KEYWORDS.jp,
@@ -62,13 +70,15 @@ function scoreTweet(tweet) {
                         (tweet.retweets || 0) * 2 + 
                         (tweet.replies || 0) * 1.5;
   
-  const filoFitScore = countKeywordMatches(tweet.text) * 5;
+  const keywordMatchCount = countKeywordMatches(tweet.text);
+  const filoFitScore = keywordMatchCount * 5;
   const textBonus = (tweet.text && tweet.text.length > 20) ? 5 : 0;
   const finalScore = viralityScore + filoFitScore + textBonus;
   
   return {
     viralityScore: Math.round(viralityScore * 10) / 10,
     filoFitScore,
+    filoFitKeywordCount: keywordMatchCount,
     textBonus,
     finalScore: Math.round(finalScore * 10) / 10
   };
@@ -85,7 +95,7 @@ function selectTop10(rawData) {
     for (const tweet of source.tweets || []) {
       allTweets.push({
         ...tweet,
-        group: source.group === 'kol' ? 'reach' : source.group, // KOL counts as reach
+        group: source.group === 'kol' ? 'reach' : source.group,
         sourceQuery: source.name,
         originalGroup: source.group
       });
@@ -104,36 +114,144 @@ function selectTop10(rawData) {
   
   log('INFO', `Unique tweets after dedup: ${uniqueTweets.length}`);
   
+  // ============ Three-Tier Brand Safety Gate ============
+  const filterStats = {
+    hardFiltered: 0,
+    hardReasons: {},
+    softFiltered: 0,
+    softReasons: {},
+    lowSignalPenalized: 0,
+    filoFitFiltered: 0,
+    relevanceFiltered: 0
+  };
+  
+  // First pass: score all tweets (needed for soft tier decisions)
+  const scoredTweets = uniqueTweets.map(t => ({
+    ...t,
+    ...scoreTweet(t)
+  }));
+  
+  // Apply three-tier filtering
+  const filteredTweets = [];
+  
+  for (const tweet of scoredTweets) {
+    const safetyCheck = checkBrandSafety(tweet.text, tweet.filoFitScore);
+    
+    // Hard tier: immediate drop
+    if (safetyCheck.action === 'drop' && safetyCheck.tier === 'hard') {
+      filterStats.hardFiltered++;
+      filterStats.hardReasons[safetyCheck.category] = (filterStats.hardReasons[safetyCheck.category] || 0) + 1;
+      log('DEBUG', `Hard filtered: ${tweet.url}`, { 
+        category: safetyCheck.category, 
+        keyword: safetyCheck.keyword 
+      });
+      continue;
+    }
+    
+    // Soft tier: drop unless high FiloFit (handled in checkBrandSafety)
+    if (safetyCheck.action === 'drop' && safetyCheck.tier === 'soft') {
+      filterStats.softFiltered++;
+      filterStats.softReasons[safetyCheck.category] = (filterStats.softReasons[safetyCheck.category] || 0) + 1;
+      log('DEBUG', `Soft filtered: ${tweet.url}`, { 
+        category: safetyCheck.category, 
+        reason: safetyCheck.reason 
+      });
+      continue;
+    }
+    
+    // Low signal tier: apply penalty
+    if (safetyCheck.action === 'penalize' && safetyCheck.tier === 'low_signal') {
+      tweet.finalScore = Math.round(tweet.finalScore * LOW_SIGNAL_PENALTY * 10) / 10;
+      tweet.lowSignalPenalty = true;
+      tweet.lowSignalCategory = safetyCheck.category;
+      filterStats.lowSignalPenalized++;
+      log('DEBUG', `Low signal penalized: ${tweet.url}`, { 
+        category: safetyCheck.category,
+        newScore: tweet.finalScore 
+      });
+    }
+    
+    // Store safety metadata
+    tweet.safetyTier = safetyCheck.tier || 'clean';
+    tweet.safetyReason = safetyCheck.reason;
+    
+    filteredTweets.push(tweet);
+  }
+  
+  log('INFO', `After Brand Safety Gate: ${filteredTweets.length}`, {
+    hardFiltered: filterStats.hardFiltered,
+    softFiltered: filterStats.softFiltered,
+    lowSignalPenalized: filterStats.lowSignalPenalized
+  });
+  
+  // ============ Minimum FiloFit Threshold ============
+  const filoFitQualified = filteredTweets.filter(t => {
+    const check = checkMinFiloFit(t.filoFitScore);
+    if (!check.pass) {
+      filterStats.filoFitFiltered++;
+      log('DEBUG', `FiloFit below threshold: ${t.url}`, { 
+        filoFitScore: t.filoFitScore,
+        keywordCount: t.filoFitKeywordCount,
+        minRequired: MIN_FILO_FIT 
+      });
+      return false;
+    }
+    return true;
+  });
+  
+  log('INFO', `After FiloFit threshold (>=${MIN_FILO_FIT}): ${filoFitQualified.length} (filtered: ${filterStats.filoFitFiltered})`);
+  
+  // ============ Group Relevance Check ============
+  const relevantTweets = filoFitQualified.filter(t => {
+    let relevanceCheck;
+    
+    if (t.group === 'pain') {
+      relevanceCheck = checkPainRelevance(t.text);
+    } else {
+      relevanceCheck = checkReachRelevance(t.text);
+    }
+    
+    t.relevanceKeywords = relevanceCheck.keywords || [];
+    
+    if (!relevanceCheck.relevant) {
+      filterStats.relevanceFiltered++;
+      log('DEBUG', `Relevance filtered: ${t.url}`, { 
+        group: t.group,
+        matchCount: relevanceCheck.matchCount || 0
+      });
+      return false;
+    }
+    
+    return true;
+  });
+  
+  log('INFO', `After relevance check: ${relevantTweets.length} (filtered: ${filterStats.relevanceFiltered})`);
+  
   // Handle empty results
-  if (uniqueTweets.length === 0) {
-    log('WARN', 'No tweets found across all sources');
+  if (relevantTweets.length === 0) {
+    log('WARN', 'No tweets passed all filters');
     return {
       runAt: rawData.runAt,
       selectionStats: {
-        totalCandidates: 0,
-        uniqueAfterDedup: 0,
+        totalCandidates: allTweets.length,
+        uniqueAfterDedup: uniqueTweets.length,
+        ...filterStats,
         painSelected: 0,
         reachSelected: 0,
         backfilled: 0,
-        warning: 'NO_TWEETS_FOUND'
+        warning: 'NO_TWEETS_PASSED_FILTERS'
       },
       quota: QUOTA,
       top: []
     };
   }
   
-  // Score all tweets
-  const scoredTweets = uniqueTweets.map(t => ({
-    ...t,
-    ...scoreTweet(t)
-  }));
-  
   // Split by group
-  const painPool = scoredTweets
+  const painPool = relevantTweets
     .filter(t => t.group === 'pain')
     .sort((a, b) => b.finalScore - a.finalScore);
   
-  const reachPool = scoredTweets
+  const reachPool = relevantTweets
     .filter(t => t.group === 'reach')
     .sort((a, b) => b.finalScore - a.finalScore);
   
@@ -155,14 +273,11 @@ function selectTop10(rawData) {
   const remaining = QUOTA.total - selected.length;
   
   if (remaining > 0) {
-    // If pain is short, backfill from reach
     if (painPicked.length < QUOTA.pain) {
       const extraFromReach = reachPool.slice(reachPicked.length, reachPicked.length + remaining);
       selected.push(...extraFromReach);
       backfilled += extraFromReach.length;
-    }
-    // If reach is short, backfill from pain
-    else if (reachPicked.length < QUOTA.reach) {
+    } else if (reachPicked.length < QUOTA.reach) {
       const extraFromPain = painPool.slice(painPicked.length, painPicked.length + remaining);
       selected.push(...extraFromPain);
       backfilled += extraFromPain.length;
@@ -187,13 +302,22 @@ function selectTop10(rawData) {
       replies: t.replies,
       viralityScore: t.viralityScore,
       filoFitScore: t.filoFitScore,
+      filoFitKeywordCount: t.filoFitKeywordCount,
       textBonus: t.textBonus,
-      finalScore: t.finalScore
+      finalScore: t.finalScore,
+      // Safety metadata
+      safetyTier: t.safetyTier,
+      lowSignalPenalty: t.lowSignalPenalty || false,
+      relevanceKeywords: t.relevanceKeywords || []
     }));
   
   const stats = {
     totalCandidates: allTweets.length,
     uniqueAfterDedup: uniqueTweets.length,
+    ...filterStats,
+    qualifiedAfterFilters: relevantTweets.length,
+    painPool: painPool.length,
+    reachPool: reachPool.length,
     painSelected: finalSelection.filter(t => t.group === 'pain').length,
     reachSelected: finalSelection.filter(t => t.group === 'reach').length,
     backfilled
@@ -210,7 +334,8 @@ function selectTop10(rawData) {
 }
 
 async function main() {
-  log('INFO', 'Starting selection process');
+  log('INFO', '=== Starting Selection Process ===');
+  log('INFO', `Config: MIN_FILO_FIT=${MIN_FILO_FIT}`);
   
   // Read raw data
   const rawData = JSON.parse(readFileSync(INPUT_FILE, 'utf-8'));

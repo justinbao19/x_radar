@@ -4,11 +4,26 @@
 
 ## 功能
 
-- **Pain Track**: 抓取邮件/Gmail/收件箱相关的痛点推文（多语言，包括日语、中文）
+- **Pain Track**: 抓取邮件/Gmail/收件箱相关的痛点推文（多语言）
 - **Reach Track**: 抓取 AI/生产力/自动化等趋势话题
-- **KOL 追踪**: 监控指定 KOL 的相关推文
+- **KOL 追踪**: 监控指定 KOL 的相关推文（带主题过滤）
+- **Brand Safety**: 三级过滤系统确保内容安全
 - **智能评分**: 基于互动量和关键词匹配度进行排序
-- **评论生成**: 使用 Claude API 为每条推文生成 3 个回复选项（原语言 + 中文解释）
+- **评论生成**: 使用 Claude API 为每条推文生成 3 个回复选项
+
+## 设计原则
+
+**低风险抓取策略** - 我们不使用任何反检测或指纹伪装技术：
+- ❌ 不隐藏 `navigator.webdriver`
+- ❌ 不注入假的 `chrome` 对象
+- ❌ 不伪造浏览器插件
+- ❌ 不模拟人类鼠标移动
+
+**我们依赖的是：**
+- ✅ 低频率抓取（每次只抓 8 个源）
+- ✅ 充足的等待时间（页面加载 4-8s，查询间 15-30s）
+- ✅ 有限的滚动深度（3-5 轮，每轮 600-1200px）
+- ✅ 优雅的失败处理（单次重试后跳过，不激进）
 
 ## 项目结构
 
@@ -16,23 +31,33 @@
 x-radar/
 ├── package.json           # 依赖和脚本
 ├── queries.json           # 搜索查询配置
-├── influencers.json       # KOL 账号列表
+├── influencers.json       # KOL 账号列表 + 过滤规则
+├── denylist.json          # 三级品牌安全过滤词库
 ├── src/
-│   ├── scrape.mjs         # Playwright 抓取
-│   ├── select.mjs         # Top10 筛选
+│   ├── scrape.mjs         # Playwright 抓取（低风险模式）
+│   ├── select.mjs         # Top10 筛选 + Brand Safety Gate
 │   ├── format.mjs         # Markdown 格式化
-│   ├── commenter.mjs      # Claude 评论生成
+│   ├── commenter.mjs      # Claude 评论生成 + SKIP 机制
+│   ├── safety.mjs         # 品牌安全检查模块
 │   ├── login.mjs          # 登录助手
 │   └── utils.mjs          # 工具函数
-├── auth/                  # 登录状态存储
-├── out/                   # 输出目录
-│   ├── raw.json           # 原始抓取数据
-│   ├── top10.json         # 筛选后的 Top10
-│   ├── top10.md           # Markdown 报告
-│   ├── top10_with_comments.json  # 带评论的结果
-│   └── top10_with_comments.md    # 带评论的 Markdown
+├── auth/                  # 登录状态存储 (gitignored)
+├── out/                   # 输出目录 (gitignored)
 └── .github/workflows/     # GitHub Actions
 ```
+
+## 环境变量
+
+| 变量 | 必需 | 默认值 | 说明 |
+|------|------|--------|------|
+| `LLM_API_KEY` | ✅ | - | Claude API Key |
+| `LLM_API_URL` | ❌ | `https://api.anthropic.com/v1/messages` | LLM API 端点 |
+| `LLM_MODEL` | ❌ | `claude-sonnet-4-20250514` | 模型名称 |
+| `MAX_SOURCES` | ❌ | `8` | 每次运行抓取的源数量 |
+| `SAMPLING_MODE` | ❌ | `random` | 抽样模式：`random` 或 `all` |
+| `MIN_FILO_FIT` | ❌ | `2` | 最低 FiloFit 关键词匹配数 |
+| `PLAYWRIGHT_HEADLESS` | ❌ | `false` | 是否无头模式运行 |
+| `X_STORAGE_STATE_B64` | ❌ | - | X 登录状态的 Base64 编码 (GitHub Actions) |
 
 ## 本地运行
 
@@ -47,15 +72,7 @@ npx playwright install chromium
 
 ```bash
 cp .env.example .env
-# 编辑 .env 文件，填入 Claude API Key
-```
-
-`.env` 文件内容：
-
-```
-LLM_API_URL=https://api.anthropic.com/v1/messages
-LLM_API_KEY=sk-ant-api03-xxxx
-LLM_MODEL=claude-sonnet-4-20250514
+# 编辑 .env 文件
 ```
 
 ### 3. 生成登录状态（推荐）
@@ -81,102 +98,120 @@ npm run format   # 格式化 → out/top10.md
 npm run comment  # 生成评论 → out/top10_with_comments.*
 ```
 
+## Brand Safety 系统
+
+### 三级过滤 (denylist.json)
+
+| 级别 | 处理方式 | 包含类别 |
+|------|----------|----------|
+| **hard** | 立即丢弃 | 政治、战争/军事、恐怖主义、暴力/犯罪、仇恨言论、成人内容、毒品、诈骗、隐私泄露 |
+| **soft** | 除非 FiloFit ≥ 3 否则丢弃 | 宗教、执法/诉讼、灾难/受害者、加密货币投机 |
+| **low_signal** | 分数惩罚 ×0.2 | 体育、名人八卦、病毒梗、广告 |
+
+### 过滤流程
+
+```
+raw.json
+  ↓
+[Brand Safety Gate] → hard 命中 → 丢弃
+  ↓                 → soft 命中 + FiloFit < 3 → 丢弃
+  ↓                 → low_signal 命中 → 分数 ×0.2
+  ↓
+[FiloFit Threshold] → 关键词匹配 < MIN_FILO_FIT → 丢弃
+  ↓
+[Relevance Check] → Pain: 需邮件相关词
+  ↓               → Reach: 需 AI + 生产力组合
+  ↓
+top10.json
+  ↓
+[Commenter Safety] → 再次检查 → SKIP 或生成评论
+  ↓
+top10_with_comments.json
+```
+
 ## GitHub Actions 配置
 
 ### 设置 Secrets
 
-在仓库的 Settings → Secrets and variables → Actions 中添加：
-
-| Secret 名称 | 必需 | 说明 |
-|------------|------|------|
+| Secret | 必需 | 说明 |
+|--------|------|------|
 | `LLM_API_KEY` | ✅ | Claude API Key |
-| `LLM_API_URL` | ❌ | 默认 `https://api.anthropic.com/v1/messages` |
-| `LLM_MODEL` | ❌ | 默认 `claude-sonnet-4-20250514` |
-| `X_STORAGE_STATE_B64` | ❌ | X 登录状态的 Base64 编码 |
+| `LLM_API_URL` | ❌ | API 端点 |
+| `LLM_MODEL` | ❌ | 模型名称 |
+| `X_STORAGE_STATE_B64` | ❌ | X 登录状态 Base64 |
 
 ### 生成 X_STORAGE_STATE_B64
 
 ```bash
-# 本地登录后生成
 npm run login
 
-# 编码为 Base64
 # macOS:
 base64 -i auth/state.json | tr -d '\n'
 
 # Linux:
 base64 -w 0 auth/state.json
-
-# 将输出复制到 GitHub Secrets
 ```
 
 ### 运行时间
 
-默认每 6 小时运行一次（UTC 00:00, 06:00, 12:00, 18:00）。
-
-也可以在 Actions 页面手动触发 (Run workflow)。
-
-### 查看结果
-
-运行完成后，在 Actions 页面找到对应的 workflow run，下载 Artifacts 中的 `x-radar-*` 文件。
+默认每 6 小时运行一次。也可手动触发。
 
 ## 输出说明
 
 ### out/top10_with_comments.md
 
-包含 Top10 推文和每条推文的 3 个回复选项：
+包含 Top10 推文和每条的 3 个回复选项：
 
 - **A) Witty**: 短而机智的回复
 - **B) Practical**: 务实的产品建设者视角
 - **C) Subtle Product**: 微妙的产品角度
 
-每个选项都有中文解释说明意图。
+被 SKIP 的推文会显示原因（英文 + 中文解释）。
 
 ## 故障排查
 
-### 空结果
+### 空结果 / 部分失败
 
-1. 检查是否有 `auth/state.json`
-2. 登录状态可能过期，重新运行 `npm run login`
-3. X 可能有 rate limit，等待一段时间再试
+这是预期行为。系统会：
+1. 对失败的查询最多重试 1 次（等待 30s）
+2. 跳过持续失败的源继续处理其他
+3. 仍然输出 top10.json（可能少于 10 条）
 
-### 选择器错误
+检查 raw.json 中各 source 的 `errors` 字段了解失败原因。
 
-X 的 DOM 结构可能会变化。如果出现大量 "Failed to extract tweet" 警告：
+### 登录状态过期
 
-1. 检查 `src/scrape.mjs` 中的 `SELECTORS`
-2. 在浏览器中检查 X 的当前 DOM 结构
-3. 更新选择器
+```bash
+npm run login  # 重新登录
+```
 
 ### Claude API 错误
 
 1. 检查 `LLM_API_KEY` 是否正确
-2. 检查 API 配额是否用完
-3. 查看 `out/top10_with_comments.json` 中的 `commentError` 字段
-
-### GitHub Actions 失败
-
-1. 检查 Secrets 是否正确设置
-2. 查看 workflow 日志中的错误信息
-3. 尝试手动触发 workflow 进行调试
+2. 检查 API 配额
+3. 查看 `top10_with_comments.json` 中的 `commentError`
 
 ## 自定义
 
 ### 修改搜索查询
 
-编辑 `queries.json` 添加或修改搜索查询。
+编辑 `queries.json`
 
 ### 修改 KOL 列表
 
-编辑 `influencers.json` 添加或删除 KOL 账号。
+编辑 `influencers.json`（包含 `allowedQuery` 和 `denyTerms`）
+
+### 修改安全过滤词
+
+编辑 `denylist.json`
 
 ### 修改评分权重
 
-编辑 `src/select.mjs` 中的评分公式和配额设置。
+编辑 `src/select.mjs`
 
 ### 修改评论生成 Prompt
 
-编辑 `src/commenter.mjs` 中的 `SYSTEM_PROMPT`。
+编辑 `src/commenter.mjs` 中的 `SYSTEM_PROMPT`
 
 ## License
 

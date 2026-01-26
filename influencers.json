@@ -1,6 +1,5 @@
 {
   "handles": [
-    "elonmusk",
     "sama",
     "karpathy",
     "AndrewYNg",
@@ -10,5 +9,6 @@
     "toaboraso",
     "benediktevans"
   ],
-  "query": "(AI OR agent OR productivity OR automation OR email OR inbox OR notifications OR workflow)"
+  "allowedQuery": "(AI OR agent OR search OR productivity OR workflow OR email OR inbox OR notification)",
+  "denyTerms": "-election -vote -regime -war -military -army -terrorist -suicide -murder -bomb -nazi -porn -nude -cocaine -heroin -meth -airdrop -doxx -leaked -hacked -选举 -投票 -战争 -军队 -恐怖 -自杀 -爆炸 -纳粹 -色情 -泄露 -選挙 -戦争 -軍 -テロ -自殺 -爆発 -ナチ -ポルノ -ハック"
 }

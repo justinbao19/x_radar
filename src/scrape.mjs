@@ -8,42 +8,33 @@ const OUTPUT_FILE = 'out/raw.json';
 const QUERIES_FILE = 'queries.json';
 const INFLUENCERS_FILE = 'influencers.json';
 
-// ============ Browser Fingerprint Configuration ============
+// ============ Configuration ============
 
-// Pool of realistic User-Agent strings (Chrome on Mac/Windows)
-const USER_AGENTS = [
-  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
-];
+// Sampling configuration (env vars)
+const MAX_SOURCES_PER_RUN = parseInt(process.env.MAX_SOURCES || '8', 10);
+const SAMPLING_MODE = process.env.SAMPLING_MODE || 'random'; // 'random' or 'all'
 
-// Viewport size ranges for random selection
-const VIEWPORT_WIDTHS = [1280, 1366, 1440, 1536, 1600, 1920];
-const VIEWPORT_HEIGHTS = [720, 768, 800, 864, 900, 1080];
+// Throttling configuration
+const PAGE_LOAD_WAIT_MIN = 4000;
+const PAGE_LOAD_WAIT_MAX = 8000;
+const BETWEEN_QUERIES_WAIT_MIN = 15000;
+const BETWEEN_QUERIES_WAIT_MAX = 30000;
+const SCROLL_WAIT_MIN = 2000;
+const SCROLL_WAIT_MAX = 4000;
 
-// Timezone and locale options
-const TIMEZONES = ['America/New_York', 'America/Los_Angeles', 'America/Chicago', 'Europe/London'];
-const LOCALES = ['en-US', 'en-GB'];
+// Scroll configuration (limited depth)
+const MAX_SCROLL_ROUNDS = 5;
+const MIN_SCROLL_ROUNDS = 3;
+const SCROLL_DISTANCE_MIN = 600;
+const SCROLL_DISTANCE_MAX = 1200;
+const SCROLL_BACK_CHANCE = 0.15; // 15% chance to scroll back
 
-/**
- * Get random browser fingerprint configuration
- */
-function getRandomFingerprint() {
-  return {
-    userAgent: USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)],
-    viewport: {
-      width: VIEWPORT_WIDTHS[Math.floor(Math.random() * VIEWPORT_WIDTHS.length)],
-      height: VIEWPORT_HEIGHTS[Math.floor(Math.random() * VIEWPORT_HEIGHTS.length)]
-    },
-    locale: LOCALES[Math.floor(Math.random() * LOCALES.length)],
-    timezoneId: TIMEZONES[Math.floor(Math.random() * TIMEZONES.length)]
-  };
-}
+// Retry configuration
+const MAX_RETRIES = 1;
+const RETRY_BACKOFF_MS = 30000;
 
-// Selectors with fallbacks
+// ============ Selectors ============
+
 const SELECTORS = {
   tweetContainer: ['article[data-testid="tweet"]', 'article[role="article"]'],
   tweetUrl: ['a[href*="/status/"]'],
@@ -54,6 +45,8 @@ const SELECTORS = {
   replyButton: ['button[data-testid="reply"]', 'button[aria-label*="Reply"]', 'button[aria-label*="reply"]'],
   loginButton: ['[data-testid="loginButton"]', 'a[href="/login"]']
 };
+
+// ============ Helper Functions ============
 
 /**
  * Try multiple selectors and return first match
@@ -69,42 +62,6 @@ async function $(element, selectors) {
     }
   }
   return null;
-}
-
-// ============ Human Behavior Simulation ============
-
-/**
- * Simulate human-like mouse movement
- */
-async function humanMouseMove(page) {
-  try {
-    const x = randomBetween(100, 900);
-    const y = randomBetween(100, 600);
-    // Move mouse with random steps to simulate natural movement
-    await page.mouse.move(x, y, { steps: randomBetween(5, 15) });
-  } catch (e) {
-    // Ignore mouse move errors
-  }
-}
-
-/**
- * Randomly pause to simulate reading behavior (30% chance)
- */
-async function maybeReadingPause(page) {
-  if (Math.random() < 0.3) {
-    await humanMouseMove(page);
-    await sleep(randomBetween(3000, 8000));
-  }
-}
-
-/**
- * Random micro-interaction (hover, small movement)
- */
-async function microInteraction(page) {
-  if (Math.random() < 0.4) {
-    await humanMouseMove(page);
-    await sleep(randomBetween(200, 600));
-  }
 }
 
 /**
@@ -175,32 +132,43 @@ async function extractTweet(article) {
 }
 
 /**
- * Check if page requires login
+ * Check if page requires login or shows error
  */
-async function checkLoginRequired(page) {
+async function checkPageStatus(page) {
   try {
     const loginBtn = await $(page, SELECTORS.loginButton);
-    if (loginBtn) return true;
+    if (loginBtn) return { ok: false, reason: 'LOGIN_REQUIRED' };
     
     const url = page.url();
-    if (url.includes('/login') || url.includes('/i/flow/login')) return true;
+    if (url.includes('/login') || url.includes('/i/flow/login')) {
+      return { ok: false, reason: 'LOGIN_REDIRECT' };
+    }
     
-    return false;
+    // Check for error states
+    const content = await page.content();
+    if (content.includes('Something went wrong')) {
+      return { ok: false, reason: 'ERROR_PAGE' };
+    }
+    if (content.includes('Rate limit') || content.includes('Too many requests')) {
+      return { ok: false, reason: 'RATE_LIMIT' };
+    }
+    
+    return { ok: true };
   } catch (e) {
-    return false;
+    return { ok: false, reason: 'CHECK_FAILED' };
   }
 }
 
 /**
  * Scroll page and wait for content to load
- * Randomized behavior to avoid bot detection
+ * Limited depth scrolling with polite waits
  */
-async function scrollAndLoad(page, maxTweets, maxRounds = 7) {
+async function scrollAndLoad(page, maxTweets) {
   const seenUrls = new Set();
   let noNewContentRounds = 0;
   
-  // Randomize actual number of scroll rounds (3-6)
-  const actualRounds = randomBetween(3, Math.min(6, maxRounds));
+  // Random scroll rounds between MIN and MAX
+  const actualRounds = randomBetween(MIN_SCROLL_ROUNDS, MAX_SCROLL_ROUNDS);
   
   for (let round = 0; round < actualRounds; round++) {
     // Get current tweet count
@@ -224,29 +192,22 @@ async function scrollAndLoad(page, maxTweets, maxRounds = 7) {
       break;
     }
     
-    // Random mouse movement before scrolling
-    await microInteraction(page);
-    
-    // Scroll down by random amount (not always to bottom)
-    const scrollAmount = randomBetween(600, 1200);
+    // Scroll down by random amount
+    const scrollAmount = randomBetween(SCROLL_DISTANCE_MIN, SCROLL_DISTANCE_MAX);
     await page.evaluate((amount) => {
       window.scrollBy(0, amount);
     }, scrollAmount);
     
-    // Random delay between scrolls
-    await sleep(randomBetween(3000, 7000));
+    // Polite wait between scrolls
+    await sleep(randomBetween(SCROLL_WAIT_MIN, SCROLL_WAIT_MAX));
     
-    // Occasional mouse movement after scrolling
-    await microInteraction(page);
-    
-    // Occasionally scroll up a bit (simulate human looking back, 20% chance)
-    if (Math.random() < 0.2) {
-      await sleep(randomBetween(500, 1500));
-      const scrollBackAmount = randomBetween(150, 300);
+    // Optional small upward scroll (15% chance)
+    if (Math.random() < SCROLL_BACK_CHANCE) {
+      const scrollBackAmount = randomBetween(100, 200);
       await page.evaluate((amount) => {
         window.scrollBy(0, -amount);
       }, scrollBackAmount);
-      await sleep(randomBetween(1000, 2000));
+      await sleep(randomBetween(500, 1000));
     }
     
     // Check for new content
@@ -266,9 +227,47 @@ async function scrollAndLoad(page, maxTweets, maxRounds = 7) {
 }
 
 /**
+ * Scrape a single source with retry logic
+ */
+async function scrapeSourceWithRetry(page, source) {
+  let lastError = null;
+  
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    if (attempt > 0) {
+      log('INFO', `Retry ${attempt}/${MAX_RETRIES} for ${source.name}, waiting ${RETRY_BACKOFF_MS / 1000}s`);
+      await sleep(RETRY_BACKOFF_MS);
+    }
+    
+    const result = await scrapeSource(page, source, attempt);
+    
+    // Success or non-retryable error
+    if (result.tweetCount > 0 || !result.retryable) {
+      return result;
+    }
+    
+    lastError = result.errors[result.errors.length - 1];
+    log('WARN', `Attempt ${attempt + 1} failed for ${source.name}`, { error: lastError?.message });
+  }
+  
+  // All retries exhausted
+  log('ERROR', `All retries exhausted for ${source.name}`, { lastError: lastError?.message });
+  return {
+    group: source.group,
+    name: source.name,
+    query: source.query,
+    searchUrl: source.searchUrl,
+    scrapedAt: new Date().toISOString(),
+    tweetCount: 0,
+    tweets: [],
+    errors: [{ type: 'MAX_RETRIES_EXHAUSTED', message: lastError?.message || 'Unknown error' }],
+    retryable: false
+  };
+}
+
+/**
  * Scrape a single source (query or KOL)
  */
-async function scrapeSource(page, source) {
+async function scrapeSource(page, source, attempt = 0) {
   const result = {
     group: source.group,
     name: source.name,
@@ -277,42 +276,34 @@ async function scrapeSource(page, source) {
     scrapedAt: new Date().toISOString(),
     tweetCount: 0,
     tweets: [],
-    errors: []
+    errors: [],
+    retryable: false
   };
 
+  const startTime = Date.now();
+  log('INFO', `[START] Scraping: ${source.name}`, { group: source.group, attempt });
+
   try {
-    log('INFO', `Scraping: ${source.name}`, { group: source.group });
-    
     // Navigate to search URL
     await page.goto(source.searchUrl, { 
       timeout: 30000,
       waitUntil: 'domcontentloaded'
     });
     
-    // Wait a bit for dynamic content
-    await sleep(randomBetween(4000, 8000));
+    // Polite wait for dynamic content
+    await sleep(randomBetween(PAGE_LOAD_WAIT_MIN, PAGE_LOAD_WAIT_MAX));
     
-    // Simulate human behavior after page load
-    await humanMouseMove(page);
-    await maybeReadingPause(page);
-    
-    // Check for login requirement
-    if (await checkLoginRequired(page)) {
-      log('WARN', 'Login required, skipping source', { name: source.name });
-      result.errors.push({ type: 'LOGIN_REQUIRED', message: 'Login wall detected' });
+    // Check page status
+    const status = await checkPageStatus(page);
+    if (!status.ok) {
+      log('WARN', `Page status issue: ${status.reason}`, { name: source.name });
+      result.errors.push({ type: status.reason, message: `Page check failed: ${status.reason}` });
+      result.retryable = status.reason === 'RATE_LIMIT' || status.reason === 'ERROR_PAGE';
       return result;
     }
     
-    // Check for rate limit
-    const content = await page.content();
-    if (content.includes('Rate limit') || content.includes('Too many requests')) {
-      log('WARN', 'Rate limit detected, waiting 60s', { name: source.name });
-      await sleep(60000);
-      await page.reload();
-    }
-    
-    // Scroll to load more tweets
-    await scrollAndLoad(page, source.max || 50);
+    // Scroll to load more tweets (limited depth)
+    await scrollAndLoad(page, source.max || 30);
     
     // Extract tweets
     const articles = await page.$$(SELECTORS.tweetContainer[0]);
@@ -340,23 +331,22 @@ async function scrapeSource(page, source) {
     }
     
     result.tweetCount = result.tweets.length;
-    log('INFO', `Scraped ${result.tweetCount} tweets from ${source.name}`);
+    const duration = ((Date.now() - startTime) / 1000).toFixed(1);
+    log('INFO', `[SUCCESS] ${source.name}: ${result.tweetCount} tweets in ${duration}s`);
     
   } catch (err) {
-    log('ERROR', 'Source scrape failed', { name: source.name, error: err.message });
+    const duration = ((Date.now() - startTime) / 1000).toFixed(1);
+    log('ERROR', `[FAILED] ${source.name} after ${duration}s`, { error: err.message });
     result.errors.push({ type: 'SCRAPE_FAILED', message: err.message });
+    result.retryable = true;
   }
 
   return result;
 }
 
-// Configuration for random sampling
-const MAX_SOURCES_PER_RUN = parseInt(process.env.MAX_SOURCES || '8', 10);
-const SAMPLING_MODE = process.env.SAMPLING_MODE || 'random'; // 'random' or 'all'
-
 /**
  * Build source list from queries and influencers config
- * Supports random sampling to reduce detection risk
+ * Supports random sampling to reduce load
  */
 function buildSourceList() {
   const allSources = [];
@@ -371,7 +361,7 @@ function buildSourceList() {
       name: q.name,
       query: q.query,
       searchUrl: buildSearchUrl(q.query),
-      max: q.max || 50
+      max: q.max || 30
     });
   }
   
@@ -382,23 +372,31 @@ function buildSourceList() {
       name: q.name,
       query: q.query,
       searchUrl: buildSearchUrl(q.query),
-      max: q.max || 50
+      max: q.max || 30
     });
   }
   
-  // KOL queries
+  // KOL queries - with topic filter and denyTerms
   if (existsSync(INFLUENCERS_FILE)) {
     const influencers = JSON.parse(readFileSync(INFLUENCERS_FILE, 'utf-8'));
+    const topicQuery = influencers.allowedQuery || influencers.query || '';
+    const denyTerms = influencers.denyTerms || '';
+    
     for (const handle of influencers.handles || []) {
-      const kolQuery = `from:${handle} ${influencers.query} -filter:retweets`;
+      const kolQuery = `from:${handle} ${topicQuery} ${denyTerms} -filter:retweets`.trim();
       allSources.push({
         group: 'kol',
         name: `kol-${handle}`,
         query: kolQuery,
         searchUrl: buildSearchUrl(kolQuery),
-        max: 20 // Limit per KOL
+        max: 15
       });
     }
+    
+    log('INFO', `KOL queries configured`, { 
+      handles: influencers.handles?.length,
+      hasDenyTerms: !!denyTerms
+    });
   }
   
   // Apply sampling strategy
@@ -412,16 +410,36 @@ function buildSourceList() {
   const reachSources = allSources.filter(s => s.group === 'reach');
   const kolSources = allSources.filter(s => s.group === 'kol');
   
-  // Allocate: ~30% pain, ~40% reach, ~30% kol
-  const painCount = Math.max(2, Math.floor(MAX_SOURCES_PER_RUN * 0.3));
-  const reachCount = Math.max(2, Math.floor(MAX_SOURCES_PER_RUN * 0.4));
-  const kolCount = MAX_SOURCES_PER_RUN - painCount - reachCount;
+  // Allocate: ~30% pain, ~40% reach, ~30% kol (with backfill)
+  let painCount = Math.max(1, Math.floor(MAX_SOURCES_PER_RUN * 0.3));
+  let reachCount = Math.max(1, Math.floor(MAX_SOURCES_PER_RUN * 0.4));
+  let kolCount = Math.max(1, MAX_SOURCES_PER_RUN - painCount - reachCount);
   
+  // Backfill if a group has fewer sources
+  const painAvailable = Math.min(painCount, painSources.length);
+  const reachAvailable = Math.min(reachCount, reachSources.length);
+  const kolAvailable = Math.min(kolCount, kolSources.length);
+  
+  let remaining = MAX_SOURCES_PER_RUN - painAvailable - reachAvailable - kolAvailable;
+  
+  // Distribute remaining slots
   const selectedSources = [
-    ...shuffle(painSources).slice(0, painCount),
-    ...shuffle(reachSources).slice(0, reachCount),
-    ...shuffle(kolSources).slice(0, kolCount)
+    ...shuffle(painSources).slice(0, painAvailable),
+    ...shuffle(reachSources).slice(0, reachAvailable),
+    ...shuffle(kolSources).slice(0, kolAvailable)
   ];
+  
+  // Backfill from groups that have more sources
+  if (remaining > 0 && reachSources.length > reachAvailable) {
+    const extra = shuffle(reachSources).slice(reachAvailable, reachAvailable + remaining);
+    selectedSources.push(...extra);
+    remaining -= extra.length;
+  }
+  if (remaining > 0 && painSources.length > painAvailable) {
+    const extra = shuffle(painSources).slice(painAvailable, painAvailable + remaining);
+    selectedSources.push(...extra);
+    remaining -= extra.length;
+  }
   
   // Shuffle final selection to randomize order
   const finalSources = shuffle(selectedSources);
@@ -436,47 +454,38 @@ function buildSourceList() {
 }
 
 async function main() {
-  log('INFO', 'Starting X Radar scraper');
+  log('INFO', '=== X Radar Scraper Starting ===');
+  log('INFO', `Config: MAX_SOURCES=${MAX_SOURCES_PER_RUN}, SAMPLING_MODE=${SAMPLING_MODE}`);
   const runAt = new Date().toISOString();
   
   // Build source list
   const sources = buildSourceList();
   log('INFO', `Total sources to scrape: ${sources.length}`);
   
-  // Launch browser
+  if (sources.length === 0) {
+    log('WARN', 'No sources to scrape');
+    writeFileSync(OUTPUT_FILE, JSON.stringify({
+      runAt,
+      stats: { totalSources: 0, totalTweets: 0, byGroup: {} },
+      sources: [],
+      errors: []
+    }, null, 2));
+    return;
+  }
+  
+  // Launch browser (simple config, no anti-detection)
   const headless = process.env.PLAYWRIGHT_HEADLESS === 'true';
   log('INFO', `Launching browser (headless: ${headless})`);
   
   const browser = await chromium.launch({
     headless,
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-blink-features=AutomationControlled', // Hide automation flag
-      '--disable-infobars',
-      '--window-size=1920,1080'
-    ]
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
   
-  // Get random browser fingerprint
-  const fingerprint = getRandomFingerprint();
-  log('INFO', 'Using random fingerprint', { 
-    viewport: `${fingerprint.viewport.width}x${fingerprint.viewport.height}`,
-    locale: fingerprint.locale,
-    timezone: fingerprint.timezoneId
-  });
-  
-  // Create context with auth state and random fingerprint
+  // Create context (simple config)
   const contextOptions = {
-    viewport: fingerprint.viewport,
-    userAgent: fingerprint.userAgent,
-    locale: fingerprint.locale,
-    timezoneId: fingerprint.timezoneId,
-    // Add permissions that real browsers have
-    permissions: ['geolocation'],
-    // Disable some automation indicators
-    bypassCSP: false,
-    javaScriptEnabled: true
+    viewport: { width: 1280, height: 800 },
+    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
   };
   
   if (existsSync(AUTH_STATE_FILE)) {
@@ -489,61 +498,52 @@ async function main() {
   const context = await browser.newContext(contextOptions);
   const page = await context.newPage();
   
-  // Inject anti-detection scripts
-  await page.addInitScript(() => {
-    // Hide webdriver property
-    Object.defineProperty(navigator, 'webdriver', {
-      get: () => false,
-      configurable: true
-    });
-    
-    // Add chrome object (present in real Chrome)
-    if (!window.chrome) {
-      window.chrome = {
-        runtime: {},
-        loadTimes: function() {},
-        csi: function() {},
-        app: {}
-      };
-    }
-    
-    // Override plugins to look like real browser
-    Object.defineProperty(navigator, 'plugins', {
-      get: () => [
-        { name: 'Chrome PDF Plugin', filename: 'internal-pdf-viewer' },
-        { name: 'Chrome PDF Viewer', filename: 'mhjfbmdgcfjbbpaeojofohoefgiehjai' },
-        { name: 'Native Client', filename: 'internal-nacl-plugin' }
-      ]
-    });
-    
-    // Override languages
-    Object.defineProperty(navigator, 'languages', {
-      get: () => ['en-US', 'en']
-    });
-    
-    // Prevent detection via permissions API
-    const originalQuery = window.navigator.permissions.query;
-    window.navigator.permissions.query = (parameters) => (
-      parameters.name === 'notifications' ?
-        Promise.resolve({ state: Notification.permission }) :
-        originalQuery(parameters)
-    );
-  });
-  
-  // Scrape all sources
+  // Scrape all sources with graceful failure handling
   const results = [];
-  const errors = [];
+  const globalErrors = [];
+  let successCount = 0;
+  let failCount = 0;
   
-  for (const source of sources) {
+  for (let i = 0; i < sources.length; i++) {
+    const source = sources[i];
+    log('INFO', `--- Source ${i + 1}/${sources.length}: ${source.name} ---`);
+    
     try {
-      const result = await scrapeSource(page, source);
+      const result = await scrapeSourceWithRetry(page, source);
       results.push(result);
       
-      // Add delay between sources (longer to avoid detection)
-      await sleep(randomBetween(15000, 30000));
+      if (result.tweetCount > 0) {
+        successCount++;
+      } else {
+        failCount++;
+      }
+      
+      // Polite wait between sources (except for last one)
+      if (i < sources.length - 1) {
+        const waitTime = randomBetween(BETWEEN_QUERIES_WAIT_MIN, BETWEEN_QUERIES_WAIT_MAX);
+        log('DEBUG', `Waiting ${(waitTime / 1000).toFixed(0)}s before next source`);
+        await sleep(waitTime);
+      }
     } catch (err) {
-      log('ERROR', 'Failed to scrape source', { name: source.name, error: err.message });
-      errors.push({ source: source.name, error: err.message, timestamp: new Date().toISOString() });
+      log('ERROR', `Unexpected error for ${source.name}`, { error: err.message });
+      globalErrors.push({ 
+        source: source.name, 
+        error: err.message, 
+        timestamp: new Date().toISOString() 
+      });
+      failCount++;
+      
+      // Still add a failed result to track it
+      results.push({
+        group: source.group,
+        name: source.name,
+        query: source.query,
+        searchUrl: source.searchUrl,
+        scrapedAt: new Date().toISOString(),
+        tweetCount: 0,
+        tweets: [],
+        errors: [{ type: 'UNEXPECTED_ERROR', message: err.message }]
+      });
     }
   }
   
@@ -553,6 +553,8 @@ async function main() {
   // Calculate stats
   const stats = {
     totalSources: results.length,
+    successfulSources: successCount,
+    failedSources: failCount,
     totalTweets: results.reduce((sum, r) => sum + r.tweetCount, 0),
     byGroup: {
       pain: results.filter(r => r.group === 'pain').reduce((sum, r) => sum + r.tweetCount, 0),
@@ -561,16 +563,16 @@ async function main() {
     }
   };
   
-  // Write output
+  // Write output (always, even if some sources failed)
   const output = {
     runAt,
     stats,
     sources: results,
-    errors
+    errors: globalErrors
   };
   
   writeFileSync(OUTPUT_FILE, JSON.stringify(output, null, 2));
-  log('INFO', 'Scrape complete', stats);
+  log('INFO', '=== Scrape Complete ===', stats);
   log('INFO', `Output written to ${OUTPUT_FILE}`);
 }
 

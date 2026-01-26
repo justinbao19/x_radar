@@ -1,5 +1,6 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { log, detectLanguage, extractJSON, sleep } from './utils.mjs';
+import { checkBrandSafety, checkMinFiloFit, MIN_FILO_FIT } from './safety.mjs';
 import 'dotenv/config';
 
 const INPUT_FILE = 'out/top10.json';
@@ -9,7 +10,47 @@ const OUTPUT_MD = 'out/top10_with_comments.md';
 const MAX_RETRIES = 3;
 const RETRY_DELAY_BASE = 2000;
 
-// System prompt for comment generation
+// ============ Safety Check for Comment Generation ============
+
+/**
+ * Check if tweet should be skipped for comment generation
+ * Returns SKIP with reason or allows comment generation
+ * @param {Object} tweet - Tweet object from selection
+ * @returns {{ skip: boolean, reason?: string, reasonZh?: string }}
+ */
+function shouldSkipTweet(tweet) {
+  // 1. Brand Safety check (second pass to catch any that slipped through)
+  const safetyCheck = checkBrandSafety(tweet.text, tweet.filoFitScore || 0);
+  
+  if (safetyCheck.action === 'drop') {
+    return {
+      skip: true,
+      reason: `Brand Safety [${safetyCheck.tier}]: ${safetyCheck.reason}`,
+      reasonZh: `品牌安全过滤 [${safetyCheck.tier === 'hard' ? '硬过滤' : '软过滤'}]: ${safetyCheck.reason}`
+    };
+  }
+  
+  // 2. Minimum FiloFit check
+  const filoFitCheck = checkMinFiloFit(tweet.filoFitScore || 0);
+  if (!filoFitCheck.pass) {
+    return {
+      skip: true,
+      reason: `Low relevance: ${filoFitCheck.reason}`,
+      reasonZh: `相关性过低，回复会显得像广告: ${filoFitCheck.reason}`
+    };
+  }
+  
+  // 3. Check for low signal penalty (warn but don't skip)
+  if (safetyCheck.action === 'penalize' && safetyCheck.tier === 'low_signal') {
+    tweet.lowSignalWarning = safetyCheck.reason;
+    log('WARN', `Tweet has low signal content: ${safetyCheck.category}`, { url: tweet.url });
+  }
+  
+  return { skip: false };
+}
+
+// ============ System Prompt ============
+
 const SYSTEM_PROMPT = `你是一个帮助产品人员撰写 X (Twitter) 回复的助手。
 
 产品背景：一个帮助用户管理邮箱的工具，核心功能包括：
@@ -25,11 +66,12 @@ const SYSTEM_PROMPT = `你是一个帮助产品人员撰写 X (Twitter) 回复�
    A) witty - 短而机智/幽默的回复，轻松共鸣
    B) practical - 务实的、产品建设者视角的回复，展示思考
    C) subtle_product - 微妙的产品角度，暗示在做相关产品但不推销
-4. 严格禁止：
+4. 严格禁止（Non-salesy 原则）：
    - 任何链接或 URL
-   - "下载"、"试试"、"查看" 等 CTA 用语
+   - "下载"、"试试"、"查看"、"check out" 等 CTA 用语
    - 直接提及产品名称（除非对话中真的非常自然）
    - 敏感话题、侮辱、编造具体功能
+   - 任何听起来像广告或推销的内容
 5. 长度控制：每条回复尽量 <= 220 字符
 6. 每个选项必须包含中文解释 (zh_explain)，说明这条回复的意图和为什么有效
 
@@ -45,6 +87,8 @@ const SYSTEM_PROMPT = `你是一个帮助产品人员撰写 X (Twitter) 回复�
     }
   ]
 }`;
+
+// ============ API Functions ============
 
 /**
  * Call Claude API to generate comments
@@ -63,7 +107,7 @@ async function callClaudeAPI(tweetText, detectedLang) {
 ${tweetText}
 """
 
-请为这条推文生成 3 个回复选项。记住用推文的原始语言回复。`;
+请为这条推文生成 3 个回复选项。记住用推文的原始语言回复，并且绝对不要有任何推销或广告味道。`;
 
   const response = await fetch(apiUrl, {
     method: 'POST',
@@ -88,8 +132,6 @@ ${tweetText}
   }
   
   const data = await response.json();
-  
-  // Extract text from Claude response
   const content = data.content?.[0]?.text;
   if (!content) {
     throw new Error('No content in API response');
@@ -106,7 +148,7 @@ async function generateComments(tweet, retries = MAX_RETRIES) {
   
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
-      log('DEBUG', `Generating comments for tweet (attempt ${attempt})`, { 
+      log('DEBUG', `Generating comments (attempt ${attempt})`, { 
         url: tweet.url, 
         lang: detectedLang 
       });
@@ -118,7 +160,6 @@ async function generateComments(tweet, retries = MAX_RETRIES) {
         throw new Error('Invalid response format');
       }
       
-      // Validate options
       if (parsed.options.length !== 3) {
         log('WARN', `Expected 3 options, got ${parsed.options.length}`);
       }
@@ -152,8 +193,10 @@ async function generateComments(tweet, retries = MAX_RETRIES) {
   return null;
 }
 
+// ============ Markdown Generation ============
+
 /**
- * Generate markdown with comments
+ * Generate markdown report with comments
  */
 function generateMarkdownWithComments(data) {
   const lines = [];
@@ -168,13 +211,23 @@ function generateMarkdownWithComments(data) {
   lines.push('');
   lines.push(`- **Total tweets:** ${data.commentGenerationStats?.total || 0}`);
   lines.push(`- **Succeeded:** ${data.commentGenerationStats?.succeeded || 0}`);
-  lines.push(`- **Failed:** ${data.commentGenerationStats?.failed || 0}`);
-  if (data.commentGenerationStats?.byLanguage) {
+  lines.push(`- **Skipped (safety/relevance):** ${data.commentGenerationStats?.skipped || 0}`);
+  lines.push(`- **Failed (API error):** ${data.commentGenerationStats?.failed || 0}`);
+  
+  if (data.commentGenerationStats?.skipReasons && Object.keys(data.commentGenerationStats.skipReasons).length > 0) {
+    const reasons = Object.entries(data.commentGenerationStats.skipReasons)
+      .map(([k, v]) => `${k}: ${v}`)
+      .join(', ');
+    lines.push(`- **Skip reasons:** ${reasons}`);
+  }
+  
+  if (data.commentGenerationStats?.byLanguage && Object.keys(data.commentGenerationStats.byLanguage).length > 0) {
     const langs = Object.entries(data.commentGenerationStats.byLanguage)
       .map(([k, v]) => `${k}: ${v}`)
       .join(', ');
     lines.push(`- **By language:** ${langs}`);
   }
+  
   lines.push('');
   lines.push('---');
   lines.push('');
@@ -185,18 +238,36 @@ function generateMarkdownWithComments(data) {
     
     lines.push(`## #${tweet.rank} [${groupLabel}] ${tweet.author || 'Unknown'}`);
     lines.push('');
-    lines.push(`**Score:** ${tweet.finalScore} | **Lang:** ${tweet.detectedLanguage || 'unknown'}`);
+    lines.push(`**Score:** ${tweet.finalScore} | **FiloFit:** ${tweet.filoFitKeywordCount || 0} keywords | **Lang:** ${tweet.detectedLanguage || 'unknown'}`);
     lines.push('');
     lines.push('> ' + (tweet.text || '*No text*').split('\n').join('\n> '));
     lines.push('');
     lines.push(`[View Tweet](${tweet.url})`);
     lines.push('');
     
-    if (tweet.comments && tweet.comments.options) {
+    if (tweet.commentSkipped) {
+      // Show SKIP reason
+      lines.push('### ⏭️ SKIPPED');
+      lines.push('');
+      lines.push(`**Reason:** ${tweet.skipReason || 'Unknown'}`);
+      lines.push('');
+      lines.push(`**中文原因:** ${tweet.skipReasonZh || '未知'}`);
+      lines.push('');
+    } else if (tweet.comments && tweet.comments.options) {
       lines.push('### Reply Options');
       lines.push('');
       
-      const angleLabels = { witty: 'A) Witty', practical: 'B) Practical', subtle_product: 'C) Subtle Product' };
+      // Show warnings if any
+      if (tweet.lowSignalWarning) {
+        lines.push(`**⚠️ Warning:** ${tweet.lowSignalWarning}`);
+        lines.push('');
+      }
+      
+      const angleLabels = { 
+        witty: 'A) Witty', 
+        practical: 'B) Practical', 
+        subtle_product: 'C) Subtle Product' 
+      };
       
       for (const opt of tweet.comments.options) {
         const label = angleLabels[opt.angle] || opt.angle;
@@ -208,7 +279,7 @@ function generateMarkdownWithComments(data) {
         lines.push('');
       }
     } else if (tweet.commentError) {
-      lines.push(`**Comment generation failed:** ${tweet.commentError}`);
+      lines.push(`**❌ Comment generation failed:** ${tweet.commentError}`);
       lines.push('');
     } else {
       lines.push('*No comments generated*');
@@ -224,8 +295,11 @@ function generateMarkdownWithComments(data) {
   return lines.join('\n');
 }
 
+// ============ Main ============
+
 async function main() {
-  log('INFO', 'Starting comment generation');
+  log('INFO', '=== Starting Comment Generation ===');
+  log('INFO', `Config: MIN_FILO_FIT=${MIN_FILO_FIT}`);
   
   // Check API key
   if (!process.env.LLM_API_KEY) {
@@ -244,35 +318,58 @@ async function main() {
     return;
   }
   
-  // Generate comments for each tweet
+  // Stats
   const stats = {
     total: data.top.length,
     succeeded: 0,
     failed: 0,
+    skipped: 0,
+    skipReasons: {},
     byLanguage: {}
   };
   
+  // Process each tweet
   for (const tweet of data.top) {
     const detectedLang = detectLanguage(tweet.text);
     tweet.detectedLanguage = detectedLang;
     
+    // Safety check
+    const skipCheck = shouldSkipTweet(tweet);
+    if (skipCheck.skip) {
+      tweet.comments = null;
+      tweet.commentSkipped = true;
+      tweet.skipReason = skipCheck.reason;
+      tweet.skipReasonZh = skipCheck.reasonZh;
+      stats.skipped++;
+      
+      // Track skip reasons
+      const reasonKey = skipCheck.reason.split(':')[0].trim();
+      stats.skipReasons[reasonKey] = (stats.skipReasons[reasonKey] || 0) + 1;
+      
+      log('INFO', `SKIP tweet #${tweet.rank}: ${skipCheck.reason}`, { url: tweet.url });
+      continue;
+    }
+    
+    // Generate comments
     const comments = await generateComments(tweet);
     
     if (comments) {
       tweet.comments = comments;
       tweet.commentError = null;
+      tweet.commentSkipped = false;
       stats.succeeded++;
       
       const lang = comments.language || detectedLang;
       stats.byLanguage[lang] = (stats.byLanguage[lang] || 0) + 1;
       
-      log('INFO', `Comments generated for tweet #${tweet.rank}`, { 
+      log('INFO', `Generated comments for tweet #${tweet.rank}`, { 
         lang, 
         options: comments.options.length 
       });
     } else {
       tweet.comments = null;
       tweet.commentError = 'Generation failed after retries';
+      tweet.commentSkipped = false;
       stats.failed++;
     }
     
@@ -280,22 +377,20 @@ async function main() {
     await sleep(1000);
   }
   
-  // Prepare output
+  // Output
   const output = {
     ...data,
     commentGenerationStats: stats
   };
   
-  // Write JSON output
   writeFileSync(OUTPUT_JSON, JSON.stringify(output, null, 2));
   log('INFO', `JSON output written to ${OUTPUT_JSON}`);
   
-  // Write markdown output
   const markdown = generateMarkdownWithComments(output);
   writeFileSync(OUTPUT_MD, markdown);
   log('INFO', `Markdown output written to ${OUTPUT_MD}`);
   
-  log('INFO', 'Comment generation complete', stats);
+  log('INFO', '=== Comment Generation Complete ===', stats);
 }
 
 main().catch(err => {

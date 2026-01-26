@@ -1,0 +1,86 @@
+{
+  "hard": {
+    "politics": [
+      "election", "vote", "voting", "ballot", "democrat", "republican", "政治", "选举", "投票",
+      "選挙", "投票", "政権", "政府", "regime", "政权", "coup", "impeach"
+    ],
+    "war_military": [
+      "war", "military", "army", "soldier", "战争", "军队", "軍", "戦争", "invasion", "missile",
+      "bomb", "bombing", "爆炸", "爆発", "missile", "drone strike", "airstrike"
+    ],
+    "terrorism_extremism": [
+      "terrorist", "terrorism", "恐怖", "テロ", "jihad", "isis", "al-qaeda", "extremist",
+      "radicalized", "militia", "insurgent", "极端", "過激派"
+    ],
+    "violence_crime_selfharm": [
+      "murder", "suicide", "self-harm", "殺人", "自殺", "自杀", "自残", "枪击", "shooting",
+      "massacre", "stabbing", "assault", "rape", "kidnap", "hostage", "homicide"
+    ],
+    "hate_harassment": [
+      "nazi", "white supremacy", "纳粹", "ナチ", "racist", "人種差別", "白人至上", "hate crime",
+      "ethnic cleansing", "genocide", "slur", "bigot"
+    ],
+    "adult": [
+      "porn", "nude", "naked", "色情", "裸照", "ポルノ", "ヌード", "xxx", "nsfw", "onlyfans",
+      "sex worker", "escort", "prostitut"
+    ],
+    "drugs": [
+      "cocaine", "heroin", "meth", "大麻", "冰毒", "コカイン", "覚醒剤", "fentanyl", "overdose",
+      "drug dealer", "cartel", "trafficking"
+    ],
+    "scams_finance": [
+      "airdrop", "rug pull", "100x", "guaranteed profit", "空投", "保证收益", "ラグプル",
+      "確実に儲かる", "ponzi", "pyramid scheme", "get rich quick", "free money", "giveaway scam"
+    ],
+    "privacy_hacking": [
+      "doxx", "doxing", "leaked", "hacked", "breach", "人肉", "泄露", "被黑", "流出", "ハック",
+      "leak", "exposed", "private photos", "stolen data"
+    ]
+  },
+  "soft": {
+    "religion": [
+      "christian", "muslim", "jewish", "hindu", "buddhist", "atheist", "god", "allah",
+      "jesus", "church", "mosque", "temple", "宗教", "基督", "イスラム", "仏教"
+    ],
+    "law_enforcement": [
+      "police brutality", "cop", "lawsuit", "sue", "court case", "trial", "verdict",
+      "arrest", "detained", "警察", "逮捕", "裁判", "訴訟"
+    ],
+    "disasters_victims": [
+      "earthquake", "tsunami", "hurricane", "flood", "wildfire", "victims", "死者",
+      "地震", "津波", "台風", "洪水", "casualties", "fatalities"
+    ],
+    "crypto_investing": [
+      "to the moon", "hodl", "diamond hands", "buy the dip", "crypto millionaire",
+      "nft drop", "shitcoin", "altcoin pump", "暴涨", "暴騰", "一夜暴富"
+    ]
+  },
+  "low_signal": {
+    "sports": [
+      "football", "soccer", "nba", "nfl", "world cup", "superbowl", "championship",
+      "playoff", "サッカー", "足球", "野球", "basketball", "touchdown", "goal scorer"
+    ],
+    "celebrity_gossip": [
+      "celebrity", "gossip", "八卦", "ゴシップ", "paparazzi", "scandal", "affair",
+      "breakup", "dating", "married", "divorced", "red carpet", "award show"
+    ],
+    "memes_viral": [
+      "viral", "trending", "meme", "tiktok", "challenge", "prank", "lol", "lmao",
+      "rofl", "omg", "slay", "iconic"
+    ],
+    "ads_promotion": [
+      "sponsored", "ad", "advertisement", "promo code", "discount", "sale", "buy now",
+      "limited time", "click link", "check out", "广告", "宣伝", "PR"
+    ]
+  },
+  "_meta": {
+    "version": "1.0.0",
+    "description": "Three-tier denylist for brand safety filtering",
+    "tiers": {
+      "hard": "Immediate discard - never include in results",
+      "soft": "Discard unless FiloFitScore >= 3",
+      "low_signal": "Heavy penalty (finalScore *= 0.2) but may include if highly relevant"
+    },
+    "languages": ["en", "zh", "ja"]
+  }
+}
