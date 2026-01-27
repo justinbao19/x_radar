@@ -14,6 +14,9 @@ jobs:
   scrape-and-comment:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: write
+      issues: write
 
     steps:
       # ===== Setup =====
