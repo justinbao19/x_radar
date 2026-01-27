@@ -474,26 +474,48 @@ async function sendSuccessWebhook(stats) {
   let payload;
 
   if (isFeishu) {
+    // 构建本次检索总结
+    const summaryParts = [];
+    if (stats.topTopics) {
+      summaryParts.push(`涉及 ${stats.topTopics} 等话题`);
+    }
+    if (stats.languages) {
+      summaryParts.push(`覆盖 ${stats.languages}`);
+    }
+    const summary = summaryParts.length > 0 
+      ? summaryParts.join('，') 
+      : `共筛选 ${stats.totalCandidates} 条候选内容`;
+
     payload = {
       msg_type: 'interactive',
       card: {
         header: {
-          title: { tag: 'plain_text', content: '✅ X Radar 更新完成' },
+          title: { tag: 'plain_text', content: '✅ 邮箱话题雷达扫描完成' },
           template: 'green'
         },
         elements: [
           {
             tag: 'div',
+            text: { 
+              tag: 'lark_md', 
+              content: `已完成近期 X 上邮箱相关讨论的抓取与分析，${summary}。`
+            }
+          },
+          {
+            tag: 'hr'
+          },
+          {
+            tag: 'div',
             fields: [
-              { is_short: true, text: { tag: 'lark_md', content: `**抓取推文:** ${stats.totalTweets} 条` } },
-              { is_short: true, text: { tag: 'lark_md', content: `**生成评论:** ${stats.succeeded}/${stats.total}` } }
+              { is_short: true, text: { tag: 'lark_md', content: `**精选推文:** ${stats.totalTweets} 条` } },
+              { is_short: true, text: { tag: 'lark_md', content: `**生成回复:** ${stats.succeeded}/${stats.total}` } }
             ]
           },
           {
             tag: 'div',
             fields: [
-              { is_short: true, text: { tag: 'lark_md', content: `**Pain:** ${stats.pain} | **Reach:** ${stats.reach}` } },
-              { is_short: true, text: { tag: 'lark_md', content: `**时间:** ${runTime}` } }
+              { is_short: true, text: { tag: 'lark_md', content: `**需求类:** ${stats.painCount} 条 · **曝光类:** ${stats.reachCount} 条` } },
+              { is_short: true, text: { tag: 'lark_md', content: `**更新时间:** ${runTime}` } }
             ]
           },
           {
@@ -501,7 +523,7 @@ async function sendSuccessWebhook(stats) {
             actions: [
               {
                 tag: 'button',
-                text: { tag: 'plain_text', content: '📊 查看 Dashboard' },
+                text: { tag: 'plain_text', content: '📊 查看详情' },
                 type: 'primary',
                 url: DASHBOARD_URL
               }
@@ -511,20 +533,28 @@ async function sendSuccessWebhook(stats) {
       }
     };
   } else if (isSlack) {
+    const summaryText = stats.topTopics 
+      ? `涉及 ${stats.topTopics} 等话题` 
+      : `共筛选 ${stats.totalCandidates} 条候选内容`;
+    
     payload = {
-      text: '✅ X Radar 更新完成',
+      text: '✅ 邮箱话题雷达扫描完成',
       blocks: [
         {
           type: 'header',
-          text: { type: 'plain_text', text: '✅ X Radar 更新完成' }
+          text: { type: 'plain_text', text: '✅ 邮箱话题雷达扫描完成' }
+        },
+        {
+          type: 'section',
+          text: { type: 'mrkdwn', text: `已完成近期 X 上邮箱相关讨论的抓取与分析，${summaryText}。` }
         },
         {
           type: 'section',
           fields: [
-            { type: 'mrkdwn', text: `*抓取推文:* ${stats.totalTweets} 条` },
-            { type: 'mrkdwn', text: `*生成评论:* ${stats.succeeded}/${stats.total}` },
-            { type: 'mrkdwn', text: `*Pain:* ${stats.pain} | *Reach:* ${stats.reach}` },
-            { type: 'mrkdwn', text: `*时间:* ${runTime}` }
+            { type: 'mrkdwn', text: `*精选推文:* ${stats.totalTweets} 条` },
+            { type: 'mrkdwn', text: `*生成回复:* ${stats.succeeded}/${stats.total}` },
+            { type: 'mrkdwn', text: `*需求类:* ${stats.painCount} 条 · *曝光类:* ${stats.reachCount} 条` },
+            { type: 'mrkdwn', text: `*更新时间:* ${runTime}` }
           ]
         },
         {
@@ -532,7 +562,7 @@ async function sendSuccessWebhook(stats) {
           elements: [
             {
               type: 'button',
-              text: { type: 'plain_text', text: '📊 查看 Dashboard' },
+              text: { type: 'plain_text', text: '📊 查看详情' },
               url: DASHBOARD_URL
             }
           ]
@@ -540,23 +570,29 @@ async function sendSuccessWebhook(stats) {
       ]
     };
   } else if (isDiscord) {
+    const summaryText = stats.topTopics 
+      ? `涉及 ${stats.topTopics} 等话题` 
+      : `共筛选 ${stats.totalCandidates} 条候选内容`;
+    
     payload = {
-      content: '✅ X Radar 更新完成',
+      content: '✅ 邮箱话题雷达扫描完成',
       embeds: [{
-        title: '✅ X Radar 更新完成',
+        title: '✅ 邮箱话题雷达扫描完成',
+        description: `已完成近期 X 上邮箱相关讨论的抓取与分析，${summaryText}。`,
         color: 5763719, // Green
         fields: [
-          { name: '抓取推文', value: `${stats.totalTweets} 条`, inline: true },
-          { name: '生成评论', value: `${stats.succeeded}/${stats.total}`, inline: true },
-          { name: '分类', value: `Pain: ${stats.pain} | Reach: ${stats.reach}`, inline: false },
-          { name: '时间', value: runTime, inline: true }
+          { name: '精选推文', value: `${stats.totalTweets} 条`, inline: true },
+          { name: '生成回复', value: `${stats.succeeded}/${stats.total}`, inline: true },
+          { name: '分类', value: `需求类: ${stats.painCount} 条 · 曝光类: ${stats.reachCount} 条`, inline: false },
+          { name: '更新时间', value: runTime, inline: true }
         ],
         url: DASHBOARD_URL
       }]
     };
   } else {
+    const summaryText = stats.topTopics ? `(${stats.topTopics})` : '';
     payload = {
-      text: `✅ X Radar 更新完成\n抓取: ${stats.totalTweets} 条 | 评论: ${stats.succeeded}/${stats.total}\n${DASHBOARD_URL}`
+      text: `✅ 邮箱话题雷达扫描完成\n已完成 X 邮箱讨论抓取${summaryText}\n精选: ${stats.totalTweets} 条 | 回复: ${stats.succeeded}/${stats.total}\n${DASHBOARD_URL}`
     };
   }
 
@@ -592,14 +628,42 @@ function loadSuccessStats() {
     const stats = data.commentGenerationStats || {};
     const selectionStats = data.selectionStats || {};
     
+    // 统计各语言数量
+    const langStats = stats.byLanguage || {};
+    const languages = Object.entries(langStats)
+      .map(([lang, count]) => {
+        const langNames = { en: '英文', zh: '中文', ja: '日文', ko: '韩文' };
+        return `${langNames[lang] || lang} ${count} 条`;
+      })
+      .join('、');
+    
+    // 提取主要话题关键词（从sourceQuery字段）
+    const topicCounts = {};
+    (data.top || []).forEach(item => {
+      const query = item.sourceQuery || '';
+      // 提取关键词，如 gmail-spam-en -> gmail spam
+      const keywords = query.replace(/-/g, ' ').replace(/(en|cn|jp|zh|ja|ko)$/i, '').trim();
+      if (keywords) {
+        topicCounts[keywords] = (topicCounts[keywords] || 0) + 1;
+      }
+    });
+    const topTopics = Object.entries(topicCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([topic]) => topic)
+      .join('、');
+    
     return {
       totalTweets: data.top?.length || 0,
+      totalCandidates: selectionStats.totalCandidates || 0,
       total: stats.total || 0,
       succeeded: stats.succeeded || 0,
       skipped: stats.skipped || 0,
-      pain: selectionStats.painSelected || 0,
-      reach: selectionStats.reachSelected || 0,
-      runAt: data.runAt
+      painCount: selectionStats.painSelected || 0,
+      reachCount: selectionStats.reachSelected || 0,
+      runAt: data.runAt,
+      languages,
+      topTopics
     };
   } catch (e) {
     log('ERROR', 'Failed to load stats', { error: e.message });
