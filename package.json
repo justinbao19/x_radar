@@ -13,7 +13,8 @@
     "sync-data": "node scripts/sync-data.mjs",
     "update-manifest": "node scripts/update-manifest.mjs",
     "notify:auth-failed": "node src/notify.mjs",
-    "notify:success": "node src/notify.mjs --success"
+    "notify:success": "node src/notify.mjs --success",
+    "notify:failure": "node src/notify.mjs --failure"
   },
   "dependencies": {
     "playwright": "^1.40.0",

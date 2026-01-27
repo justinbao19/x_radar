@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 /**
  * X Radar Notification Module
- * Sends notifications for auth failures and successful runs
+ * Sends notifications for auth failures, general failures, and successful runs
  * Supports: GitHub Issue, Email (via Resend), Webhook (Slack/Discord/Feishu)
  * 
  * Usage:
  *   node src/notify.mjs                 # Auth failure notification
  *   node src/notify.mjs --success       # Success notification with stats
+ *   node src/notify.mjs --failure       # General failure notification (requires FAILURE_STEP env)
  */
 
 import { readFileSync, existsSync } from 'fs';
@@ -311,6 +312,142 @@ async function sendWebhook(authStatus) {
   }
 }
 
+// ============ Failure Notification (Webhook only) ============
+
+async function sendFailureWebhook(failureInfo) {
+  const webhookUrl = process.env.WEBHOOK_URL;
+  
+  if (!webhookUrl) {
+    log('WARN', 'WEBHOOK_URL not set, skipping failure webhook');
+    return false;
+  }
+
+  const isFeishu = webhookUrl.includes('feishu.cn') || webhookUrl.includes('larksuite.com');
+  const isSlack = webhookUrl.includes('slack.com');
+  const isDiscord = webhookUrl.includes('discord.com');
+
+  const runTime = new Date().toLocaleString('zh-CN', { 
+    timeZone: 'Asia/Shanghai',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
+  const runUrl = failureInfo.runUrl || 'https://github.com/justinbao19/x_radar/actions';
+
+  let payload;
+
+  if (isFeishu) {
+    payload = {
+      msg_type: 'interactive',
+      card: {
+        header: {
+          title: { tag: 'plain_text', content: '❌ X Radar 运行失败' },
+          template: 'red'
+        },
+        elements: [
+          {
+            tag: 'div',
+            fields: [
+              { is_short: true, text: { tag: 'lark_md', content: `**失败步骤:** ${failureInfo.step || 'Unknown'}` } },
+              { is_short: true, text: { tag: 'lark_md', content: `**时间:** ${runTime}` } }
+            ]
+          },
+          {
+            tag: 'div',
+            text: { 
+              tag: 'lark_md', 
+              content: `**错误信息:**\n${failureInfo.error || '未知错误，请查看 GitHub Actions 日志'}` 
+            }
+          },
+          {
+            tag: 'action',
+            actions: [
+              {
+                tag: 'button',
+                text: { tag: 'plain_text', content: '📋 查看日志' },
+                type: 'default',
+                url: runUrl
+              }
+            ]
+          }
+        ]
+      }
+    };
+  } else if (isSlack) {
+    payload = {
+      text: '❌ X Radar 运行失败',
+      blocks: [
+        {
+          type: 'header',
+          text: { type: 'plain_text', text: '❌ X Radar 运行失败' }
+        },
+        {
+          type: 'section',
+          fields: [
+            { type: 'mrkdwn', text: `*失败步骤:* ${failureInfo.step || 'Unknown'}` },
+            { type: 'mrkdwn', text: `*时间:* ${runTime}` }
+          ]
+        },
+        {
+          type: 'section',
+          text: { type: 'mrkdwn', text: `*错误:* ${failureInfo.error || '未知错误'}` }
+        },
+        {
+          type: 'actions',
+          elements: [
+            {
+              type: 'button',
+              text: { type: 'plain_text', text: '📋 查看日志' },
+              url: runUrl
+            }
+          ]
+        }
+      ]
+    };
+  } else if (isDiscord) {
+    payload = {
+      content: '❌ X Radar 运行失败',
+      embeds: [{
+        title: '❌ X Radar 运行失败',
+        color: 15158332, // Red
+        fields: [
+          { name: '失败步骤', value: failureInfo.step || 'Unknown', inline: true },
+          { name: '时间', value: runTime, inline: true },
+          { name: '错误', value: failureInfo.error || '未知错误', inline: false }
+        ],
+        url: runUrl
+      }]
+    };
+  } else {
+    payload = {
+      text: `❌ X Radar 运行失败\n步骤: ${failureInfo.step || 'Unknown'}\n错误: ${failureInfo.error || '未知错误'}\n${runUrl}`
+    };
+  }
+
+  try {
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      log('ERROR', 'Failure webhook failed', { status: response.status, error });
+      return false;
+    }
+
+    log('INFO', 'Failure webhook sent');
+    return true;
+  } catch (e) {
+    log('ERROR', 'Failure webhook sending failed', { error: e.message });
+    return false;
+  }
+}
+
 // ============ Success Notification (Webhook only) ============
 
 async function sendSuccessWebhook(stats) {
@@ -474,8 +611,10 @@ function loadSuccessStats() {
 
 async function main() {
   const isSuccessMode = process.argv.includes('--success');
+  const isFailureMode = process.argv.includes('--failure');
   
-  log('INFO', '=== X Radar Notification Module ===', { mode: isSuccessMode ? 'success' : 'auth-failed' });
+  const mode = isSuccessMode ? 'success' : isFailureMode ? 'failure' : 'auth-failed';
+  log('INFO', '=== X Radar Notification Module ===', { mode });
 
   if (isSuccessMode) {
     // Success notification
@@ -488,6 +627,20 @@ async function main() {
     log('INFO', 'Sending success notification...', stats);
     const result = await sendSuccessWebhook(stats);
     log('INFO', 'Success notification complete', { sent: result });
+    return;
+  }
+
+  if (isFailureMode) {
+    // General failure notification
+    const failureInfo = {
+      step: process.env.FAILURE_STEP || 'Unknown',
+      error: process.env.FAILURE_ERROR || '',
+      runUrl: process.env.GITHUB_RUN_URL || `https://github.com/${process.env.GITHUB_REPOSITORY || 'justinbao19/x_radar'}/actions/runs/${process.env.GITHUB_RUN_ID || ''}`
+    };
+
+    log('INFO', 'Sending failure notification...', failureInfo);
+    const result = await sendFailureWebhook(failureInfo);
+    log('INFO', 'Failure notification complete', { sent: result });
     return;
   }
 

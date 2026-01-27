@@ -167,3 +167,13 @@ jobs:
             out/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/
           retention-days: 30
           if-no-files-found: warn
+
+      # ===== Send Failure Notification =====
+      - name: Send failure notification
+        if: failure()
+        run: npm run notify:failure
+        env:
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+          FAILURE_STEP: ${{ github.job }}
+          FAILURE_ERROR: "Pipeline 执行过程中出现错误，请查看 Actions 日志"
+          GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
