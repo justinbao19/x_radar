@@ -9,7 +9,10 @@
     "select": "node src/select.mjs",
     "format": "node src/format.mjs",
     "comment": "node src/commenter.mjs",
-    "run": "npm run scrape && npm run select && npm run format && npm run comment"
+    "run": "npm run scrape && npm run select && npm run format && npm run comment",
+    "sync-data": "node scripts/sync-data.mjs",
+    "update-manifest": "node scripts/update-manifest.mjs",
+    "notify:auth-failed": "node src/notify.mjs"
   },
   "dependencies": {
     "playwright": "^1.40.0",

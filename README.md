@@ -129,6 +129,32 @@ top10.json
 top10_with_comments.json
 ```
 
+## Dashboard 网页
+
+项目包含一个 Next.js 构建的 Dashboard，用于浏览抓取的推文和生成的评论建议。
+
+### 功能
+
+- **日期选择**: 今天、昨天、最近 3/7 天，或指定日期
+- **视图切换**: 卡片视图、列表视图、时间线视图
+- **分类筛选**: Pain / Reach / KOL
+- **AI 精选**: 只显示 AI 精选的推文
+- **登录状态**: 显示 X 登录状态和修复指南
+
+### 本地运行
+
+```bash
+cd web
+npm install
+npm run dev
+```
+
+### 部署到 Vercel
+
+1. Fork 或连接仓库到 Vercel
+2. 设置 Root Directory 为 `web/`
+3. 自动部署（main 分支推送触发）
+
 ## GitHub Actions 配置
 
 ### 设置 Secrets
@@ -138,7 +164,10 @@ top10_with_comments.json
 | `LLM_API_KEY` | ✅ | Claude API Key |
 | `LLM_API_URL` | ❌ | API 端点 |
 | `LLM_MODEL` | ❌ | 模型名称 |
-| `X_STORAGE_STATE_B64` | ❌ | X 登录状态 Base64 |
+| `X_STORAGE_STATE_B64` | ✅ | X 登录状态 Base64 |
+| `NOTIFY_EMAIL` | ❌ | 登录失效通知邮件 |
+| `WEBHOOK_URL` | ❌ | Slack/Discord/飞书 Webhook |
+| `RESEND_API_KEY` | ❌ | Resend 邮件服务 API Key |
 
 ### 生成 X_STORAGE_STATE_B64
 
@@ -146,15 +175,22 @@ top10_with_comments.json
 npm run login
 
 # macOS:
-base64 -i auth/state.json | tr -d '\n'
+base64 -i auth/state.json | tr -d '\n' | gh secret set X_STORAGE_STATE_B64
 
 # Linux:
-base64 -w 0 auth/state.json
+base64 -w 0 auth/state.json | gh secret set X_STORAGE_STATE_B64
 ```
 
 ### 运行时间
 
-默认每 6 小时运行一次。也可手动触发。
+默认每 6 小时运行一次（北京时间 08:00, 14:00, 20:00, 02:00）。也可手动触发。
+
+### 登录失效通知
+
+当 X 登录状态失效时，系统会自动发送通知：
+- **GitHub Issue**: 自动创建 Issue，包含修复步骤
+- **Email**: 发送邮件到 `NOTIFY_EMAIL`
+- **Webhook**: 发送到 Slack/Discord/飞书
 
 ## 输出说明
 

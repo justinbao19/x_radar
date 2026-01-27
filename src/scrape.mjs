@@ -1,5 +1,7 @@
 import { chromium } from 'playwright';
-import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { 
   log, parseEngagement, buildSearchUrl, ensureAbsoluteUrl, 
   randomBetween, sleep, cleanText, shuffle,
@@ -8,7 +10,9 @@ import {
 } from './utils.mjs';
 import 'dotenv/config';
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const AUTH_STATE_FILE = 'auth/state.json';
+const AUTH_STATUS_FILE = 'out/auth-status.json';
 const QUERIES_FILE = 'queries.json';
 const INFLUENCERS_FILE = 'influencers.json';
 
@@ -141,26 +145,82 @@ async function extractTweet(article) {
 async function checkPageStatus(page) {
   try {
     const loginBtn = await $(page, SELECTORS.loginButton);
-    if (loginBtn) return { ok: false, reason: 'LOGIN_REQUIRED' };
+    if (loginBtn) return { ok: false, reason: 'LOGIN_REQUIRED', authFailed: true };
     
     const url = page.url();
     if (url.includes('/login') || url.includes('/i/flow/login')) {
-      return { ok: false, reason: 'LOGIN_REDIRECT' };
+      return { ok: false, reason: 'LOGIN_REDIRECT', authFailed: true };
     }
     
     // Check for error states
     const content = await page.content();
     if (content.includes('Something went wrong')) {
-      return { ok: false, reason: 'ERROR_PAGE' };
+      return { ok: false, reason: 'ERROR_PAGE', authFailed: false };
     }
     if (content.includes('Rate limit') || content.includes('Too many requests')) {
-      return { ok: false, reason: 'RATE_LIMIT' };
+      return { ok: false, reason: 'RATE_LIMIT', authFailed: false };
     }
     
-    return { ok: true };
+    return { ok: true, authFailed: false };
   } catch (e) {
-    return { ok: false, reason: 'CHECK_FAILED' };
+    return { ok: false, reason: 'CHECK_FAILED', authFailed: false };
   }
+}
+
+/**
+ * Verify authentication by navigating to X home page
+ */
+async function verifyAuth(page) {
+  log('INFO', 'Verifying X authentication status...');
+  
+  try {
+    await page.goto('https://x.com/home', { 
+      timeout: 30000,
+      waitUntil: 'domcontentloaded'
+    });
+    
+    await sleep(3000);
+    
+    const status = await checkPageStatus(page);
+    
+    if (status.authFailed) {
+      log('ERROR', 'Authentication failed', { reason: status.reason });
+      return { valid: false, reason: status.reason };
+    }
+    
+    // Check for auth_token cookie
+    const cookies = await page.context().cookies();
+    const hasAuthCookie = cookies.some(c => c.name === 'auth_token');
+    
+    if (!hasAuthCookie) {
+      log('ERROR', 'Auth token cookie missing');
+      return { valid: false, reason: 'AUTH_TOKEN_MISSING' };
+    }
+    
+    log('INFO', 'Authentication verified successfully');
+    return { valid: true };
+  } catch (e) {
+    log('ERROR', 'Auth verification failed', { error: e.message });
+    return { valid: false, reason: 'VERIFICATION_FAILED', error: e.message };
+  }
+}
+
+/**
+ * Save auth status to file for notification system
+ */
+function saveAuthStatus(status) {
+  const outDir = 'out';
+  if (!existsSync(outDir)) {
+    mkdirSync(outDir, { recursive: true });
+  }
+  
+  const authStatus = {
+    ...status,
+    checkedAt: new Date().toISOString()
+  };
+  
+  writeFileSync(AUTH_STATUS_FILE, JSON.stringify(authStatus, null, 2));
+  log('INFO', `Auth status saved to ${AUTH_STATUS_FILE}`, { valid: status.valid });
 }
 
 /**
@@ -515,6 +575,18 @@ async function main() {
   
   const context = await browser.newContext(contextOptions);
   const page = await context.newPage();
+  
+  // Verify authentication before starting
+  const authStatus = await verifyAuth(page);
+  saveAuthStatus(authStatus);
+  
+  if (!authStatus.valid) {
+    log('ERROR', 'Authentication failed, aborting scrape');
+    await browser.close();
+    
+    // Exit with error code to trigger notification in workflow
+    process.exit(2); // Exit code 2 = auth failed
+  }
   
   // Scrape all sources with graceful failure handling
   const results = [];

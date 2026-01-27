@@ -56,20 +56,43 @@ jobs:
 
       # ===== Run Pipeline =====
       - name: Run scraper
+        id: scraper
         run: npm run scrape
         env:
           PLAYWRIGHT_HEADLESS: 'true'
-        continue-on-error: false
+        continue-on-error: true
+
+      - name: Check scraper result and notify on auth failure
+        if: steps.scraper.outcome == 'failure'
+        run: |
+          echo "Scraper failed, checking auth status..."
+          if [ -f out/auth-status.json ]; then
+            cat out/auth-status.json
+            AUTH_VALID=$(node -e "console.log(require('./out/auth-status.json').valid)")
+            if [ "$AUTH_VALID" = "false" ]; then
+              echo "Auth failed, sending notifications..."
+              npm run notify:auth-failed
+            fi
+          fi
+          exit 1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NOTIFY_EMAIL: ${{ secrets.NOTIFY_EMAIL }}
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
 
       - name: Run selector
+        if: steps.scraper.outcome == 'success'
         run: npm run select
         continue-on-error: false
 
       - name: Run formatter
+        if: steps.scraper.outcome == 'success'
         run: npm run format
         continue-on-error: false
 
       - name: Run comment generator
+        if: steps.scraper.outcome == 'success'
         run: npm run comment
         env:
           LLM_API_URL: ${{ secrets.LLM_API_URL }}
@@ -107,6 +130,20 @@ jobs:
           else
             echo "top10_with_comments.json not found"
           fi
+
+      # ===== Sync Data to Web =====
+      - name: Sync data to web
+        if: steps.scraper.outcome == 'success'
+        run: node scripts/sync-data.mjs
+
+      - name: Commit and push data
+        if: steps.scraper.outcome == 'success'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add web/public/data/
+          git diff --staged --quiet || git commit -m "chore: update radar data [skip ci]"
+          git push
 
       # ===== Upload Artifacts =====
       - name: Upload artifacts
