@@ -107,6 +107,46 @@ function ReplyOptionCard({
   );
 }
 
+// 根据分数返回对应的样式类
+function getScoreStyle(score: number): { bg: string; text: string; label: string } {
+  if (score >= 500) {
+    // 传奇级 - 紫金渐变
+    return {
+      bg: 'bg-gradient-to-br from-amber-50 via-orange-50 to-purple-50 border-amber-300/60',
+      text: 'bg-gradient-to-r from-amber-600 via-orange-500 to-purple-600 bg-clip-text text-transparent',
+      label: '传奇'
+    };
+  } else if (score >= 200) {
+    // 优秀 - 橙色渐变
+    return {
+      bg: 'bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200/60',
+      text: 'bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent',
+      label: '优秀'
+    };
+  } else if (score >= 100) {
+    // 良好 - 蓝色渐变
+    return {
+      bg: 'bg-gradient-to-br from-sky-50 to-blue-50 border-sky-200/60',
+      text: 'bg-gradient-to-r from-sky-500 to-blue-500 bg-clip-text text-transparent',
+      label: '良好'
+    };
+  } else if (score >= 50) {
+    // 普通 - 绿灰色
+    return {
+      bg: 'bg-stone-50 border-stone-200/60',
+      text: 'text-stone-600',
+      label: '普通'
+    };
+  } else {
+    // 较低 - 灰色
+    return {
+      bg: 'bg-stone-50 border-stone-100',
+      text: 'text-stone-400',
+      label: '一般'
+    };
+  }
+}
+
 export function TweetCard({ tweet, index, showComments = true, collapsible = false, isNew = false }: TweetCardProps) {
   const [activeTab, setActiveTab] = useState<number>(0);
   const [copied, setCopied] = useState(false);
@@ -234,10 +274,17 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
               </div>
             </div>
           </div>
-          <div className="text-right bg-stone-50 px-3 py-2 rounded-xl border border-stone-100">
-            <div className="text-xl font-bold text-stone-800">{formatNumber(tweet.finalScore)}</div>
-            <div className="text-xs text-stone-400 uppercase tracking-wide">Score</div>
-          </div>
+          {(() => {
+            const scoreStyle = getScoreStyle(tweet.finalScore);
+            return (
+              <div className={`text-right px-3 py-2 rounded-xl border ${scoreStyle.bg}`}>
+                <div className={`text-xl font-bold ${scoreStyle.text}`}>
+                  {formatNumber(tweet.finalScore)}
+                </div>
+                <div className="text-xs text-stone-400 uppercase tracking-wide">Score</div>
+              </div>
+            );
+          })()}
         </div>
       </div>
 
