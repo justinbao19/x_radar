@@ -82,25 +82,28 @@ jobs:
         if: always()
         run: |
           echo "=== Output Files ==="
-          ls -la out/ 2>/dev/null || echo "No output directory"
+          ls -laR out/ 2>/dev/null || echo "No output directory"
           echo ""
           echo "=== raw.json stats ==="
-          if [ -f out/raw.json ]; then
-            node -e "const d=require('./out/raw.json'); console.log('Sources:', d.sources?.length || 0, 'Tweets:', d.stats?.totalTweets || 0)"
+          RAW_FILE=$(find out -name "raw.json" -type f 2>/dev/null | head -1)
+          if [ -n "$RAW_FILE" ]; then
+            node -e "const d=require('./$RAW_FILE'); console.log('Sources:', d.sources?.length || 0, 'Tweets:', d.stats?.totalTweets || 0)"
           else
             echo "raw.json not found"
           fi
           echo ""
           echo "=== top10.json stats ==="
-          if [ -f out/top10.json ]; then
-            node -e "const d=require('./out/top10.json'); console.log('Selected:', d.top?.length || 0)"
+          TOP10_FILE=$(find out -name "top10.json" -type f 2>/dev/null | head -1)
+          if [ -n "$TOP10_FILE" ]; then
+            node -e "const d=require('./$TOP10_FILE'); console.log('Selected:', d.top?.length || 0)"
           else
             echo "top10.json not found"
           fi
           echo ""
           echo "=== top10_with_comments.json stats ==="
-          if [ -f out/top10_with_comments.json ]; then
-            node -e "const d=require('./out/top10_with_comments.json'); console.log('With comments:', d.commentGenerationStats?.succeeded || 0, '/', d.commentGenerationStats?.total || 0)"
+          COMMENTS_FILE=$(find out -name "top10_with_comments.json" -type f 2>/dev/null | head -1)
+          if [ -n "$COMMENTS_FILE" ]; then
+            node -e "const d=require('./$COMMENTS_FILE'); console.log('With comments:', d.commentGenerationStats?.succeeded || 0, '/', d.commentGenerationStats?.total || 0)"
           else
             echo "top10_with_comments.json not found"
           fi
@@ -112,10 +115,7 @@ jobs:
         with:
           name: x-radar-${{ github.run_number }}-${{ github.run_attempt }}
           path: |
-            out/raw.json
-            out/top10.json
-            out/top10.md
-            out/top10_with_comments.json
-            out/top10_with_comments.md
+            out/latest/
+            out/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/
           retention-days: 30
           if-no-files-found: warn
