@@ -4,7 +4,7 @@
  * Called by GitHub Actions after pipeline completes
  */
 
-import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync, unlinkSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -82,10 +82,33 @@ function syncData() {
   // Clean files older than 7 days
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - 7);
-  manifest.files = manifest.files.filter(f => {
+  
+  const filesToKeep = [];
+  const filesToDelete = [];
+  
+  for (const f of manifest.files) {
     const fileDate = new Date(f.timestamp);
-    return fileDate >= cutoff;
-  });
+    if (fileDate >= cutoff) {
+      filesToKeep.push(f);
+    } else {
+      filesToDelete.push(f);
+    }
+  }
+  
+  // Actually delete old files from disk
+  for (const f of filesToDelete) {
+    const filePath = join(DATA_DIR, f.filename);
+    try {
+      if (existsSync(filePath)) {
+        unlinkSync(filePath);
+        log('INFO', 'Deleted old file', { filename: f.filename });
+      }
+    } catch (e) {
+      log('WARN', 'Failed to delete old file', { filename: f.filename, error: e.message });
+    }
+  }
+  
+  manifest.files = filesToKeep;
 
   // Sort by timestamp (newest first)
   manifest.files.sort((a, b) => 
