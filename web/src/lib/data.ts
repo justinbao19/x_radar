@@ -75,13 +75,43 @@ export function mergeRadarData(dataList: RadarData[]): Tweet[] {
         tweetMap.set(tweet.url, {
           ...tweet,
           // Add runAt for timeline view
-          datetime: tweet.datetime || data.runAt
+          datetime: tweet.datetime || data.runAt,
+          // 记录该推文是在哪次运行中抓取的
+          fetchedAt: data.runAt
         });
       }
     }
   }
 
   return Array.from(tweetMap.values());
+}
+
+/**
+ * Get the latest fetchedAt timestamp from tweets
+ */
+export function getLatestFetchedAt(tweets: Tweet[]): string | null {
+  if (tweets.length === 0) return null;
+  return tweets.reduce((latest, t) => 
+    t.fetchedAt && t.fetchedAt > (latest || '') ? t.fetchedAt : latest
+  , null as string | null);
+}
+
+/**
+ * Format datetime as relative time (e.g., "2小时前", "3天前")
+ */
+export function formatRelativeTime(date: string): string {
+  const d = new Date(date);
+  const now = new Date();
+  const diff = now.getTime() - d.getTime();
+  const minutes = Math.floor(diff / 60000);
+  const hours = Math.floor(diff / 3600000);
+  const days = Math.floor(diff / 86400000);
+  
+  if (minutes < 1) return '刚刚';
+  if (minutes < 60) return `${minutes}分钟前`;
+  if (hours < 24) return `${hours}小时前`;
+  if (days < 7) return `${days}天前`;
+  return d.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' });
 }
 
 /**

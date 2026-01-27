@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { Tweet, ReplyOption } from '@/lib/types';
-import { formatNumber, formatDateTime } from '@/lib/data';
+import { formatNumber, formatDateTime, formatRelativeTime } from '@/lib/data';
 
 interface TweetCardProps {
   tweet: Tweet;
   index: number;
   showComments?: boolean;
   collapsible?: boolean;
+  isNew?: boolean;
 }
 
 function ReplyOptionCard({ 
@@ -106,7 +107,7 @@ function ReplyOptionCard({
   );
 }
 
-export function TweetCard({ tweet, index, showComments = true, collapsible = false }: TweetCardProps) {
+export function TweetCard({ tweet, index, showComments = true, collapsible = false, isNew = false }: TweetCardProps) {
   const [activeTab, setActiveTab] = useState<number>(0);
   const [copied, setCopied] = useState(false);
   const [commentsExpanded, setCommentsExpanded] = useState(false);
@@ -182,9 +183,15 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
   const languageLabel = languageMap[detectedLang] || '未知';
 
   return (
-    <article className="bg-white rounded-2xl border border-stone-200/80 overflow-hidden hover:border-stone-300 hover:shadow-xl hover:shadow-stone-200/50 transition-all duration-300 card-hover break-inside-avoid">
+    <article className="bg-white rounded-2xl border border-stone-200/80 overflow-hidden hover:border-stone-300 hover:shadow-xl hover:shadow-stone-200/50 transition-all duration-300 card-hover break-inside-avoid relative">
       {/* Header */}
-      <div className="p-6 pb-4">
+      <div className="p-6 pb-4 relative">
+        {/* New Badge */}
+        {isNew && (
+          <span className="absolute top-3 right-3 z-10 px-2 py-0.5 text-[10px] sm:text-xs font-bold bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full shadow-md shadow-emerald-500/25 animate-pulse-soft">
+            New
+          </span>
+        )}
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">
             <span className="w-7 h-7 rounded-lg bg-gradient-to-br from-stone-800 to-stone-900 text-white text-xs font-bold flex items-center justify-center shadow-sm">
@@ -208,6 +215,13 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
                 </span>
                 <span className="text-xs text-stone-500 bg-stone-100 px-2 py-0.5 rounded-md border border-stone-200/50">
                   {languageLabel}
+                </span>
+                {/* 发布时间戳 */}
+                <span className="text-xs text-stone-500 bg-stone-100 px-2 py-0.5 rounded-md border border-stone-200/50 flex items-center gap-1">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  {formatRelativeTime(tweet.datetime)}
                 </span>
                 {tweet.aiPicked !== false && (
                   <span className="text-xs font-semibold text-amber-700 bg-gradient-to-r from-amber-100 to-orange-100 px-2 py-0.5 rounded-md flex items-center gap-1 border border-amber-200/50">

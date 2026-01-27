@@ -10,7 +10,8 @@ import {
   TweetList,
   AuthAlert,
   StatsBar,
-  Pagination
+  Pagination,
+  SortSelector
 } from '@/components';
 import { 
   loadManifest, 
@@ -22,9 +23,10 @@ import {
   filterAiPicked,
   calculateStats,
   getDateRangePreset,
-  getUniqueDates
+  getUniqueDates,
+  getLatestFetchedAt
 } from '@/lib/data';
-import { Tweet, Manifest, DateRange, ViewMode, CategoryFilter as CategoryFilterType, LanguageFilter } from '@/lib/types';
+import { Tweet, Manifest, DateRange, ViewMode, CategoryFilter as CategoryFilterType, LanguageFilter, SortOption } from '@/lib/types';
 
 export default function Dashboard() {
   const mainRef = useRef<HTMLElement | null>(null);
@@ -42,6 +44,7 @@ export default function Dashboard() {
   const [showAiPickedOnly, setShowAiPickedOnly] = useState(true);
   const [selectedTweet, setSelectedTweet] = useState<Tweet | null>(null);
   const [languageFilter, setLanguageFilter] = useState<LanguageFilter>('all');
+  const [sortBy, setSortBy] = useState<SortOption>('score');
   const [displayedAllTweets, setDisplayedAllTweets] = useState<Tweet[]>([]);
   const [isSwapping, setIsSwapping] = useState(false);
   const [pendingPageReset, setPendingPageReset] = useState(false);
@@ -105,10 +108,21 @@ export default function Dashboard() {
     return tweets;
   }, [allTweets, displayedAllTweets, categories, showAiPickedOnly, languageFilter]);
 
+  // Sort tweets
+  const sortedTweets = useMemo(() => {
+    return sortTweets(filteredTweets, sortBy);
+  }, [filteredTweets, sortBy]);
+
+  // Calculate latest fetched time for "New" badge
+  const latestFetchedAt = useMemo(() => {
+    const sourceTweets = displayedAllTweets.length > 0 ? displayedAllTweets : allTweets;
+    return getLatestFetchedAt(sourceTweets);
+  }, [displayedAllTweets, allTweets]);
+
   // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [categories, showAiPickedOnly, languageFilter]);
+  }, [categories, showAiPickedOnly, languageFilter, sortBy]);
 
   useEffect(() => {
     setPendingPageReset(true);
@@ -121,12 +135,12 @@ export default function Dashboard() {
   }, [loading, pendingPageReset]);
 
   // Pagination calculations
-  const totalPages = Math.ceil(filteredTweets.length / itemsPerPage);
+  const totalPages = Math.ceil(sortedTweets.length / itemsPerPage);
   const paginatedTweets = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
     const end = start + itemsPerPage;
-    return filteredTweets.slice(start, end);
-  }, [filteredTweets, currentPage, itemsPerPage]);
+    return sortedTweets.slice(start, end);
+  }, [sortedTweets, currentPage, itemsPerPage]);
 
   // Calculate stats
   const stats = useMemo(() => {
@@ -226,6 +240,10 @@ export default function Dashboard() {
               onChange={setCategories}
               stats={stats}
             />
+            <SortSelector
+              value={sortBy}
+              onChange={setSortBy}
+            />
             <ViewToggle 
               value={viewMode} 
               onChange={setViewMode} 
@@ -244,7 +262,7 @@ export default function Dashboard() {
           <div className="flex items-center justify-center py-20">
             <div className="animate-spin rounded-full h-10 w-10 border-4 border-amber-200 border-t-amber-500"></div>
           </div>
-        ) : filteredTweets.length === 0 ? (
+        ) : sortedTweets.length === 0 ? (
           <div className="text-center py-20">
             <div className="text-5xl mb-4">🔍</div>
             <p className="text-stone-500 text-lg">没有找到符合条件的推文</p>
@@ -261,7 +279,7 @@ export default function Dashboard() {
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={setCurrentPage}
-                totalItems={filteredTweets.length}
+                totalItems={sortedTweets.length}
                 itemsPerPage={itemsPerPage}
               />
             </div>
@@ -277,6 +295,7 @@ export default function Dashboard() {
                     index={(currentPage - 1) * itemsPerPage + index}
                     showComments={false}
                     collapsible={true}
+                    isNew={tweet.fetchedAt === latestFetchedAt}
                   />
                 ))}
               </div>
@@ -288,6 +307,7 @@ export default function Dashboard() {
                       tweet={tweet} 
                       index={(currentPage - 1) * itemsPerPage + index}
                       showComments={true}
+                      isNew={tweet.fetchedAt === latestFetchedAt}
                     />
                   </div>
                 ))}
@@ -298,7 +318,7 @@ export default function Dashboard() {
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={setCurrentPage}
-                totalItems={filteredTweets.length}
+                totalItems={sortedTweets.length}
                 itemsPerPage={itemsPerPage}
               />
             </div>
@@ -328,6 +348,7 @@ export default function Dashboard() {
               tweet={selectedTweet} 
               index={selectedTweet.rank}
               showComments={true}
+              isNew={selectedTweet.fetchedAt === latestFetchedAt}
             />
           </div>
         </div>

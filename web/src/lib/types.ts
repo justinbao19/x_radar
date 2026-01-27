@@ -42,6 +42,7 @@ export interface Tweet {
   commentSkipped: boolean;
   skipReason?: string;
   skipReasonZh?: string;
+  fetchedAt?: string;  // 推文被抓取的时间（来自 RadarData.runAt）
 }
 
 // ============ Data File Types ============
@@ -103,6 +104,8 @@ export interface Manifest {
 export type ViewMode = 'card' | 'list' | 'timeline';
 
 export type CategoryFilter = 'all' | 'pain' | 'reach' | 'kol';
+
+export type SortOption = 'score' | 'date' | 'engagement';
 
 export type LanguageFilter = 'all' | string;
 
