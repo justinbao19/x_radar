@@ -1,11 +1,27 @@
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { log, getInputPath, getOutputPath, copyToLatest, getOutputDir } from './utils.mjs';
+
+// ============ Load KOL Handles for Verification ============
+const INFLUENCERS_FILE = 'influencers.json';
+let KOL_HANDLES = new Set();
+
+if (existsSync(INFLUENCERS_FILE)) {
+  try {
+    const influencers = JSON.parse(readFileSync(INFLUENCERS_FILE, 'utf-8'));
+    KOL_HANDLES = new Set((influencers.handles || []).map(h => h.toLowerCase()));
+    log('INFO', `Loaded ${KOL_HANDLES.size} KOL handles for verification`);
+  } catch (e) {
+    log('WARN', 'Failed to load influencers.json for KOL verification', { error: e.message });
+  }
+}
 import { 
   checkBrandSafety,
   checkMinFiloFit,
   checkPainRelevance,
   checkReachRelevance,
   countFiloFitKeywords,
+  isEmailActionOnly,
+  checkPainEmotion,
   MIN_FILO_FIT,
   LOW_SIGNAL_PENALTY
 } from './safety.mjs';
@@ -13,8 +29,9 @@ import {
 // Quality threshold config (replaces fixed quota)
 const QUALITY_CONFIG = {
   aiPickTopN: 10,           // Number of AI-picked tweets for quick view
-  kolMinFiloFitScore: 15,   // KOL tweets need at least 3 keywords (15 = 3 * 5)
-  minFinalScore: 30         // Minimum score to be included
+  kolMinFiloFitScore: 20,   // KOL tweets need at least 4 keywords (20 = 4 * 5) - raised from 15
+  minFinalScore: 50,        // Minimum score to be included - raised from 30
+  noEmotionPenalty: 0.5     // Score penalty for pain tweets without emotion words
 };
 
 // Freshness filter - only keep tweets from last N days
@@ -268,11 +285,67 @@ function selectTop10(rawData) {
   
   log('INFO', `After relevance check: ${relevantTweets.length} (filtered: ${filterStats.relevanceFiltered})`);
   
+  // ============ Email Action Only Check ============
+  // Filter out tweets that just mention "sending email" without actual pain points
+  filterStats.emailActionOnlyFiltered = 0;
+  filterStats.noEmotionPenalized = 0;
+  
+  const contextQualifiedTweets = relevantTweets.filter(t => {
+    if (t.group === 'pain') {
+      // Check if this is just an email action, not a pain point
+      if (isEmailActionOnly(t.text)) {
+        filterStats.emailActionOnlyFiltered++;
+        log('DEBUG', `Email action only (no pain context): ${t.url}`, { 
+          text: t.text?.substring(0, 100)
+        });
+        return false;
+      }
+      
+      // Check for pain emotion words - apply penalty if missing
+      const emotionCheck = checkPainEmotion(t.text);
+      t.painEmotionWords = emotionCheck.words;
+      
+      if (!emotionCheck.hasPainEmotion) {
+        // No emotion words - apply score penalty but don't filter
+        t.finalScore = Math.round(t.finalScore * QUALITY_CONFIG.noEmotionPenalty * 10) / 10;
+        t.noEmotionPenalty = true;
+        filterStats.noEmotionPenalized++;
+        log('DEBUG', `No pain emotion words, score penalized: ${t.url}`, { 
+          newScore: t.finalScore
+        });
+      }
+    }
+    return true;
+  });
+  
+  log('INFO', `After context check: ${contextQualifiedTweets.length} (emailActionOnly: ${filterStats.emailActionOnlyFiltered}, noEmotionPenalized: ${filterStats.noEmotionPenalized})`);
+  
+  // ============ KOL Author Verification ============
+  // Verify that KOL tweets are actually from the expected KOL accounts
+  filterStats.kolAuthorMismatch = 0;
+  
+  const kolVerifiedTweets = contextQualifiedTweets.filter(t => {
+    if (t.originalGroup === 'kol') {
+      const authorHandle = t.author?.replace('@', '').toLowerCase();
+      if (!KOL_HANDLES.has(authorHandle)) {
+        filterStats.kolAuthorMismatch++;
+        log('DEBUG', `KOL author mismatch: expected KOL but got ${t.author}`, { 
+          url: t.url,
+          sourceQuery: t.sourceQuery
+        });
+        return false;
+      }
+    }
+    return true;
+  });
+  
+  log('INFO', `After KOL author verification: ${kolVerifiedTweets.length} (mismatched: ${filterStats.kolAuthorMismatch})`);
+  
   // ============ KOL Strict Relevance Check ============
   // KOL tweets need higher FiloFit score to be included
   filterStats.kolRelevanceFiltered = 0;
   
-  const qualifiedTweets = relevantTweets.filter(t => {
+  const qualifiedTweets = kolVerifiedTweets.filter(t => {
     // KOL tweets must have higher relevance
     if (t.originalGroup === 'kol') {
       if (t.filoFitScore < QUALITY_CONFIG.kolMinFiloFitScore) {
@@ -366,7 +439,9 @@ function selectTop10(rawData) {
     // Safety metadata
     safetyTier: t.safetyTier,
     lowSignalPenalty: t.lowSignalPenalty || false,
-    relevanceKeywords: t.relevanceKeywords || []
+    noEmotionPenalty: t.noEmotionPenalty || false,
+    relevanceKeywords: t.relevanceKeywords || [],
+    painEmotionWords: t.painEmotionWords || []
   }));
   
   // Count stats by group

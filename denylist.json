@@ -1,5 +1,12 @@
 {
   "hard": {
+    "promotional": [
+      "subscribe to my", "subscribe to our", "sign up for my", "sign up for our",
+      "join my newsletter", "join our newsletter", "check out my newsletter",
+      "link in bio", "dm for details", "dm me for",
+      "メルマガ登録", "購読はこちら", "フォローお願い", "お申し込みは",
+      "订阅我的", "关注我获取", "点击链接获取", "私信我"
+    ],
     "politics": [
       "election", "vote", "voting", "ballot", "democrat", "republican", "政治", "选举", "投票",
       "選挙", "投票", "政権", "政府", "regime", "政权", "coup", "impeach"
@@ -70,7 +77,11 @@
     ],
     "ads_promotion": [
       "sponsored", "ad", "advertisement", "promo code", "discount", "sale", "buy now",
-      "limited time", "click link", "check out", "广告", "宣伝", "PR"
+      "limited time", "click link", "check out", "广告", "宣伝", "PR",
+      "free trial", "get started today", "book a demo", "schedule a call",
+      "newsletter", "weekly digest", "daily tips", "subscribe now",
+      "最速で", "成功の秘訣", "無料で", "今すぐ登録",
+      "免费领取", "立即获取", "限时优惠"
     ]
   },
   "_meta": {

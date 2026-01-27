@@ -8,9 +8,22 @@ import { readFileSync, existsSync } from 'fs';
 // ============ Configuration ============
 
 const DENYLIST_FILE = 'denylist.json';
-const MIN_FILO_FIT = parseInt(process.env.MIN_FILO_FIT || '2', 10);
+const MIN_FILO_FIT = parseInt(process.env.MIN_FILO_FIT || '3', 10);  // Raised from 2 to 3
 const SOFT_THRESHOLD = 3; // FiloFitScore needed to keep soft-flagged content
 const LOW_SIGNAL_PENALTY = 0.2; // Score multiplier for low_signal matches
+
+// ============ Pain Emotion Words ============
+// Words that indicate actual pain/frustration with email, not just mentioning email
+const PAIN_EMOTION_WORDS = [
+  // English
+  'hate', 'annoying', 'terrible', 'broken', 'bug', 'issue', 'problem',
+  'overwhelming', 'drowning', 'chaos', 'mess', 'frustrating', 'worst',
+  'nightmare', 'hell', 'awful', 'useless', 'sucks', 'horrible', 'disaster',
+  // Japanese
+  'うざい', '最悪', '困る', '大変', 'ひどい', '地獄', 'バグ', '問題',
+  // Chinese
+  '烦死', '太多', '找不到', '难用', '崩溃', '问题', '噩梦', '糟糕', '垃圾'
+];
 
 // ============ Load Denylist ============
 
@@ -307,6 +320,68 @@ export function checkMinFiloFit(filoFitScore) {
   return { pass: true };
 }
 
+// ============ Email Action Only Detection ============
+
+/**
+ * Detect if text is just about "sending an email" action, not email pain points
+ * e.g., "email me at..." or "I emailed them" should be filtered
+ * @param {string} text - Text to check
+ * @returns {boolean} - True if this is just an email action, not a pain point
+ */
+export function isEmailActionOnly(text) {
+  if (!text) return false;
+  const lowerText = text.toLowerCase();
+  
+  // Action patterns - just talking about sending/receiving email as an action
+  const actionPatterns = [
+    /email\s+(me|us|them|him|her|both|everyone)\b/i,
+    /send\s+(an?\s+)?email\s+(to|for)/i,
+    /emailed?\s+(you|me|them|us|him|her)\b/i,
+    /reach\s+out\s+(via|by|through)\s+email/i,
+    /contact\s+(via|by|through)\s+email/i,
+    /\bemail\s+at\b/i,
+    /via\s+email\b/i,
+    /by\s+email\b/i,
+    // Japanese
+    /メールして/,
+    /メールください/,
+    /メールで連絡/,
+    /メールにて/,
+    // Chinese
+    /发邮件给/,
+    /请发邮件/,
+    /邮件联系/,
+    /通过邮件/
+  ];
+  
+  for (const pattern of actionPatterns) {
+    if (pattern.test(text)) {
+      // Check if there's also a pain word - if so, it might be legitimate
+      const hasPainWord = PAIN_EMOTION_WORDS.some(w => lowerText.includes(w.toLowerCase()));
+      if (!hasPainWord) {
+        return true; // Just an action, no pain context
+      }
+    }
+  }
+  return false;
+}
+
+/**
+ * Check if text contains pain emotion words
+ * @param {string} text - Text to check
+ * @returns {{ hasPainEmotion: boolean, words: string[] }}
+ */
+export function checkPainEmotion(text) {
+  if (!text) return { hasPainEmotion: false, words: [] };
+  const lowerText = text.toLowerCase();
+  
+  const matched = PAIN_EMOTION_WORDS.filter(w => lowerText.includes(w.toLowerCase()));
+  return {
+    hasPainEmotion: matched.length > 0,
+    words: matched
+  };
+}
+
 // ============ Exports ============
 
-export { MIN_FILO_FIT, SOFT_THRESHOLD, LOW_SIGNAL_PENALTY };
+export { MIN_FILO_FIT, SOFT_THRESHOLD, LOW_SIGNAL_PENALTY, PAIN_EMOTION_WORDS };
