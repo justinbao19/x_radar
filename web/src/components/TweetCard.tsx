@@ -107,7 +107,12 @@ function ReplyOptionCard({
 export function TweetCard({ tweet, index, showComments = true, collapsible = false }: TweetCardProps) {
   const [activeTab, setActiveTab] = useState<number>(0);
   const [copied, setCopied] = useState(false);
-  const [commentsExpanded, setCommentsExpanded] = useState(!collapsible);
+  const [commentsExpanded, setCommentsExpanded] = useState(false);
+  
+  // Reset expanded state when collapsible changes
+  useEffect(() => {
+    setCommentsExpanded(!collapsible && showComments);
+  }, [collapsible, showComments]);
   
   // Check if tweet has comments to show
   const hasComments = tweet.comments?.options?.length || tweet.commentSkipped || tweet.commentError;
