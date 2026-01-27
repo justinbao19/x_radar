@@ -1,8 +1,49 @@
 @import "tailwindcss";
 
+/* Claude-inspired warm color palette */
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  /* Background colors - warm cream tones */
+  --background: #FAF9F7;
+  --background-secondary: #F5F3EF;
+  --background-tertiary: #EFEDE8;
+  
+  /* Foreground/Text colors */
+  --foreground: #1A1915;
+  --foreground-secondary: #5D5A52;
+  --foreground-muted: #8A8680;
+  
+  /* Primary accent - warm terracotta/amber */
+  --primary: #D97706;
+  --primary-hover: #B45309;
+  --primary-light: #FEF3C7;
+  --primary-muted: #FBBF24;
+  
+  /* Secondary accent - warm coral */
+  --accent: #DC7B5C;
+  --accent-hover: #C4694D;
+  --accent-light: #FDF2EF;
+  
+  /* Borders and dividers */
+  --border: #E7E5E0;
+  --border-hover: #D4D1CA;
+  
+  /* Status colors - warmed versions */
+  --success: #65A30D;
+  --success-light: #ECFCCB;
+  --warning: #D97706;
+  --warning-light: #FEF3C7;
+  --error: #DC2626;
+  --error-light: #FEE2E2;
+  --info: #0891B2;
+  --info-light: #CFFAFE;
+  
+  /* Card and surface */
+  --card: #FFFFFF;
+  --card-hover: #FDFCFA;
+  
+  /* Special - AI/精选 highlight */
+  --ai-picked: #D97706;
+  --ai-picked-light: #FEF3C7;
 }
 
 body {
@@ -10,25 +51,26 @@ body {
   color: var(--foreground);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar - warm tones */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--background-secondary);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--border);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--border-hover);
 }
 
 /* Animations */
@@ -43,12 +85,70 @@ body {
   }
 }
 
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
 .animate-fade-in {
   animation: fade-in 0.2s ease-out;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
 }
 
 /* Code blocks in auth alert */
 code {
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
   font-size: 0.85em;
+  background: var(--background-tertiary);
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+}
+
+/* Focus styles for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Selection color */
+::selection {
+  background: var(--primary-light);
+  color: var(--foreground);
+}
+
+/* Button base transitions */
+button {
+  transition: all 0.15s ease;
+}
+
+/* Card hover effect */
+.card-hover {
+  transition: all 0.2s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px -5px rgba(26, 25, 21, 0.1), 0 4px 10px -5px rgba(26, 25, 21, 0.04);
 }

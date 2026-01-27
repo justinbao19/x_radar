@@ -88,15 +88,15 @@ export function DatePicker({ value, onChange, availableDates }: DatePickerProps)
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {presets.map(preset => (
           <button
             key={preset.key}
             onClick={() => handlePresetClick(preset.key)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
               activePreset === preset.key
-                ? 'bg-slate-900 text-white'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'bg-gradient-to-r from-stone-800 to-stone-900 text-white shadow-md shadow-stone-900/20'
+                : 'bg-stone-100 text-stone-600 hover:bg-stone-200 border border-stone-200/50'
             }`}
           >
             {preset.label}
@@ -104,23 +104,26 @@ export function DatePicker({ value, onChange, availableDates }: DatePickerProps)
         ))}
         <button
           onClick={() => setShowCustom(!showCustom)}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+          className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
             showCustom || (!activePreset && availableDates)
-              ? 'bg-violet-600 text-white'
-              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md shadow-amber-500/25'
+              : 'bg-stone-100 text-stone-600 hover:bg-stone-200 border border-stone-200/50'
           }`}
         >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
           选择日期
         </button>
       </div>
 
       {showCustom && availableDates && availableDates.length > 0 && (
-        <div className="flex flex-wrap gap-2 p-4 bg-slate-50 rounded-xl border border-slate-200">
+        <div className="flex flex-wrap gap-2 p-4 bg-stone-50 rounded-xl border border-stone-200/80 animate-fade-in">
           {availableDates.map(date => (
             <button
               key={date}
               onClick={() => handleDateSelect(date)}
-              className="px-3 py-1.5 rounded-lg text-sm bg-white border border-slate-200 hover:border-violet-400 hover:bg-violet-50 transition-all"
+              className="px-3 py-1.5 rounded-lg text-sm bg-white border border-stone-200 hover:border-amber-400 hover:bg-amber-50 hover:text-amber-700 transition-all"
             >
               {formatDate(date)}
             </button>
@@ -128,7 +131,10 @@ export function DatePicker({ value, onChange, availableDates }: DatePickerProps)
         </div>
       )}
 
-      <div className="text-sm text-slate-500">
+      <div className="text-sm text-stone-500 flex items-center gap-2">
+        <svg className="w-4 h-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
         {formatDate(value.start)} — {formatDate(value.end)}
       </div>
     </div>

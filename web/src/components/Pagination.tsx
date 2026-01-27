@@ -58,10 +58,10 @@ export function Pagination({
   };
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 bg-white border border-slate-200 rounded-xl">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-5 py-4 bg-white border border-stone-200/80 rounded-2xl shadow-sm">
       {/* Info */}
-      <div className="text-sm text-slate-500">
-        显示 <span className="font-medium text-slate-700">{startItem}-{endItem}</span> / 共 <span className="font-medium text-slate-700">{totalItems}</span> 条
+      <div className="text-sm text-stone-500">
+        显示 <span className="font-semibold text-stone-700">{startItem}-{endItem}</span> / 共 <span className="font-semibold text-stone-700">{totalItems}</span> 条
       </div>
       
       {/* Navigation */}
@@ -70,10 +70,10 @@ export function Pagination({
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className={`p-2 rounded-lg transition-all ${
+          className={`p-2 rounded-xl transition-all duration-200 ${
             currentPage === 1
-              ? 'text-slate-300 cursor-not-allowed'
-              : 'text-slate-600 hover:bg-slate-100'
+              ? 'text-stone-300 cursor-not-allowed'
+              : 'text-stone-600 hover:bg-stone-100 hover:text-stone-800'
           }`}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -84,15 +84,15 @@ export function Pagination({
         {/* Page numbers */}
         {getPageNumbers().map((page, i) => (
           page === 'ellipsis' ? (
-            <span key={`ellipsis-${i}`} className="px-2 text-slate-400">...</span>
+            <span key={`ellipsis-${i}`} className="px-2 text-stone-400">...</span>
           ) : (
             <button
               key={page}
               onClick={() => onPageChange(page)}
-              className={`min-w-[36px] h-9 px-3 rounded-lg text-sm font-medium transition-all ${
+              className={`min-w-[40px] h-10 px-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 currentPage === page
-                  ? 'bg-slate-900 text-white'
-                  : 'text-slate-600 hover:bg-slate-100'
+                  ? 'bg-gradient-to-r from-stone-800 to-stone-900 text-white shadow-md shadow-stone-900/20'
+                  : 'text-stone-600 hover:bg-stone-100 border border-transparent hover:border-stone-200'
               }`}
             >
               {page}
@@ -104,10 +104,10 @@ export function Pagination({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className={`p-2 rounded-lg transition-all ${
+          className={`p-2 rounded-xl transition-all duration-200 ${
             currentPage === totalPages
-              ? 'text-slate-300 cursor-not-allowed'
-              : 'text-slate-600 hover:bg-slate-100'
+              ? 'text-stone-300 cursor-not-allowed'
+              : 'text-stone-600 hover:bg-stone-100 hover:text-stone-800'
           }`}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
