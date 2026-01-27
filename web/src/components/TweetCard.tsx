@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tweet, ReplyOption } from '@/lib/types';
 import { formatNumber, formatDateTime } from '@/lib/data';
 
@@ -46,9 +46,16 @@ function ReplyOptionCard({
         </div>
       )}
       
-      <p className="text-slate-800 text-sm leading-relaxed mb-3 pr-16">
+      <p className="text-slate-800 text-sm leading-relaxed mb-2 pr-16">
         {option.comment}
       </p>
+      
+      {/* Comment Translation */}
+      {option.comment_zh && (
+        <p className="text-slate-500 text-xs leading-relaxed mb-3 pr-16 pl-3 border-l-2 border-blue-200">
+          {option.comment_zh}
+        </p>
+      )}
       
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -100,7 +107,12 @@ export function TweetCard({ tweet, index, showComments = true }: TweetCardProps)
   const [activeTab, setActiveTab] = useState<number>(0);
   const [copied, setCopied] = useState(false);
 
-  const groupLabel = tweet.originalGroup === 'kol' ? 'KOL' : tweet.group.toUpperCase();
+  const groupLabels: Record<string, string> = {
+    pain: '痛点',
+    reach: '传播',
+    kol: 'KOL'
+  };
+  const groupLabel = tweet.originalGroup === 'kol' ? 'KOL' : groupLabels[tweet.group] || tweet.group;
   const groupColor = tweet.group === 'pain' ? 'bg-pink-100 text-pink-700' : 'bg-blue-100 text-blue-700';
   
   const authorHandle = tweet.author?.startsWith('@') ? tweet.author : `@${tweet.author}`;
@@ -122,12 +134,15 @@ export function TweetCard({ tweet, index, showComments = true }: TweetCardProps)
     : [];
   
   const recommendedIndex = sortedOptions.findIndex(opt => opt.recommended);
-  const initialTab = recommendedIndex >= 0 ? recommendedIndex : 0;
   
-  // Set initial active tab on first render
-  if (activeTab === 0 && recommendedIndex > 0) {
-    setActiveTab(recommendedIndex);
-  }
+  // Set initial active tab when tweet changes
+  useEffect(() => {
+    if (recommendedIndex >= 0) {
+      setActiveTab(recommendedIndex);
+    } else {
+      setActiveTab(0);
+    }
+  }, [tweet.url, recommendedIndex]);
 
   const tabLabels: Record<string, string> = {
     witty: '机智风格',

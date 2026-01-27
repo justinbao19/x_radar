@@ -9,7 +9,8 @@ import {
   TweetCard, 
   TweetList,
   AuthAlert,
-  StatsBar 
+  StatsBar,
+  Pagination
 } from '@/components';
 import { 
   loadManifest, 
@@ -37,6 +38,10 @@ export default function Dashboard() {
   const [categories, setCategories] = useState<CategoryFilterType[]>(['all']);
   const [showAiPickedOnly, setShowAiPickedOnly] = useState(true);
   const [selectedTweet, setSelectedTweet] = useState<Tweet | null>(null);
+  
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   // Load manifest on mount
   useEffect(() => {
@@ -88,6 +93,19 @@ export default function Dashboard() {
     
     return tweets;
   }, [allTweets, categories, showAiPickedOnly]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [categories, showAiPickedOnly, dateRange]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredTweets.length / itemsPerPage);
+  const paginatedTweets = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return filteredTweets.slice(start, end);
+  }, [filteredTweets, currentPage, itemsPerPage]);
 
   // Calculate stats
   const stats = useMemo(() => {
@@ -171,23 +189,45 @@ export default function Dashboard() {
             <p className="text-slate-500">没有找到符合条件的推文</p>
           </div>
         ) : viewMode === 'list' ? (
-          <TweetList 
-            tweets={filteredTweets} 
-            onSelect={setSelectedTweet}
-          />
-        ) : (
-          <div className={`grid gap-6 ${
-            viewMode === 'timeline' ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-2'
-          }`}>
-            {filteredTweets.map((tweet, index) => (
-              <TweetCard 
-                key={tweet.url} 
-                tweet={tweet} 
-                index={index}
-                showComments={viewMode !== 'timeline'}
+          <>
+            <TweetList 
+              tweets={paginatedTweets} 
+              onSelect={setSelectedTweet}
+            />
+            <div className="mt-6">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                totalItems={filteredTweets.length}
+                itemsPerPage={itemsPerPage}
               />
-            ))}
-          </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className={`grid gap-6 ${
+              viewMode === 'timeline' ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-2'
+            }`}>
+              {paginatedTweets.map((tweet, index) => (
+                <TweetCard 
+                  key={tweet.url} 
+                  tweet={tweet} 
+                  index={(currentPage - 1) * itemsPerPage + index}
+                  showComments={viewMode !== 'timeline'}
+                />
+              ))}
+            </div>
+            <div className="mt-6">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                totalItems={filteredTweets.length}
+                itemsPerPage={itemsPerPage}
+              />
+            </div>
+          </>
         )}
       </main>
 

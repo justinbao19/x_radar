@@ -11,8 +11,8 @@ interface CategoryFilterProps {
 
 const categories: { key: CategoryFilterType; label: string; color: string }[] = [
   { key: 'all', label: '全部', color: 'bg-slate-500' },
-  { key: 'pain', label: 'Pain', color: 'bg-pink-500' },
-  { key: 'reach', label: 'Reach', color: 'bg-blue-500' },
+  { key: 'pain', label: '痛点', color: 'bg-pink-500' },
+  { key: 'reach', label: '传播', color: 'bg-blue-500' },
   { key: 'kol', label: 'KOL', color: 'bg-violet-500' },
 ];
 

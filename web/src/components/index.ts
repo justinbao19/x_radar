@@ -6,3 +6,4 @@ export { TweetCard } from './TweetCard';
 export { TweetList } from './TweetList';
 export { AuthAlert } from './AuthAlert';
 export { StatsBar } from './StatsBar';
+export { Pagination } from './Pagination';

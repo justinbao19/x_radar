@@ -103,6 +103,10 @@ const SYSTEM_PROMPT = `你是一个帮助产品人员撰写 X (Twitter) 回复�
     - 翻译要准确、自然，保持原文语气
     - 如果原推文已经是中文，则 tweet_translation_zh 为空字符串或省略
 
+12. 【回复翻译】如果回复不是中文，也要提供中文翻译：
+    - 帮助中文用户理解回复内容
+    - 如果回复已经是中文，则 comment_zh 为空字符串或省略
+
 输出严格的 JSON 格式，不要有任何其他文字：
 {
   "language": "en|ja|zh|other",
@@ -111,6 +115,7 @@ const SYSTEM_PROMPT = `你是一个帮助产品人员撰写 X (Twitter) 回复�
   "options": [
     {
       "comment": "回复内容（用原推文语言）",
+      "comment_zh": "回复内容的中文翻译（仅非中文回复需要，中文回复留空）",
       "zh_explain": "中文解释这条回复的意图和效果",
       "angle": "witty|practical|subtle_product",
       "risk": "low|medium|high",
@@ -204,14 +209,19 @@ async function generateComments(tweet, retries = MAX_RETRIES) {
         productRelevance: parsed.product_relevance || 'medium',
         tweetTranslationZh: translation,
         generatedAt: new Date().toISOString(),
-        options: parsed.options.map(opt => ({
-          comment: opt.comment || '',
-          zh_explain: opt.zh_explain || '',
-          angle: opt.angle || 'unknown',
-          charCount: (opt.comment || '').length,
-          risk: opt.risk || 'low',
-          recommended: opt.recommended === true
-        }))
+        options: parsed.options.map(opt => {
+          // Only include comment_zh if the reply is not in Chinese
+          const replyNeedsTranslation = needsTranslation && opt.comment_zh;
+          return {
+            comment: opt.comment || '',
+            comment_zh: replyNeedsTranslation ? opt.comment_zh : '',
+            zh_explain: opt.zh_explain || '',
+            angle: opt.angle || 'unknown',
+            charCount: (opt.comment || '').length,
+            risk: opt.risk || 'low',
+            recommended: opt.recommended === true
+          };
+        })
       };
       
     } catch (err) {

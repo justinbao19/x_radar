@@ -2,6 +2,7 @@
 
 export interface ReplyOption {
   comment: string;
+  comment_zh?: string;
   zh_explain: string;
   angle: 'witty' | 'practical' | 'subtle_product';
   charCount: number;
