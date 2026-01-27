@@ -215,6 +215,7 @@ export default function Dashboard() {
                   tweet={tweet} 
                   index={(currentPage - 1) * itemsPerPage + index}
                   showComments={viewMode !== 'timeline'}
+                  collapsible={viewMode === 'timeline'}
                 />
               ))}
             </div>
