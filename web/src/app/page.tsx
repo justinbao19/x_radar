@@ -305,6 +305,7 @@ export default function Dashboard() {
                       tweet={tweet} 
                       index={(currentPage - 1) * itemsPerPage + index}
                       showComments={true}
+                      collapsible={true}
                       isNew={tweet.fetchedAt === latestRunAt}
                     />
                   </div>

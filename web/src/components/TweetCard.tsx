@@ -152,17 +152,17 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
   const [copied, setCopied] = useState(false);
   const [commentsExpanded, setCommentsExpanded] = useState(false);
 
-  const languageMap: Record<string, string> = {
-    en: '英语',
-    ja: '日语',
-    zh: '中文',
-    ko: '韩语',
-    fr: '法语',
-    de: '德语',
-    es: '西班牙语',
-    pt: '葡萄牙语',
-    ru: '俄语',
-    other: '其他'
+  const languageMap: Record<string, { flag: string; label: string }> = {
+    en: { flag: '🇺🇸', label: '英语' },
+    ja: { flag: '🇯🇵', label: '日语' },
+    zh: { flag: '🇨🇳', label: '中文' },
+    ko: { flag: '🇰🇷', label: '韩语' },
+    fr: { flag: '🇫🇷', label: '法语' },
+    de: { flag: '🇩🇪', label: '德语' },
+    es: { flag: '🇪🇸', label: '西班牙语' },
+    pt: { flag: '🇵🇹', label: '葡萄牙语' },
+    ru: { flag: '🇷🇺', label: '俄语' },
+    other: { flag: '🌐', label: '其他' }
   };
   
   // Reset expanded state when collapsible changes
@@ -220,7 +220,7 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
     subtle_product: '产品植入'
   };
   const detectedLang = (tweet.detectedLanguage || 'unknown').toLowerCase();
-  const languageLabel = languageMap[detectedLang] || '未知';
+  const languageInfo = languageMap[detectedLang] || { flag: '❔', label: '未知' };
 
   return (
     <article className="bg-white rounded-2xl border border-stone-200/80 overflow-hidden hover:border-stone-300 hover:shadow-xl hover:shadow-stone-200/50 transition-all duration-300 card-hover break-inside-avoid relative">
@@ -250,21 +250,22 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
                 {authorHandle}
               </a>
               <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-                <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${groupColor}`}>
+                <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${groupColor}`}>
                   {groupLabel}
                 </span>
-                <span className="text-xs text-stone-500 bg-stone-100 px-2 py-0.5 rounded-md border border-stone-200/50">
-                  {languageLabel}
+                <span className="text-xs text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-full border border-stone-200/50 flex items-center gap-1">
+                  <span>{languageInfo.flag}</span>
+                  <span>{languageInfo.label}</span>
                 </span>
                 {/* 发布时间戳 */}
-                <span className="text-xs text-stone-500 bg-stone-100 px-2 py-0.5 rounded-md border border-stone-200/50 flex items-center gap-1">
+                <span className="text-xs text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-full border border-stone-200/50 flex items-center gap-1">
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                   {formatRelativeTime(tweet.datetime)}
                 </span>
                 {tweet.aiPicked !== false && (
-                  <span className="text-xs font-semibold text-amber-700 bg-gradient-to-r from-amber-100 to-orange-100 px-2 py-0.5 rounded-md flex items-center gap-1 border border-amber-200/50">
+                  <span className="text-xs font-semibold text-amber-700 bg-gradient-to-r from-amber-100 to-orange-100 px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-amber-200/50">
                     <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2Z"/>
                     </svg>
@@ -335,7 +336,7 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
             href={tweet.url} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="ml-auto inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-stone-800 to-stone-900 text-white text-sm font-medium rounded-xl hover:from-stone-700 hover:to-stone-800 transition-all shadow-lg shadow-stone-900/20 hover:shadow-stone-900/30"
+            className="ml-auto inline-flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-stone-800 to-stone-900 text-white text-sm font-medium rounded-full hover:from-stone-700 hover:to-stone-800 transition-all shadow-lg shadow-stone-900/20 hover:shadow-stone-900/30"
           >
             查看原推文
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -372,7 +373,7 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
           )}
           
           {/* Comments Content */}
-          {(showComments || commentsExpanded) && (
+          {(collapsible ? commentsExpanded : showComments) && (
             <div className="p-6 pt-4">
               {tweet.commentSkipped ? (
                 <div className="bg-amber-50 border border-amber-200/80 rounded-xl p-4 text-amber-800 text-sm">
@@ -392,24 +393,38 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
                     <div className="flex-1 h-px bg-gradient-to-r from-stone-200 to-transparent"></div>
                   </div>
                   
-                  {/* Tabs */}
-                  <div className="flex gap-1 p-1.5 bg-white rounded-xl border border-stone-200/80 mb-4 shadow-sm">
+                  {/* Tabs with sliding indicator */}
+                  <div className="relative flex p-1.5 bg-stone-100 rounded-2xl border border-stone-200/80 mb-4 shadow-sm">
+                    {/* Sliding background indicator */}
+                    <div 
+                      className="absolute top-1.5 bottom-1.5 rounded-xl transition-all duration-300 ease-out"
+                      style={{
+                        width: `calc((100% - 12px) / ${sortedOptions.length})`,
+                        left: `calc(6px + ${activeTab} * (100% - 12px) / ${sortedOptions.length})`,
+                        background: sortedOptions[activeTab]?.recommended 
+                          ? 'linear-gradient(to right, #f59e0b, #f97316)' 
+                          : 'white',
+                        boxShadow: sortedOptions[activeTab]?.recommended
+                          ? '0 4px 6px -1px rgba(245, 158, 11, 0.25), 0 2px 4px -2px rgba(245, 158, 11, 0.15)'
+                          : '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)'
+                      }}
+                    />
                     {sortedOptions.map((opt, i) => (
                       <button
                         key={opt.angle}
                         onClick={() => setActiveTab(i)}
-                        className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                        className={`relative z-10 flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-200 ${
                           activeTab === i
                             ? opt.recommended
-                              ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md shadow-amber-500/25'
-                              : 'bg-white text-stone-800 shadow-md border border-stone-200/50'
+                              ? 'text-white'
+                              : 'text-stone-800'
                             : opt.recommended
-                              ? 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200/50'
-                              : 'text-stone-500 hover:text-stone-700 hover:bg-stone-50'
+                              ? 'text-amber-600 hover:text-amber-700'
+                              : 'text-stone-500 hover:text-stone-700'
                         }`}
                       >
                         {opt.recommended && (
-                          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+                          <svg className={`w-3.5 h-3.5 transition-transform duration-200 ${activeTab === i ? 'scale-110' : ''}`} viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2Z"/>
                           </svg>
                         )}

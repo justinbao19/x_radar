@@ -89,8 +89,8 @@ export function StatsBar({ stats, showAiPicked, onToggleAiPicked, languageFilter
     <div className="bg-white/80 backdrop-blur-sm border-b border-stone-200/60 relative z-20">
       <div className="max-w-6xl mx-auto px-6 py-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-6 md:gap-8">
         {/* Stats Cards */}
-        <div className="flex items-center gap-2 bg-gradient-to-r from-amber-50 to-orange-50 px-4 py-2 rounded-xl border border-amber-200/50 w-full sm:w-auto sm:min-w-[180px]">
-          <div className="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center">
+        <div className="flex items-center gap-2 bg-gradient-to-r from-amber-50 to-orange-50 px-4 py-2 rounded-2xl border border-amber-200/50 w-full sm:w-auto sm:min-w-[180px]">
+          <div className="w-8 h-8 bg-amber-500 rounded-xl flex items-center justify-center">
             <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2Z"/>
             </svg>
@@ -105,8 +105,8 @@ export function StatsBar({ stats, showAiPicked, onToggleAiPicked, languageFilter
           </div>
         </div>
         
-        <div className="flex items-center gap-2 bg-stone-50 px-4 py-2 rounded-xl border border-stone-200/50 w-full sm:w-auto sm:min-w-[200px]">
-          <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
+        <div className="flex items-center gap-2 bg-stone-50 px-4 py-2 rounded-2xl border border-stone-200/50 w-full sm:w-auto sm:min-w-[200px]">
+          <div className="w-8 h-8 bg-emerald-500 rounded-xl flex items-center justify-center">
             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
@@ -118,7 +118,7 @@ export function StatsBar({ stats, showAiPicked, onToggleAiPicked, languageFilter
         </div>
         
         {languageCount > 0 && (
-          <div ref={langRef} className="relative hidden md:flex items-center bg-stone-50 px-3 py-2 rounded-xl border border-stone-200/50 z-30">
+          <div ref={langRef} className="relative hidden md:flex items-center bg-stone-50 px-3 py-2 rounded-2xl border border-stone-200/50 z-30">
             <button
               type="button"
               onClick={() => setLangOpen(prev => !prev)}
@@ -126,7 +126,7 @@ export function StatsBar({ stats, showAiPicked, onToggleAiPicked, languageFilter
               aria-haspopup="dialog"
               aria-expanded={langOpen}
             >
-              <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-blue-500 rounded-xl flex items-center justify-center">
                 <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 19l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
                 </svg>
@@ -164,7 +164,7 @@ export function StatsBar({ stats, showAiPicked, onToggleAiPicked, languageFilter
               </svg>
             </button>
             {langOpen && (
-              <div className="absolute right-0 top-full mt-2 w-64 rounded-xl bg-white border border-stone-200 shadow-lg shadow-stone-200/50 p-2 z-50">
+              <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl bg-white border border-stone-200 shadow-lg shadow-stone-200/50 p-2 z-50">
                 <div className="text-xs text-stone-500 px-2 py-1">语言分布</div>
                 <div className="max-h-56 overflow-auto">
                   <button
@@ -173,7 +173,7 @@ export function StatsBar({ stats, showAiPicked, onToggleAiPicked, languageFilter
                       onLanguageChange('all');
                       setLangOpen(false);
                     }}
-                    className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-sm transition-colors ${
+                    className={`w-full flex items-center justify-between px-2 py-1.5 rounded-xl text-sm transition-colors ${
                       languageFilter === 'all'
                         ? 'bg-stone-100 text-stone-800'
                         : 'text-stone-600 hover:bg-stone-50'
@@ -195,7 +195,7 @@ export function StatsBar({ stats, showAiPicked, onToggleAiPicked, languageFilter
                         onLanguageChange(item.key);
                         setLangOpen(false);
                       }}
-                      className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-sm transition-colors ${
+                      className={`w-full flex items-center justify-between px-2 py-1.5 rounded-xl text-sm transition-colors ${
                         activeLanguage === item.key
                           ? 'bg-amber-50 text-amber-700'
                           : 'text-stone-700 hover:bg-stone-50'
@@ -217,7 +217,7 @@ export function StatsBar({ stats, showAiPicked, onToggleAiPicked, languageFilter
         )}
         
         {/* Toggle Switch */}
-        <div className="flex items-center justify-between sm:justify-start gap-3 bg-stone-100/80 px-4 py-2 rounded-xl w-full sm:w-auto sm:ml-auto">
+        <div className="flex items-center justify-between sm:justify-start gap-3 bg-stone-100/80 px-4 py-2 rounded-2xl w-full sm:w-auto sm:ml-auto">
           <span className={`text-sm font-medium transition-colors ${!showAiPicked ? 'text-stone-600' : 'text-stone-400'}`}>
             全部
           </span>

@@ -60,7 +60,7 @@ export function SortSelector({ value, onChange }: SortSelectorProps) {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-3 py-2 bg-white border border-stone-200 rounded-xl hover:border-stone-300 hover:bg-stone-50 transition-all text-sm font-medium text-stone-700 shadow-sm"
+        className="flex items-center gap-2 px-4 py-2 bg-white border border-stone-200 rounded-full hover:border-stone-300 hover:bg-stone-50 transition-all text-sm font-medium text-stone-700 shadow-sm"
         aria-haspopup="listbox"
         aria-expanded={open}
       >
@@ -77,7 +77,7 @@ export function SortSelector({ value, onChange }: SortSelectorProps) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-40 bg-white border border-stone-200 rounded-xl shadow-lg shadow-stone-200/50 py-1 z-50 animate-fade-in">
+        <div className="absolute right-0 top-full mt-2 w-40 bg-white border border-stone-200 rounded-2xl shadow-lg shadow-stone-200/50 py-1 z-50 animate-fade-in">
           {sortOptions.map(option => (
             <button
               key={option.value}

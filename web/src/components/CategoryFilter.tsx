@@ -70,7 +70,7 @@ export function CategoryFilter({ value, onChange, stats }: CategoryFilterProps) 
       <button
         type="button"
         onClick={() => setOpen(prev => !prev)}
-        className="inline-flex items-center gap-2 px-3 h-9 rounded-xl text-sm font-medium bg-stone-100 text-stone-600 hover:bg-stone-200 border border-stone-200/50 whitespace-nowrap"
+        className="inline-flex items-center gap-2 px-4 h-9 rounded-full text-sm font-medium bg-stone-100 text-stone-600 hover:bg-stone-200 border border-stone-200/50 whitespace-nowrap"
         aria-haspopup="listbox"
         aria-expanded={open}
       >
@@ -83,7 +83,7 @@ export function CategoryFilter({ value, onChange, stats }: CategoryFilterProps) 
       {open && (
         <div
           role="listbox"
-          className="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 w-60 rounded-xl bg-white border border-stone-200 shadow-lg shadow-stone-200/50 p-2 z-30"
+          className="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 w-60 rounded-2xl bg-white border border-stone-200 shadow-lg shadow-stone-200/50 p-2 z-30"
         >
           {categories.map(cat => {
             const isActive = value.includes(cat.key);
@@ -93,7 +93,7 @@ export function CategoryFilter({ value, onChange, stats }: CategoryFilterProps) 
               <button
                 key={cat.key}
                 onClick={() => handleClick(cat.key)}
-                className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all ${
                   isActive
                     ? `${cat.activeColor} text-white shadow-sm`
                     : 'text-stone-600 hover:bg-stone-100'
