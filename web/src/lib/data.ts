@@ -128,6 +128,15 @@ export function filterAiPicked(tweets: Tweet[]): Tweet[] {
   return tweets.filter(tweet => tweet.aiPicked !== false);
 }
 
+/**
+ * Filter tweets by language
+ */
+export function filterByLanguage(tweets: Tweet[], language: string): Tweet[] {
+  if (!language || language === 'all') return tweets;
+  const target = language.toLowerCase();
+  return tweets.filter(tweet => (tweet.detectedLanguage || '').toLowerCase() === target);
+}
+
 // ============ Statistics ============
 
 export interface TweetStats {

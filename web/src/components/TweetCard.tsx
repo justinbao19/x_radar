@@ -167,7 +167,7 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
   };
 
   return (
-    <article className="bg-white rounded-2xl border border-stone-200/80 overflow-hidden hover:border-stone-300 hover:shadow-xl hover:shadow-stone-200/50 transition-all duration-300 card-hover">
+    <article className="bg-white rounded-2xl border border-stone-200/80 overflow-hidden hover:border-stone-300 hover:shadow-xl hover:shadow-stone-200/50 transition-all duration-300 card-hover break-inside-avoid">
       {/* Header */}
       <div className="p-6 pb-4">
         <div className="flex items-start justify-between gap-4">

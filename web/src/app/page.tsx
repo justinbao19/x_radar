@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { 
   Header, 
   DatePicker, 
@@ -18,14 +18,17 @@ import {
   mergeRadarData, 
   sortTweets,
   filterByCategory,
+  filterByLanguage,
   filterAiPicked,
   calculateStats,
   getDateRangePreset,
   getUniqueDates
 } from '@/lib/data';
-import { Tweet, Manifest, DateRange, ViewMode, CategoryFilter as CategoryFilterType } from '@/lib/types';
+import { Tweet, Manifest, DateRange, ViewMode, CategoryFilter as CategoryFilterType, LanguageFilter } from '@/lib/types';
 
 export default function Dashboard() {
+  const mainRef = useRef<HTMLElement | null>(null);
+  const [frozenHeight, setFrozenHeight] = useState<number | null>(null);
   // State
   const [manifest, setManifest] = useState<Manifest | null>(null);
   const [allTweets, setAllTweets] = useState<Tweet[]>([]);
@@ -38,6 +41,10 @@ export default function Dashboard() {
   const [categories, setCategories] = useState<CategoryFilterType[]>(['all']);
   const [showAiPickedOnly, setShowAiPickedOnly] = useState(true);
   const [selectedTweet, setSelectedTweet] = useState<Tweet | null>(null);
+  const [languageFilter, setLanguageFilter] = useState<LanguageFilter>('all');
+  const [displayedAllTweets, setDisplayedAllTweets] = useState<Tweet[]>([]);
+  const [isSwapping, setIsSwapping] = useState(false);
+  const [pendingPageReset, setPendingPageReset] = useState(false);
   
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -81,7 +88,8 @@ export default function Dashboard() {
 
   // Filter tweets
   const filteredTweets = useMemo(() => {
-    let tweets = allTweets;
+    const sourceTweets = displayedAllTweets.length > 0 ? displayedAllTweets : allTweets;
+    let tweets = sourceTweets;
     
     // Apply category filter
     tweets = filterByCategory(tweets, categories);
@@ -90,14 +98,27 @@ export default function Dashboard() {
     if (showAiPickedOnly) {
       tweets = filterAiPicked(tweets);
     }
+
+    // Apply language filter
+    tweets = filterByLanguage(tweets, languageFilter);
     
     return tweets;
-  }, [allTweets, categories, showAiPickedOnly]);
+  }, [allTweets, displayedAllTweets, categories, showAiPickedOnly, languageFilter]);
 
   // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [categories, showAiPickedOnly, dateRange]);
+  }, [categories, showAiPickedOnly, languageFilter]);
+
+  useEffect(() => {
+    setPendingPageReset(true);
+  }, [dateRange]);
+
+  useEffect(() => {
+    if (loading || !pendingPageReset) return;
+    setCurrentPage(1);
+    setPendingPageReset(false);
+  }, [loading, pendingPageReset]);
 
   // Pagination calculations
   const totalPages = Math.ceil(filteredTweets.length / itemsPerPage);
@@ -109,8 +130,9 @@ export default function Dashboard() {
 
   // Calculate stats
   const stats = useMemo(() => {
-    return calculateStats(allTweets);
-  }, [allTweets]);
+    const sourceTweets = displayedAllTweets.length > 0 ? displayedAllTweets : allTweets;
+    return calculateStats(sourceTweets);
+  }, [displayedAllTweets, allTweets]);
 
   // Available dates for picker
   const availableDates = useMemo(() => {
@@ -119,6 +141,39 @@ export default function Dashboard() {
 
   // Last updated time
   const lastUpdated = manifest?.lastUpdated;
+  const sourceTweets = displayedAllTweets.length > 0 ? displayedAllTweets : allTweets;
+  const isInitialLoading = loading && sourceTweets.length === 0;
+  const showRefreshOverlay = loading && sourceTweets.length > 0;
+  const mainOpacity = showRefreshOverlay || isSwapping ? 'opacity-70' : 'opacity-100';
+
+  useEffect(() => {
+    if (loading) return;
+    if (allTweets.length === 0) {
+      setDisplayedAllTweets([]);
+      return;
+    }
+    if (displayedAllTweets.length === 0) {
+      setDisplayedAllTweets(allTweets);
+      return;
+    }
+    setIsSwapping(true);
+    const swapTimer = window.setTimeout(() => {
+      setDisplayedAllTweets(allTweets);
+      requestAnimationFrame(() => setIsSwapping(false));
+    }, 120);
+    return () => window.clearTimeout(swapTimer);
+  }, [allTweets, loading, displayedAllTweets.length]);
+
+  useEffect(() => {
+    if (!showRefreshOverlay) {
+      setFrozenHeight(null);
+      return;
+    }
+    const height = mainRef.current?.offsetHeight ?? null;
+    if (height && height > 0) {
+      setFrozenHeight(height);
+    }
+  }, [showRefreshOverlay]);
 
   if (error && !manifest) {
     return (
@@ -152,6 +207,8 @@ export default function Dashboard() {
           stats={stats} 
           showAiPicked={showAiPickedOnly}
           onToggleAiPicked={() => setShowAiPickedOnly(!showAiPickedOnly)}
+          languageFilter={languageFilter}
+          onLanguageChange={setLanguageFilter}
         />
       )}
 
@@ -163,7 +220,7 @@ export default function Dashboard() {
             onChange={setDateRange}
             availableDates={availableDates}
           />
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col items-start gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4 sm:gap-y-2">
             <CategoryFilter 
               value={categories} 
               onChange={setCategories}
@@ -178,8 +235,12 @@ export default function Dashboard() {
       </div>
 
       {/* Content */}
-      <main className="max-w-6xl mx-auto px-6 pb-12">
-        {loading ? (
+      <main
+        ref={mainRef}
+        className={`max-w-6xl mx-auto px-6 pb-12 relative transition-opacity duration-200 ${mainOpacity}`}
+        style={frozenHeight ? { minHeight: `${frozenHeight}px` } : undefined}
+      >
+        {isInitialLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="animate-spin rounded-full h-10 w-10 border-4 border-amber-200 border-t-amber-500"></div>
           </div>
@@ -207,19 +268,31 @@ export default function Dashboard() {
           </>
         ) : (
           <>
-            <div className={`grid gap-6 ${
-              viewMode === 'timeline' ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-2'
-            }`}>
-              {paginatedTweets.map((tweet, index) => (
-                <TweetCard 
-                  key={tweet.url} 
-                  tweet={tweet} 
-                  index={(currentPage - 1) * itemsPerPage + index}
-                  showComments={viewMode !== 'timeline'}
-                  collapsible={viewMode === 'timeline'}
-                />
-              ))}
-            </div>
+            {viewMode === 'timeline' ? (
+              <div className="grid gap-6 grid-cols-1">
+                {paginatedTweets.map((tweet, index) => (
+                  <TweetCard 
+                    key={tweet.url} 
+                    tweet={tweet} 
+                    index={(currentPage - 1) * itemsPerPage + index}
+                    showComments={false}
+                    collapsible={true}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="columns-1 lg:columns-2 gap-6">
+                {paginatedTweets.map((tweet, index) => (
+                  <div key={tweet.url} className="mb-6 break-inside-avoid">
+                    <TweetCard 
+                      tweet={tweet} 
+                      index={(currentPage - 1) * itemsPerPage + index}
+                      showComments={true}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
             <div className="mt-6">
               <Pagination
                 currentPage={currentPage}
@@ -230,6 +303,14 @@ export default function Dashboard() {
               />
             </div>
           </>
+        )}
+        {showRefreshOverlay && (
+          <div className="absolute inset-0 bg-[#FAF9F7]/60 backdrop-blur-[1px] flex items-center justify-center rounded-2xl">
+            <div className="flex items-center gap-3 px-4 py-2 bg-white/90 border border-stone-200/60 rounded-full shadow-sm">
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-amber-200 border-t-amber-500"></div>
+              <span className="text-sm text-stone-500">更新中</span>
+            </div>
+          </div>
         )}
       </main>
 

@@ -104,6 +104,8 @@ export type ViewMode = 'card' | 'list' | 'timeline';
 
 export type CategoryFilter = 'all' | 'pain' | 'reach' | 'kol';
 
+export type LanguageFilter = 'all' | string;
+
 export interface DateRange {
   start: Date;
   end: Date;

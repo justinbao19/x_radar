@@ -44,14 +44,14 @@ export function ViewToggle({ value, onChange }: ViewToggleProps) {
         <button
           key={option.mode}
           onClick={() => onChange(option.mode)}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+          className={`flex items-center justify-center gap-2 px-3 h-9 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 ${
             value === option.mode
               ? 'bg-white text-stone-800 shadow-md border border-stone-200/50'
               : 'text-stone-500 hover:text-stone-700 hover:bg-stone-50'
           }`}
         >
           {option.icon}
-          <span className="hidden sm:inline">{option.label}</span>
+          <span className="hidden sm:inline whitespace-nowrap">{option.label}</span>
         </button>
       ))}
     </div>
