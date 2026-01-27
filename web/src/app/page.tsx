@@ -16,15 +16,14 @@ import {
 import { 
   loadManifest, 
   loadDataByDateRange, 
-  mergeRadarData, 
+  mergeRadarDataWithMeta, 
   sortTweets,
   filterByCategory,
   filterByLanguage,
   filterAiPicked,
   calculateStats,
   getDateRangePreset,
-  getUniqueDates,
-  getLatestFetchedAt
+  getUniqueDates
 } from '@/lib/data';
 import { Tweet, Manifest, DateRange, ViewMode, CategoryFilter as CategoryFilterType, LanguageFilter, SortOption } from '@/lib/types';
 
@@ -34,6 +33,7 @@ export default function Dashboard() {
   // State
   const [manifest, setManifest] = useState<Manifest | null>(null);
   const [allTweets, setAllTweets] = useState<Tweet[]>([]);
+  const [latestRunAt, setLatestRunAt] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -78,8 +78,9 @@ export default function Dashboard() {
       setLoading(true);
       try {
         const dataList = await loadDataByDateRange(manifest!, dateRange);
-        const tweets = mergeRadarData(dataList);
+        const { tweets, latestRunAt: runAt } = mergeRadarDataWithMeta(dataList);
         setAllTweets(sortTweets(tweets, 'score'));
+        setLatestRunAt(runAt);
       } catch (e) {
         setError('加载数据失败');
       } finally {
@@ -113,11 +114,8 @@ export default function Dashboard() {
     return sortTweets(filteredTweets, sortBy);
   }, [filteredTweets, sortBy]);
 
-  // Calculate latest fetched time for "New" badge
-  const latestFetchedAt = useMemo(() => {
-    const sourceTweets = displayedAllTweets.length > 0 ? displayedAllTweets : allTweets;
-    return getLatestFetchedAt(sourceTweets);
-  }, [displayedAllTweets, allTweets]);
+  // Use latestRunAt for "New" badge - only tweets first seen in the latest run show "New"
+  // This ensures when a new run has no new tweets, no "New" badges appear
 
   // Reset page when filters change
   useEffect(() => {
@@ -295,7 +293,7 @@ export default function Dashboard() {
                     index={(currentPage - 1) * itemsPerPage + index}
                     showComments={false}
                     collapsible={true}
-                    isNew={tweet.fetchedAt === latestFetchedAt}
+                    isNew={tweet.fetchedAt === latestRunAt}
                   />
                 ))}
               </div>
@@ -307,7 +305,7 @@ export default function Dashboard() {
                       tweet={tweet} 
                       index={(currentPage - 1) * itemsPerPage + index}
                       showComments={true}
-                      isNew={tweet.fetchedAt === latestFetchedAt}
+                      isNew={tweet.fetchedAt === latestRunAt}
                     />
                   </div>
                 ))}
@@ -348,7 +346,7 @@ export default function Dashboard() {
               tweet={selectedTweet} 
               index={selectedTweet.rank}
               showComments={true}
-              isNew={selectedTweet.fetchedAt === latestFetchedAt}
+              isNew={selectedTweet.fetchedAt === latestRunAt}
             />
           </div>
         </div>

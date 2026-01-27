@@ -148,12 +148,20 @@ jobs:
           git diff --staged --quiet || git commit -m "chore: update radar data [skip ci]"
           # Stash any other changes before pull --rebase, then push with retry
           git stash --include-untracked || true
+          PUSH_SUCCESS=false
           for i in 1 2 3; do
-            git pull --rebase origin main && git push && break
+            if git pull --rebase origin main && git push; then
+              PUSH_SUCCESS=true
+              break
+            fi
             echo "Push attempt $i failed, retrying..."
             sleep 2
           done
           git stash pop || true
+          if [ "$PUSH_SUCCESS" = "false" ]; then
+            echo "ERROR: Failed to push data after 3 attempts"
+            exit 1
+          fi
 
       # ===== Send Success Notification =====
       - name: Send success notification

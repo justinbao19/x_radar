@@ -60,39 +60,79 @@ export async function loadDataByDateRange(
 // ============ Data Processing ============
 
 /**
+ * Result of merging radar data
+ */
+export interface MergeResult {
+  tweets: Tweet[];
+  latestRunAt: string | null;  // The most recent run timestamp
+}
+
+/**
  * Merge multiple RadarData objects, deduplicating tweets by URL
  */
 export function mergeRadarData(dataList: RadarData[]): Tweet[] {
+  return mergeRadarDataWithMeta(dataList).tweets;
+}
+
+/**
+ * Merge multiple RadarData objects with metadata
+ * Returns tweets and the latest run timestamp
+ */
+export function mergeRadarDataWithMeta(dataList: RadarData[]): MergeResult {
+  if (dataList.length === 0) {
+    return { tweets: [], latestRunAt: null };
+  }
+
   const tweetMap = new Map<string, Tweet>();
   
-  for (const data of dataList) {
+  // Sort dataList by runAt (oldest first) so we process in chronological order
+  const sortedDataList = [...dataList].sort((a, b) => 
+    new Date(a.runAt).getTime() - new Date(b.runAt).getTime()
+  );
+  
+  // Get the latest run timestamp
+  const latestRunAt = sortedDataList[sortedDataList.length - 1].runAt;
+  
+  for (const data of sortedDataList) {
     for (const tweet of data.top) {
       const existing = tweetMap.get(tweet.url);
-      // Keep the newer version or the one with comments
-      if (!existing || 
-          (tweet.comments && !existing.comments) ||
-          new Date(tweet.datetime) > new Date(existing.datetime)) {
+      
+      if (!existing) {
+        // First time seeing this tweet - record when it was first fetched
         tweetMap.set(tweet.url, {
           ...tweet,
-          // Add runAt for timeline view
           datetime: tweet.datetime || data.runAt,
-          // 记录该推文是在哪次运行中抓取的
           fetchedAt: data.runAt
         });
+      } else {
+        // Tweet already exists - update data but preserve original fetchedAt
+        // Only update if newer version has comments or newer engagement data
+        if ((tweet.comments && !existing.comments) ||
+            new Date(tweet.datetime) > new Date(existing.datetime)) {
+          tweetMap.set(tweet.url, {
+            ...tweet,
+            datetime: tweet.datetime || data.runAt,
+            // Keep the original fetchedAt (first seen time)
+            fetchedAt: existing.fetchedAt
+          });
+        }
       }
     }
   }
 
-  return Array.from(tweetMap.values());
+  return {
+    tweets: Array.from(tweetMap.values()),
+    latestRunAt
+  };
 }
 
 /**
- * Get the latest fetchedAt timestamp from tweets
+ * Get the latest run timestamp from data list
  */
-export function getLatestFetchedAt(tweets: Tweet[]): string | null {
-  if (tweets.length === 0) return null;
-  return tweets.reduce((latest, t) => 
-    t.fetchedAt && t.fetchedAt > (latest || '') ? t.fetchedAt : latest
+export function getLatestRunAt(dataList: RadarData[]): string | null {
+  if (dataList.length === 0) return null;
+  return dataList.reduce((latest, data) => 
+    data.runAt > (latest || '') ? data.runAt : latest
   , null as string | null);
 }
 
