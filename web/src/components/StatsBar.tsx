@@ -25,27 +25,53 @@ export function StatsBar({ stats, showAiPicked, onToggleAiPicked, languageFilter
       de: '🇩🇪',
       es: '🇪🇸',
       pt: '🇵🇹',
-      ru: '🇷🇺'
+      ru: '🇷🇺',
+      other: '🧩',
+      unknown: '❔'
+    };
+    const nameMap: Record<string, string> = {
+      en: '英语',
+      ja: '日语',
+      zh: '中文',
+      ko: '韩语',
+      fr: '法语',
+      de: '德语',
+      es: '西班牙语',
+      pt: '葡萄牙语',
+      ru: '俄语',
+      other: '其他',
+      unknown: '未知'
     };
     return Object.entries(stats.byLanguage)
       .map(([lang, count]) => ({
+        key: lang.toLowerCase(),
         code: lang.toUpperCase(),
         count,
-        flag: flagMap[lang.toLowerCase()] || '🌐'
+        flag: flagMap[lang.toLowerCase()] || '🌐',
+        label: nameMap[lang.toLowerCase()] || '未知'
       }))
       .filter(item => item.count > 0)
-      .sort((a, b) => b.count - a.count);
+      .sort((a, b) => {
+        const tailKeys = new Set(['other', 'unknown']);
+        const aIsTail = tailKeys.has(a.key);
+        const bIsTail = tailKeys.has(b.key);
+        if (aIsTail !== bIsTail) return aIsTail ? 1 : -1;
+        return b.count - a.count;
+      });
   }, [stats.byLanguage]);
   const languageCount = languages.length;
   const previewFlags = languages.slice(0, 4);
   const activeLanguage = languageFilter && languageFilter !== 'all'
-    ? languageFilter.toUpperCase()
+    ? languageFilter.toLowerCase()
     : null;
   const activeFlag = activeLanguage
-    ? languages.find(item => item.code === activeLanguage)?.flag || '🌐'
+    ? languages.find(item => item.key === activeLanguage)?.flag || '🌐'
+    : null;
+  const activeLabel = activeLanguage
+    ? languages.find(item => item.key === activeLanguage)?.label || '未知'
     : null;
   const labelText = activeLanguage
-    ? `筛选：${activeLanguage}`
+    ? `筛选：${activeLabel}`
     : `共 ${languageCount} 种语言`;
 
   useEffect(() => {
@@ -166,11 +192,11 @@ export function StatsBar({ stats, showAiPicked, onToggleAiPicked, languageFilter
                       key={item.code}
                       type="button"
                       onClick={() => {
-                        onLanguageChange(item.code.toLowerCase());
+                        onLanguageChange(item.key);
                         setLangOpen(false);
                       }}
                       className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-sm transition-colors ${
-                        activeLanguage === item.code
+                        activeLanguage === item.key
                           ? 'bg-amber-50 text-amber-700'
                           : 'text-stone-700 hover:bg-stone-50'
                       }`}
@@ -179,7 +205,7 @@ export function StatsBar({ stats, showAiPicked, onToggleAiPicked, languageFilter
                         <span className="w-5 h-5 rounded-full bg-stone-100 border border-stone-200 flex items-center justify-center text-xs">
                           {item.flag}
                         </span>
-                        {item.code}
+                        {item.label}
                       </span>
                       <span className="text-stone-500">{item.count}</span>
                     </button>

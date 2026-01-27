@@ -110,6 +110,19 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
   const [activeTab, setActiveTab] = useState<number>(0);
   const [copied, setCopied] = useState(false);
   const [commentsExpanded, setCommentsExpanded] = useState(false);
+
+  const languageMap: Record<string, string> = {
+    en: '英语',
+    ja: '日语',
+    zh: '中文',
+    ko: '韩语',
+    fr: '法语',
+    de: '德语',
+    es: '西班牙语',
+    pt: '葡萄牙语',
+    ru: '俄语',
+    other: '其他'
+  };
   
   // Reset expanded state when collapsible changes
   useEffect(() => {
@@ -165,6 +178,8 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
     practical: '务实风格',
     subtle_product: '产品植入'
   };
+  const detectedLang = (tweet.detectedLanguage || 'unknown').toLowerCase();
+  const languageLabel = languageMap[detectedLang] || '未知';
 
   return (
     <article className="bg-white rounded-2xl border border-stone-200/80 overflow-hidden hover:border-stone-300 hover:shadow-xl hover:shadow-stone-200/50 transition-all duration-300 card-hover break-inside-avoid">
@@ -192,7 +207,7 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
                   {groupLabel}
                 </span>
                 <span className="text-xs text-stone-500 bg-stone-100 px-2 py-0.5 rounded-md border border-stone-200/50">
-                  {tweet.detectedLanguage?.toUpperCase() || 'N/A'}
+                  {languageLabel}
                 </span>
                 {tweet.aiPicked !== false && (
                   <span className="text-xs font-semibold text-amber-700 bg-gradient-to-r from-amber-100 to-orange-100 px-2 py-0.5 rounded-md flex items-center gap-1 border border-amber-200/50">
