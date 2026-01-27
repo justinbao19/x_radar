@@ -145,6 +145,14 @@ jobs:
           git diff --staged --quiet || git commit -m "chore: update radar data [skip ci]"
           git push
 
+      # ===== Send Success Notification =====
+      - name: Send success notification
+        if: steps.scraper.outcome == 'success'
+        run: npm run notify:success
+        env:
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+          DASHBOARD_URL: ${{ secrets.DASHBOARD_URL }}
+
       # ===== Upload Artifacts =====
       - name: Upload artifacts
         if: always()

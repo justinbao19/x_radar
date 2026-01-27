@@ -1,14 +1,20 @@
 #!/usr/bin/env node
 /**
  * X Radar Notification Module
- * Sends notifications when X auth fails
+ * Sends notifications for auth failures and successful runs
  * Supports: GitHub Issue, Email (via Resend), Webhook (Slack/Discord/Feishu)
+ * 
+ * Usage:
+ *   node src/notify.mjs                 # Auth failure notification
+ *   node src/notify.mjs --success       # Success notification with stats
  */
 
 import { readFileSync, existsSync } from 'fs';
 import 'dotenv/config';
 
 const AUTH_STATUS_FILE = 'out/auth-status.json';
+const COMMENTS_FILE = 'out/latest/top10_with_comments.json';
+const DASHBOARD_URL = process.env.DASHBOARD_URL || 'https://x-radar.vercel.app';
 
 // ============ Logging ============
 
@@ -305,12 +311,187 @@ async function sendWebhook(authStatus) {
   }
 }
 
+// ============ Success Notification (Webhook only) ============
+
+async function sendSuccessWebhook(stats) {
+  const webhookUrl = process.env.WEBHOOK_URL;
+  
+  if (!webhookUrl) {
+    log('WARN', 'WEBHOOK_URL not set, skipping success webhook');
+    return false;
+  }
+
+  const isFeishu = webhookUrl.includes('feishu.cn') || webhookUrl.includes('larksuite.com');
+  const isSlack = webhookUrl.includes('slack.com');
+  const isDiscord = webhookUrl.includes('discord.com');
+
+  const runTime = new Date().toLocaleString('zh-CN', { 
+    timeZone: 'Asia/Shanghai',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
+  let payload;
+
+  if (isFeishu) {
+    payload = {
+      msg_type: 'interactive',
+      card: {
+        header: {
+          title: { tag: 'plain_text', content: '✅ X Radar 更新完成' },
+          template: 'green'
+        },
+        elements: [
+          {
+            tag: 'div',
+            fields: [
+              { is_short: true, text: { tag: 'lark_md', content: `**抓取推文:** ${stats.totalTweets} 条` } },
+              { is_short: true, text: { tag: 'lark_md', content: `**生成评论:** ${stats.succeeded}/${stats.total}` } }
+            ]
+          },
+          {
+            tag: 'div',
+            fields: [
+              { is_short: true, text: { tag: 'lark_md', content: `**Pain:** ${stats.pain} | **Reach:** ${stats.reach}` } },
+              { is_short: true, text: { tag: 'lark_md', content: `**时间:** ${runTime}` } }
+            ]
+          },
+          {
+            tag: 'action',
+            actions: [
+              {
+                tag: 'button',
+                text: { tag: 'plain_text', content: '📊 查看 Dashboard' },
+                type: 'primary',
+                url: DASHBOARD_URL
+              }
+            ]
+          }
+        ]
+      }
+    };
+  } else if (isSlack) {
+    payload = {
+      text: '✅ X Radar 更新完成',
+      blocks: [
+        {
+          type: 'header',
+          text: { type: 'plain_text', text: '✅ X Radar 更新完成' }
+        },
+        {
+          type: 'section',
+          fields: [
+            { type: 'mrkdwn', text: `*抓取推文:* ${stats.totalTweets} 条` },
+            { type: 'mrkdwn', text: `*生成评论:* ${stats.succeeded}/${stats.total}` },
+            { type: 'mrkdwn', text: `*Pain:* ${stats.pain} | *Reach:* ${stats.reach}` },
+            { type: 'mrkdwn', text: `*时间:* ${runTime}` }
+          ]
+        },
+        {
+          type: 'actions',
+          elements: [
+            {
+              type: 'button',
+              text: { type: 'plain_text', text: '📊 查看 Dashboard' },
+              url: DASHBOARD_URL
+            }
+          ]
+        }
+      ]
+    };
+  } else if (isDiscord) {
+    payload = {
+      content: '✅ X Radar 更新完成',
+      embeds: [{
+        title: '✅ X Radar 更新完成',
+        color: 5763719, // Green
+        fields: [
+          { name: '抓取推文', value: `${stats.totalTweets} 条`, inline: true },
+          { name: '生成评论', value: `${stats.succeeded}/${stats.total}`, inline: true },
+          { name: '分类', value: `Pain: ${stats.pain} | Reach: ${stats.reach}`, inline: false },
+          { name: '时间', value: runTime, inline: true }
+        ],
+        url: DASHBOARD_URL
+      }]
+    };
+  } else {
+    payload = {
+      text: `✅ X Radar 更新完成\n抓取: ${stats.totalTweets} 条 | 评论: ${stats.succeeded}/${stats.total}\n${DASHBOARD_URL}`
+    };
+  }
+
+  try {
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      log('ERROR', 'Success webhook failed', { status: response.status, error });
+      return false;
+    }
+
+    log('INFO', 'Success webhook sent');
+    return true;
+  } catch (e) {
+    log('ERROR', 'Success webhook sending failed', { error: e.message });
+    return false;
+  }
+}
+
+function loadSuccessStats() {
+  if (!existsSync(COMMENTS_FILE)) {
+    log('WARN', 'Comments file not found');
+    return null;
+  }
+
+  try {
+    const data = JSON.parse(readFileSync(COMMENTS_FILE, 'utf-8'));
+    const stats = data.commentGenerationStats || {};
+    const selectionStats = data.selectionStats || {};
+    
+    return {
+      totalTweets: data.top?.length || 0,
+      total: stats.total || 0,
+      succeeded: stats.succeeded || 0,
+      skipped: stats.skipped || 0,
+      pain: selectionStats.painSelected || 0,
+      reach: selectionStats.reachSelected || 0,
+      runAt: data.runAt
+    };
+  } catch (e) {
+    log('ERROR', 'Failed to load stats', { error: e.message });
+    return null;
+  }
+}
+
 // ============ Main ============
 
 async function main() {
-  log('INFO', '=== X Radar Notification Module ===');
+  const isSuccessMode = process.argv.includes('--success');
+  
+  log('INFO', '=== X Radar Notification Module ===', { mode: isSuccessMode ? 'success' : 'auth-failed' });
 
-  // Load auth status
+  if (isSuccessMode) {
+    // Success notification
+    const stats = loadSuccessStats();
+    if (!stats) {
+      log('WARN', 'No stats available, skipping success notification');
+      return;
+    }
+
+    log('INFO', 'Sending success notification...', stats);
+    const result = await sendSuccessWebhook(stats);
+    log('INFO', 'Success notification complete', { sent: result });
+    return;
+  }
+
+  // Auth failure notification
   let authStatus = { valid: false, reason: 'UNKNOWN' };
   
   if (existsSync(AUTH_STATUS_FILE)) {
