@@ -56,16 +56,16 @@ export function SortSelector({ value, onChange }: SortSelectorProps) {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative w-full sm:w-auto">
+    <div ref={containerRef} className="relative">
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between gap-2 px-4 py-2 bg-white border border-stone-200 rounded-full hover:border-stone-300 hover:bg-stone-50 transition-all text-sm font-medium text-stone-700 shadow-sm sm:w-auto"
+        className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-stone-200 rounded-full hover:border-stone-300 hover:bg-stone-50 transition-all text-sm font-medium text-stone-700 shadow-sm"
         aria-haspopup="listbox"
         aria-expanded={open}
       >
         <span className="text-amber-600">{currentOption.icon}</span>
-        <span className="hidden sm:inline">{currentOption.label}</span>
+        <span>{currentOption.label}</span>
         <svg 
           className={`w-4 h-4 text-stone-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} 
           fill="none" 
@@ -77,33 +77,42 @@ export function SortSelector({ value, onChange }: SortSelectorProps) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-40 bg-white border border-stone-200 rounded-2xl shadow-lg shadow-stone-200/50 py-1 z-50 animate-fade-in">
-          {sortOptions.map(option => (
-            <button
-              key={option.value}
-              type="button"
-              onClick={() => {
-                onChange(option.value);
-                setOpen(false);
-              }}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm transition-colors ${
-                value === option.value
-                  ? 'bg-amber-50 text-amber-700'
-                  : 'text-stone-600 hover:bg-stone-50'
-              }`}
-            >
-              <span className={value === option.value ? 'text-amber-600' : 'text-stone-400'}>
-                {option.icon}
-              </span>
-              {option.label}
-              {value === option.value && (
-                <svg className="w-4 h-4 ml-auto text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              )}
-            </button>
-          ))}
-        </div>
+        <>
+          {/* Mobile backdrop */}
+          <div 
+            className="fixed inset-0 bg-black/20 z-40 sm:hidden" 
+            onClick={() => setOpen(false)}
+          />
+          {/* Dropdown */}
+          <div className="fixed left-4 right-4 top-1/3 z-50 w-auto max-w-[200px] mx-auto bg-white border border-stone-200 rounded-2xl shadow-xl py-1 animate-fade-in sm:absolute sm:right-0 sm:left-auto sm:top-full sm:mt-2 sm:w-40 sm:max-w-none sm:mx-0 sm:shadow-lg sm:shadow-stone-200/50">
+            <div className="text-xs text-stone-400 px-3 py-1.5 sm:hidden">排序方式</div>
+            {sortOptions.map(option => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => {
+                  onChange(option.value);
+                  setOpen(false);
+                }}
+                className={`w-full flex items-center gap-2.5 px-3 py-2.5 sm:py-2 text-sm transition-colors ${
+                  value === option.value
+                    ? 'bg-amber-50 text-amber-700'
+                    : 'text-stone-600 hover:bg-stone-50'
+                }`}
+              >
+                <span className={value === option.value ? 'text-amber-600' : 'text-stone-400'}>
+                  {option.icon}
+                </span>
+                {option.label}
+                {value === option.value && (
+                  <svg className="w-4 h-4 ml-auto text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
+              </button>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

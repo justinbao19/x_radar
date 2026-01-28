@@ -23,7 +23,8 @@ import {
   filterAiPicked,
   calculateStats,
   getDateRangePreset,
-  getUniqueDates
+  getUniqueDates,
+  isTweetNew
 } from '@/lib/data';
 import { Tweet, Manifest, DateRange, ViewMode, CategoryFilter as CategoryFilterType, LanguageFilter, SortOption } from '@/lib/types';
 
@@ -33,7 +34,7 @@ export default function Dashboard() {
   // State
   const [manifest, setManifest] = useState<Manifest | null>(null);
   const [allTweets, setAllTweets] = useState<Tweet[]>([]);
-  const [latestRunAt, setLatestRunAt] = useState<string | null>(null);
+  const [recentRunAts, setRecentRunAts] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -78,9 +79,9 @@ export default function Dashboard() {
       setLoading(true);
       try {
         const dataList = await loadDataByDateRange(manifest!, dateRange);
-        const { tweets, latestRunAt: runAt } = mergeRadarDataWithMeta(dataList);
+        const { tweets, recentRunAts: runs } = mergeRadarDataWithMeta(dataList);
         setAllTweets(sortTweets(tweets, 'score'));
-        setLatestRunAt(runAt);
+        setRecentRunAts(runs);
       } catch (e) {
         setError('加载数据失败');
       } finally {
@@ -95,8 +96,8 @@ export default function Dashboard() {
     const sourceTweets = displayedAllTweets.length > 0 ? displayedAllTweets : allTweets;
     let tweets = sourceTweets;
     
-    // Apply category filter
-    tweets = filterByCategory(tweets, categories);
+    // Apply category filter (pass recentRunAts for 'new' filter)
+    tweets = filterByCategory(tweets, categories, recentRunAts);
     
     // Apply AI picked filter
     if (showAiPickedOnly) {
@@ -107,15 +108,15 @@ export default function Dashboard() {
     tweets = filterByLanguage(tweets, languageFilter);
     
     return tweets;
-  }, [allTweets, displayedAllTweets, categories, showAiPickedOnly, languageFilter]);
+  }, [allTweets, displayedAllTweets, categories, showAiPickedOnly, languageFilter, recentRunAts]);
 
   // Sort tweets
   const sortedTweets = useMemo(() => {
     return sortTweets(filteredTweets, sortBy);
   }, [filteredTweets, sortBy]);
 
-  // Use latestRunAt for "New" badge - only tweets first seen in the latest run show "New"
-  // This ensures when a new run has no new tweets, no "New" badges appear
+  // Use recentRunAts for "New" badge - tweets from the last 4 runs show "New"
+  // After the 5th run, older tweets lose the "New" badge
 
   // Reset page when filters change
   useEffect(() => {
@@ -143,8 +144,8 @@ export default function Dashboard() {
   // Calculate stats
   const stats = useMemo(() => {
     const sourceTweets = displayedAllTweets.length > 0 ? displayedAllTweets : allTweets;
-    return calculateStats(sourceTweets);
-  }, [displayedAllTweets, allTweets]);
+    return calculateStats(sourceTweets, recentRunAts);
+  }, [displayedAllTweets, allTweets, recentRunAts]);
 
   // Available dates for picker
   const availableDates = useMemo(() => {
@@ -232,7 +233,7 @@ export default function Dashboard() {
             onChange={setDateRange}
             availableDates={availableDates}
           />
-          <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4 sm:gap-y-2">
+          <div className="flex flex-row flex-wrap items-center gap-3 sm:gap-4 sm:gap-y-2">
             <CategoryFilter 
               value={categories} 
               onChange={setCategories}
@@ -293,7 +294,7 @@ export default function Dashboard() {
                     index={(currentPage - 1) * itemsPerPage + index}
                     showComments={false}
                     collapsible={true}
-                    isNew={tweet.fetchedAt === latestRunAt}
+                    isNew={isTweetNew(tweet, recentRunAts)}
                   />
                 ))}
               </div>
@@ -306,7 +307,7 @@ export default function Dashboard() {
                       index={(currentPage - 1) * itemsPerPage + index}
                       showComments={true}
                       collapsible={true}
-                      isNew={tweet.fetchedAt === latestRunAt}
+                      isNew={isTweetNew(tweet, recentRunAts)}
                     />
                   </div>
                 ))}
@@ -347,7 +348,7 @@ export default function Dashboard() {
               tweet={selectedTweet} 
               index={selectedTweet.rank}
               showComments={true}
-              isNew={selectedTweet.fetchedAt === latestRunAt}
+              isNew={isTweetNew(selectedTweet, recentRunAts)}
             />
           </div>
         </div>

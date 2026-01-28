@@ -234,9 +234,6 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
         )}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-center gap-3 min-w-0">
-            <span className="w-7 h-7 rounded-lg bg-gradient-to-br from-stone-800 to-stone-900 text-white text-xs font-bold flex items-center justify-center shadow-sm">
-              {tweet.rank}
-            </span>
             <div className="w-11 h-11 rounded-full bg-gradient-to-br from-stone-100 to-stone-200 flex items-center justify-center text-stone-600 font-semibold text-lg border border-stone-200/50">
               {initial}
             </div>

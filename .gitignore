@@ -21,6 +21,9 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Cursor MCP config (contains API tokens)
+.cursor/mcp.json
+
 # Logs
 *.log
 npm-debug.log*

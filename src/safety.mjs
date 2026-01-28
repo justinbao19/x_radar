@@ -382,6 +382,56 @@ export function checkPainEmotion(text) {
   };
 }
 
+// ============ Customer Service Notice Detection ============
+
+/**
+ * Detect if text is a customer service/notification message asking users to check email
+ * These are not user pain points - they are service providers telling users to check inbox
+ * @param {string} text - Text to check
+ * @returns {{ isNotice: boolean, pattern?: string }}
+ */
+export function isCustomerServiceNotice(text) {
+  if (!text) return { isNotice: false };
+  
+  const customerServicePatterns = [
+    // English patterns - service provider asking user to check email
+    { pattern: /please\s+(check|see|verify)\s+(your\s+)?(inbox|spam|email|junk)/i, name: 'please_check_inbox' },
+    { pattern: /sent\s+to\s+(your\s+)?(registered\s+)?(email|inbox)/i, name: 'sent_to_email' },
+    { pattern: /if\s+you\s+haven'?t\s+received/i, name: 'havent_received' },
+    { pattern: /check\s+(your\s+)?(junk|spam)\s+(folder|mail)/i, name: 'check_junk' },
+    { pattern: /feel\s+free\s+to\s+(dm|contact|email)\s+(me|us)/i, name: 'feel_free_contact' },
+    { pattern: /e-?tickets?\s+(have\s+been|has\s+been|were)\s+sent/i, name: 'tickets_sent' },
+    { pattern: /details\s+(have\s+been|has\s+been)\s+sent\s+to\s+(your|the)/i, name: 'details_sent' },
+    { pattern: /we\s+(kindly\s+)?request\s+you\s+to/i, name: 'kindly_request' },
+    { pattern: /if\s+(there\s+are\s+)?any\s+issues.*contact/i, name: 'any_issues_contact' },
+    
+    // Japanese patterns - service notification style
+    { pattern: /ご確認(ください|を|いただけ)/i, name: 'jp_please_check' },
+    { pattern: /届いていない(方|人)は/i, name: 'jp_not_received' },
+    { pattern: /見つからない(方|人)は.*確認/i, name: 'jp_not_found_check' },
+    { pattern: /お知らせ(くださ|いただ)/i, name: 'jp_notification' },
+    
+    // Chinese patterns - service notification style
+    { pattern: /请(查收|检查).*(邮件|邮箱|收件箱)/i, name: 'cn_please_check' },
+    { pattern: /如.*没.*收到/i, name: 'cn_not_received' },
+    { pattern: /已发送至.*邮/i, name: 'cn_sent_to' }
+  ];
+  
+  for (const { pattern, name } of customerServicePatterns) {
+    if (pattern.test(text)) {
+      // Double check: if the user is ALSO expressing frustration, it might be legitimate
+      // e.g., "I checked my spam folder and still can't find it!"
+      const hasFirstPersonFrustration = /\b(i|my|me)\b.*(can'?t|couldn'?t|unable|still|nowhere|frustrat)/i.test(text);
+      
+      if (!hasFirstPersonFrustration) {
+        return { isNotice: true, pattern: name };
+      }
+    }
+  }
+  
+  return { isNotice: false };
+}
+
 // ============ Exports ============
 
 export { MIN_FILO_FIT, SOFT_THRESHOLD, LOW_SIGNAL_PENALTY, PAIN_EMOTION_WORDS };

@@ -65,6 +65,7 @@ export async function loadDataByDateRange(
 export interface MergeResult {
   tweets: Tweet[];
   latestRunAt: string | null;  // The most recent run timestamp
+  recentRunAts: string[];      // The last N run timestamps (for NEW badge logic)
 }
 
 /**
@@ -80,7 +81,7 @@ export function mergeRadarData(dataList: RadarData[]): Tweet[] {
  */
 export function mergeRadarDataWithMeta(dataList: RadarData[]): MergeResult {
   if (dataList.length === 0) {
-    return { tweets: [], latestRunAt: null };
+    return { tweets: [], latestRunAt: null, recentRunAts: [] };
   }
 
   const tweetMap = new Map<string, Tweet>();
@@ -90,8 +91,11 @@ export function mergeRadarDataWithMeta(dataList: RadarData[]): MergeResult {
     new Date(a.runAt).getTime() - new Date(b.runAt).getTime()
   );
   
-  // Get the latest run timestamp
-  const latestRunAt = sortedDataList[sortedDataList.length - 1].runAt;
+  // Get unique run timestamps (sorted newest first for recentRunAts)
+  const allRunAts = [...new Set(sortedDataList.map(d => d.runAt))].sort().reverse();
+  const latestRunAt = allRunAts[0] || null;
+  // Keep the last 4 runs for NEW badge logic
+  const recentRunAts = allRunAts.slice(0, 4);
   
   for (const data of sortedDataList) {
     for (const tweet of data.top) {
@@ -122,7 +126,8 @@ export function mergeRadarDataWithMeta(dataList: RadarData[]): MergeResult {
 
   return {
     tweets: Array.from(tweetMap.values()),
-    latestRunAt
+    latestRunAt,
+    recentRunAts
   };
 }
 
@@ -175,15 +180,25 @@ export function sortTweets(
 }
 
 /**
+ * Check if a tweet is "new" (fetched in one of the recent runs)
+ */
+export function isTweetNew(tweet: Tweet, recentRunAts: string[]): boolean {
+  if (!tweet.fetchedAt || recentRunAts.length === 0) return false;
+  return recentRunAts.includes(tweet.fetchedAt);
+}
+
+/**
  * Filter tweets by category
  */
 export function filterByCategory(
   tweets: Tweet[],
-  categories: ('all' | 'pain' | 'reach' | 'kol')[]
+  categories: ('all' | 'pain' | 'reach' | 'kol' | 'new')[],
+  recentRunAts: string[] = []
 ): Tweet[] {
   if (categories.includes('all')) return tweets;
   
   return tweets.filter(tweet => {
+    if (categories.includes('new') && isTweetNew(tweet, recentRunAts)) return true;
     if (categories.includes('kol') && tweet.originalGroup === 'kol') return true;
     if (categories.includes('pain') && tweet.group === 'pain') return true;
     if (categories.includes('reach') && tweet.group === 'reach') return true;
@@ -215,6 +230,7 @@ export interface TweetStats {
     pain: number;
     reach: number;
     kol: number;
+    new: number;
   };
   byLanguage: Record<string, number>;
   withComments: number;
@@ -222,10 +238,10 @@ export interface TweetStats {
   aiPicked: number;
 }
 
-export function calculateStats(tweets: Tweet[]): TweetStats {
+export function calculateStats(tweets: Tweet[], recentRunAts: string[] = []): TweetStats {
   const stats: TweetStats = {
     total: tweets.length,
-    byCategory: { pain: 0, reach: 0, kol: 0 },
+    byCategory: { pain: 0, reach: 0, kol: 0, new: 0 },
     byLanguage: {},
     withComments: 0,
     skipped: 0,
@@ -240,6 +256,11 @@ export function calculateStats(tweets: Tweet[]): TweetStats {
       stats.byCategory.pain++;
     } else {
       stats.byCategory.reach++;
+    }
+
+    // New (fetched in recent runs)
+    if (isTweetNew(tweet, recentRunAts)) {
+      stats.byCategory.new++;
     }
 
     // Language

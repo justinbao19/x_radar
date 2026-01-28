@@ -89,7 +89,7 @@ export function StatsBar({ stats, showAiPicked, onToggleAiPicked, languageFilter
     <div className="bg-white/80 backdrop-blur-sm border-b border-stone-200/60 relative z-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-6 md:gap-8">
         {/* Stats Cards */}
-        <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:items-center sm:gap-2">
+        <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:items-center sm:gap-4">
           <div className="flex items-center gap-2 bg-gradient-to-r from-amber-50 to-orange-50 px-3 py-2 sm:px-4 rounded-2xl border border-amber-200/50 w-full sm:w-auto sm:min-w-[180px]">
             <div className="w-7 h-7 sm:w-8 sm:h-8 bg-amber-500 rounded-xl flex items-center justify-center">
               <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -119,128 +119,131 @@ export function StatsBar({ stats, showAiPicked, onToggleAiPicked, languageFilter
           </div>
         </div>
         
-        {languageCount > 0 && (
-          <div ref={langRef} className="relative hidden md:flex items-center bg-stone-50 px-3 py-2 rounded-2xl border border-stone-200/50 z-30">
-            <button
-              type="button"
-              onClick={() => setLangOpen(prev => !prev)}
-              className="flex items-center gap-3"
-              aria-haspopup="dialog"
-              aria-expanded={langOpen}
-            >
-              <div className="w-8 h-8 bg-blue-500 rounded-xl flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 19l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
-                </svg>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="flex -space-x-2">
-                  {activeFlag ? (
-                    <span className="w-6 h-6 rounded-full bg-white border border-stone-200 flex items-center justify-center text-xs">
-                      {activeFlag}
-                    </span>
-                  ) : (
-                    <>
-                      {previewFlags.map(item => (
-                        <span
-                          key={item.code}
-                          className="w-6 h-6 rounded-full bg-white border border-stone-200 flex items-center justify-center text-xs"
-                        >
-                          {item.flag}
-                        </span>
-                      ))}
-                      {languageCount > previewFlags.length && (
-                        <span className="w-6 h-6 rounded-full bg-white border border-stone-200 flex items-center justify-center text-[10px] text-stone-500">
-                          +{languageCount - previewFlags.length}
-                        </span>
-                      )}
-                    </>
-                  )}
+        {/* Language & Toggle Row */}
+        <div className="flex items-center justify-between gap-3 sm:contents">
+          {languageCount > 0 && (
+            <div ref={langRef} className="relative flex items-center bg-stone-50 px-3 py-2 rounded-2xl border border-stone-200/50 z-30">
+              <button
+                type="button"
+                onClick={() => setLangOpen(prev => !prev)}
+                className="flex items-center gap-2 sm:gap-3"
+                aria-haspopup="dialog"
+                aria-expanded={langOpen}
+              >
+                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-500 rounded-xl flex items-center justify-center">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 19l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
+                  </svg>
                 </div>
-                <span className="text-sm font-semibold text-stone-700 whitespace-nowrap">
-                  {labelText}
-                </span>
-              </div>
-              <svg className={`w-4 h-4 text-stone-400 transition-transform ${langOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            {langOpen && (
-              <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl bg-white border border-stone-200 shadow-lg shadow-stone-200/50 p-2 z-50">
-                <div className="text-xs text-stone-500 px-2 py-1">语言分布</div>
-                <div className="max-h-56 overflow-auto">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onLanguageChange('all');
-                      setLangOpen(false);
-                    }}
-                    className={`w-full flex items-center justify-between px-2 py-1.5 rounded-xl text-sm transition-colors ${
-                      languageFilter === 'all'
-                        ? 'bg-stone-100 text-stone-800'
-                        : 'text-stone-600 hover:bg-stone-50'
-                    }`}
-                  >
-                    <span className="flex items-center gap-2">
-                      <span className="w-5 h-5 rounded-full bg-stone-100 border border-stone-200 flex items-center justify-center text-xs">
-                        🌐
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="flex -space-x-2">
+                    {activeFlag ? (
+                      <span className="w-6 h-6 rounded-full bg-white border border-stone-200 flex items-center justify-center text-xs">
+                        {activeFlag}
                       </span>
-                      全部语言
-                    </span>
-                    <span className="text-stone-500">{languageCount}</span>
-                  </button>
-                  {languages.map(item => (
+                    ) : (
+                      <>
+                        {previewFlags.map(item => (
+                          <span
+                            key={item.code}
+                            className="w-6 h-6 rounded-full bg-white border border-stone-200 flex items-center justify-center text-xs"
+                          >
+                            {item.flag}
+                          </span>
+                        ))}
+                        {languageCount > previewFlags.length && (
+                          <span className="w-6 h-6 rounded-full bg-white border border-stone-200 flex items-center justify-center text-[10px] text-stone-500">
+                            +{languageCount - previewFlags.length}
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </div>
+                  <span className="hidden sm:inline text-sm font-semibold text-stone-700 whitespace-nowrap">
+                    {labelText}
+                  </span>
+                </div>
+                <svg className={`w-4 h-4 text-stone-400 transition-transform ${langOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {langOpen && (
+                <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 w-64 rounded-2xl bg-white border border-stone-200 shadow-lg shadow-stone-200/50 p-2 z-50">
+                  <div className="text-xs text-stone-500 px-2 py-1">语言分布</div>
+                  <div className="max-h-56 overflow-auto">
                     <button
-                      key={item.code}
                       type="button"
                       onClick={() => {
-                        onLanguageChange(item.key);
+                        onLanguageChange('all');
                         setLangOpen(false);
                       }}
                       className={`w-full flex items-center justify-between px-2 py-1.5 rounded-xl text-sm transition-colors ${
-                        activeLanguage === item.key
-                          ? 'bg-amber-50 text-amber-700'
-                          : 'text-stone-700 hover:bg-stone-50'
+                        languageFilter === 'all'
+                          ? 'bg-stone-100 text-stone-800'
+                          : 'text-stone-600 hover:bg-stone-50'
                       }`}
                     >
                       <span className="flex items-center gap-2">
                         <span className="w-5 h-5 rounded-full bg-stone-100 border border-stone-200 flex items-center justify-center text-xs">
-                          {item.flag}
+                          🌐
                         </span>
-                        {item.label}
+                        全部语言
                       </span>
-                      <span className="text-stone-500">{item.count}</span>
+                      <span className="text-stone-500">{languageCount}</span>
                     </button>
-                  ))}
+                    {languages.map(item => (
+                      <button
+                        key={item.code}
+                        type="button"
+                        onClick={() => {
+                          onLanguageChange(item.key);
+                          setLangOpen(false);
+                        }}
+                        className={`w-full flex items-center justify-between px-2 py-1.5 rounded-xl text-sm transition-colors ${
+                          activeLanguage === item.key
+                            ? 'bg-amber-50 text-amber-700'
+                            : 'text-stone-700 hover:bg-stone-50'
+                        }`}
+                      >
+                        <span className="flex items-center gap-2">
+                          <span className="w-5 h-5 rounded-full bg-stone-100 border border-stone-200 flex items-center justify-center text-xs">
+                            {item.flag}
+                          </span>
+                          {item.label}
+                        </span>
+                        <span className="text-stone-500">{item.count}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-        )}
-        
-        {/* Toggle Switch */}
-        <div className="inline-flex w-fit items-center gap-2 bg-stone-100/80 px-3 py-2 rounded-2xl sm:ml-auto sm:gap-3">
-          <span className={`text-xs sm:text-sm font-medium transition-colors ${!showAiPicked ? 'text-stone-600' : 'text-stone-400'}`}>
-            全部
-          </span>
-          <button
-            onClick={onToggleAiPicked}
-            className={`relative w-11 h-6 rounded-full transition-all duration-300 shrink-0 ${
-              showAiPicked 
-                ? 'bg-gradient-to-r from-amber-400 to-orange-500 shadow-inner shadow-amber-600/20' 
-                : 'bg-stone-300'
-            }`}
-            aria-label={showAiPicked ? '显示全部推文' : '仅显示AI精选'}
-          >
-            <span 
-              className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-all duration-300 ease-out ${
-                showAiPicked ? 'left-6 shadow-amber-200' : 'left-0.5'
+              )}
+            </div>
+          )}
+          
+          {/* Toggle Switch */}
+          <div className="inline-flex items-center gap-2 bg-stone-100/80 px-3 py-2 rounded-2xl sm:ml-auto sm:gap-3">
+            <span className={`text-xs sm:text-sm font-medium transition-colors ${!showAiPicked ? 'text-stone-600' : 'text-stone-400'}`}>
+              全部
+            </span>
+            <button
+              onClick={onToggleAiPicked}
+              className={`relative w-11 h-6 rounded-full transition-all duration-300 shrink-0 ${
+                showAiPicked 
+                  ? 'bg-gradient-to-r from-amber-400 to-orange-500 shadow-inner shadow-amber-600/20' 
+                  : 'bg-stone-300'
               }`}
-            />
-          </button>
-          <span className={`text-xs sm:text-sm font-medium transition-colors ${showAiPicked ? 'text-amber-600' : 'text-stone-400'}`}>
-            AI 精选
-          </span>
+              aria-label={showAiPicked ? '显示全部推文' : '仅显示AI精选'}
+            >
+              <span 
+                className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-all duration-300 ease-out ${
+                  showAiPicked ? 'left-6 shadow-amber-200' : 'left-0.5'
+                }`}
+              />
+            </button>
+            <span className={`text-xs sm:text-sm font-medium transition-colors ${showAiPicked ? 'text-amber-600' : 'text-stone-400'}`}>
+              AI 精选
+            </span>
+          </div>
         </div>
       </div>
     </div>

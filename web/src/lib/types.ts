@@ -103,7 +103,7 @@ export interface Manifest {
 
 export type ViewMode = 'card' | 'list' | 'timeline';
 
-export type CategoryFilter = 'all' | 'pain' | 'reach' | 'kol';
+export type CategoryFilter = 'all' | 'pain' | 'reach' | 'kol' | 'new';
 
 export type SortOption = 'score' | 'date' | 'engagement';
 
