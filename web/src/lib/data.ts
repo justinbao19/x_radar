@@ -1,4 +1,4 @@
-import { RadarData, Tweet, Manifest, DataFileInfo, DateRange } from './types';
+import { RadarData, Tweet, Manifest, DataFileInfo, DateRange, PainRadarFilter } from './types';
 
 // ============ Constants ============
 
@@ -188,11 +188,11 @@ export function isTweetNew(tweet: Tweet, recentRunAts: string[]): boolean {
 }
 
 /**
- * Filter tweets by category
+ * Filter tweets by category (for Pain Radar only)
  */
 export function filterByCategory(
   tweets: Tweet[],
-  categories: ('all' | 'pain' | 'reach' | 'kol' | 'new')[],
+  categories: PainRadarFilter[],
   recentRunAts: string[] = []
 ): Tweet[] {
   if (categories.includes('all')) return tweets;

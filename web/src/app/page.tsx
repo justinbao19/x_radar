@@ -27,7 +27,7 @@ import {
   getUniqueDates,
   isTweetNew
 } from '@/lib/data';
-import { Tweet, Manifest, DateRange, ViewMode, CategoryFilter as CategoryFilterType, LanguageFilter, SortOption, RadarCategory } from '@/lib/types';
+import { Tweet, Manifest, DateRange, ViewMode, CategoryFilter as CategoryFilterType, LanguageFilter, SortOption, RadarCategory, PainRadarFilter } from '@/lib/types';
 
 export default function Dashboard() {
   const mainRef = useRef<HTMLElement | null>(null);
@@ -123,7 +123,7 @@ export default function Dashboard() {
     // Apply category filter based on radar category
     if (radarCategory === 'pain_radar') {
       // Standard category filter for pain radar
-      tweets = filterByCategory(tweets, categories, recentRunAts);
+      tweets = filterByCategory(tweets, categories as PainRadarFilter[], recentRunAts);
       
       // Apply AI picked filter only for pain radar
       if (showAiPickedOnly) {

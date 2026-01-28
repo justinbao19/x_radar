@@ -586,12 +586,15 @@ function selectTop10(rawData) {
     }
     
     // Apply minimum final score threshold
-    if (t.finalScore < QUALITY_CONFIG.minFinalScore) {
-      log('DEBUG', `Score below threshold: ${t.url}`, { 
-        finalScore: t.finalScore,
-        required: QUALITY_CONFIG.minFinalScore
-      });
-      return false;
+    // Skip for sentiment and insight groups (their value is in monitoring, not score)
+    if (t.group !== 'sentiment' && t.group !== 'insight') {
+      if (t.finalScore < QUALITY_CONFIG.minFinalScore) {
+        log('DEBUG', `Score below threshold: ${t.url}`, { 
+          finalScore: t.finalScore,
+          required: QUALITY_CONFIG.minFinalScore
+        });
+        return false;
+      }
     }
     
     return true;

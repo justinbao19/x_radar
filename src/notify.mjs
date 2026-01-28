@@ -450,6 +450,125 @@ async function sendFailureWebhook(failureInfo) {
 
 // ============ Success Notification (Webhook only) ============
 
+/**
+ * Build Feishu card elements for the three-module layout
+ */
+function buildFeishuCardElements(stats, runTime) {
+  const { byGroup = {}, bySentiment = {}, byInsightType = {}, negativeTweets = [] } = stats;
+  
+  const elements = [];
+  
+  // ===== 痛点雷达区 =====
+  const painTotal = (byGroup.pain || 0) + (byGroup.reach || 0) + (byGroup.kol || 0);
+  if (painTotal > 0) {
+    elements.push({
+      tag: 'div',
+      text: { tag: 'lark_md', content: '**🎯 痛点雷达**' }
+    });
+    elements.push({
+      tag: 'div',
+      fields: [
+        { is_short: true, text: { tag: 'lark_md', content: `痛点: ${byGroup.pain || 0}` } },
+        { is_short: true, text: { tag: 'lark_md', content: `传播: ${byGroup.reach || 0}` } },
+        { is_short: true, text: { tag: 'lark_md', content: `KOL: ${byGroup.kol || 0}` } }
+      ]
+    });
+    elements.push({ tag: 'hr' });
+  }
+  
+  // ===== Filo舆情区 =====
+  const sentimentTotal = (byGroup.sentiment || 0);
+  elements.push({
+    tag: 'div',
+    text: { tag: 'lark_md', content: '**📢 Filo舆情**' }
+  });
+  
+  if (sentimentTotal > 0) {
+    // 有舆情数据
+    const negativeCount = bySentiment.negative || 0;
+    const negativeText = negativeCount > 0 
+      ? `⚠️ **需关注: ${negativeCount}**` 
+      : `需关注: 0`;
+    
+    elements.push({
+      tag: 'div',
+      fields: [
+        { is_short: true, text: { tag: 'lark_md', content: `✓ 积极: ${bySentiment.positive || 0}` } },
+        { is_short: true, text: { tag: 'lark_md', content: `○ 中性: ${bySentiment.neutral || 0}` } },
+        { is_short: true, text: { tag: 'lark_md', content: negativeText } }
+      ]
+    });
+    
+    // 如有负面舆情，显示预览
+    if (negativeTweets.length > 0) {
+      const previewContent = negativeTweets
+        .map(t => `• ${t.author}: ${t.text}...`)
+        .join('\n');
+      elements.push({
+        tag: 'note',
+        elements: [{ tag: 'plain_text', content: previewContent }]
+      });
+    }
+  } else {
+    // 无舆情数据
+    elements.push({
+      tag: 'div',
+      text: { tag: 'lark_md', content: '暂无品牌提及' }
+    });
+  }
+  
+  elements.push({ tag: 'hr' });
+  
+  // ===== 用户洞察区 =====
+  const insightTotal = (byGroup.insight || 0);
+  elements.push({
+    tag: 'div',
+    text: { tag: 'lark_md', content: '**💡 用户洞察**' }
+  });
+  
+  if (insightTotal > 0) {
+    elements.push({
+      tag: 'div',
+      fields: [
+        { is_short: true, text: { tag: 'lark_md', content: `功能需求: ${byInsightType.feature_request || 0}` } },
+        { is_short: true, text: { tag: 'lark_md', content: `AI需求: ${byInsightType.ai_demand || 0}` } },
+        { is_short: true, text: { tag: 'lark_md', content: `竞品好评: ${byInsightType.competitor_praise || 0}` } }
+      ]
+    });
+  } else {
+    elements.push({
+      tag: 'div',
+      text: { tag: 'lark_md', content: '暂无新洞察' }
+    });
+  }
+  
+  elements.push({ tag: 'hr' });
+  
+  // ===== 底部统计 =====
+  elements.push({
+    tag: 'div',
+    fields: [
+      { is_short: true, text: { tag: 'lark_md', content: `**精选推文:** ${stats.totalTweets} 条` } },
+      { is_short: true, text: { tag: 'lark_md', content: `**更新时间:** ${runTime}` } }
+    ]
+  });
+  
+  // ===== 操作按钮 =====
+  elements.push({
+    tag: 'action',
+    actions: [
+      {
+        tag: 'button',
+        text: { tag: 'plain_text', content: '📊 查看详情' },
+        type: 'primary',
+        url: DASHBOARD_URL
+      }
+    ]
+  });
+  
+  return elements;
+}
+
 async function sendSuccessWebhook(stats) {
   const webhookUrl = process.env.WEBHOOK_URL;
   
@@ -474,86 +593,45 @@ async function sendSuccessWebhook(stats) {
   let payload;
 
   if (isFeishu) {
-    // 构建本次检索总结
-    const summaryParts = [];
-    if (stats.topTopics) {
-      summaryParts.push(`涉及 ${stats.topTopics} 等话题`);
-    }
-    if (stats.languages) {
-      summaryParts.push(`覆盖 ${stats.languages}`);
-    }
-    const summary = summaryParts.length > 0 
-      ? summaryParts.join('，') 
-      : `共筛选 ${stats.totalCandidates} 条候选内容`;
-
+    // 根据是否有负面舆情决定标题和颜色
+    const hasNegative = stats.hasNegativeSentiment;
+    const headerTitle = hasNegative ? '⚠️ X Radar 有新舆情' : '✅ X Radar 扫描完成';
+    const headerTemplate = hasNegative ? 'orange' : 'green';
+    
     payload = {
       msg_type: 'interactive',
       card: {
         header: {
-          title: { tag: 'plain_text', content: '✅ 邮箱话题雷达扫描完成' },
-          template: 'green'
+          title: { tag: 'plain_text', content: headerTitle },
+          template: headerTemplate
         },
-        elements: [
-          {
-            tag: 'div',
-            text: { 
-              tag: 'lark_md', 
-              content: `已完成近期 X 上邮箱相关讨论的抓取与分析，${summary}。`
-            }
-          },
-          {
-            tag: 'hr'
-          },
-          {
-            tag: 'div',
-            fields: [
-              { is_short: true, text: { tag: 'lark_md', content: `**精选推文:** ${stats.totalTweets} 条` } },
-              { is_short: true, text: { tag: 'lark_md', content: `**本次扫描:** ${stats.totalCandidates} 条` } }
-            ]
-          },
-          {
-            tag: 'div',
-            fields: [
-              { is_short: true, text: { tag: 'lark_md', content: `**生成回复:** ${stats.succeeded}/${stats.total}` } },
-              { is_short: true, text: { tag: 'lark_md', content: `**更新时间:** ${runTime}` } }
-            ]
-          },
-          {
-            tag: 'action',
-            actions: [
-              {
-                tag: 'button',
-                text: { tag: 'plain_text', content: '📊 查看详情' },
-                type: 'primary',
-                url: DASHBOARD_URL
-              }
-            ]
-          }
-        ]
+        elements: buildFeishuCardElements(stats, runTime)
       }
     };
   } else if (isSlack) {
-    const summaryText = stats.topTopics 
-      ? `涉及 ${stats.topTopics} 等话题` 
-      : `共筛选 ${stats.totalCandidates} 条候选内容`;
+    // Slack: 保持兼容，增加新统计
+    const { byGroup = {}, bySentiment = {} } = stats;
+    const hasNegative = stats.hasNegativeSentiment;
     
     payload = {
-      text: '✅ 邮箱话题雷达扫描完成',
+      text: hasNegative ? '⚠️ X Radar 有新舆情' : '✅ X Radar 扫描完成',
       blocks: [
         {
           type: 'header',
-          text: { type: 'plain_text', text: '✅ 邮箱话题雷达扫描完成' }
+          text: { type: 'plain_text', text: hasNegative ? '⚠️ X Radar 有新舆情' : '✅ X Radar 扫描完成' }
         },
         {
           type: 'section',
-          text: { type: 'mrkdwn', text: `已完成近期 X 上邮箱相关讨论的抓取与分析，${summaryText}。` }
+          text: { type: 'mrkdwn', text: `*🎯 痛点雷达:* 痛点 ${byGroup.pain || 0} | 传播 ${byGroup.reach || 0} | KOL ${byGroup.kol || 0}` }
+        },
+        {
+          type: 'section',
+          text: { type: 'mrkdwn', text: `*📢 Filo舆情:* 积极 ${bySentiment.positive || 0} | 中性 ${bySentiment.neutral || 0} | 需关注 ${bySentiment.negative || 0}` }
         },
         {
           type: 'section',
           fields: [
             { type: 'mrkdwn', text: `*精选推文:* ${stats.totalTweets} 条` },
-            { type: 'mrkdwn', text: `*本次扫描:* ${stats.totalCandidates} 条` },
-            { type: 'mrkdwn', text: `*生成回复:* ${stats.succeeded}/${stats.total}` },
             { type: 'mrkdwn', text: `*更新时间:* ${runTime}` }
           ]
         },
@@ -570,29 +648,29 @@ async function sendSuccessWebhook(stats) {
       ]
     };
   } else if (isDiscord) {
-    const summaryText = stats.topTopics 
-      ? `涉及 ${stats.topTopics} 等话题` 
-      : `共筛选 ${stats.totalCandidates} 条候选内容`;
+    // Discord: 保持兼容，增加新统计
+    const { byGroup = {}, bySentiment = {} } = stats;
+    const hasNegative = stats.hasNegativeSentiment;
     
     payload = {
-      content: '✅ 邮箱话题雷达扫描完成',
+      content: hasNegative ? '⚠️ X Radar 有新舆情' : '✅ X Radar 扫描完成',
       embeds: [{
-        title: '✅ 邮箱话题雷达扫描完成',
-        description: `已完成近期 X 上邮箱相关讨论的抓取与分析，${summaryText}。`,
-        color: 5763719, // Green
+        title: hasNegative ? '⚠️ X Radar 有新舆情' : '✅ X Radar 扫描完成',
+        color: hasNegative ? 16744192 : 5763719, // Orange or Green
         fields: [
+          { name: '🎯 痛点雷达', value: `痛点 ${byGroup.pain || 0} | 传播 ${byGroup.reach || 0} | KOL ${byGroup.kol || 0}`, inline: false },
+          { name: '📢 Filo舆情', value: `积极 ${bySentiment.positive || 0} | 中性 ${bySentiment.neutral || 0} | 需关注 ${bySentiment.negative || 0}`, inline: false },
           { name: '精选推文', value: `${stats.totalTweets} 条`, inline: true },
-          { name: '本次扫描', value: `${stats.totalCandidates} 条`, inline: true },
-          { name: '生成回复', value: `${stats.succeeded}/${stats.total}`, inline: true },
           { name: '更新时间', value: runTime, inline: true }
         ],
         url: DASHBOARD_URL
       }]
     };
   } else {
-    const summaryText = stats.topTopics ? `(${stats.topTopics})` : '';
+    // Generic: 简化文本
+    const { byGroup = {}, bySentiment = {} } = stats;
     payload = {
-      text: `✅ 邮箱话题雷达扫描完成\n已完成 X 邮箱讨论抓取${summaryText}\n精选: ${stats.totalTweets} 条 | 回复: ${stats.succeeded}/${stats.total}\n${DASHBOARD_URL}`
+      text: `✅ X Radar 扫描完成\n🎯 痛点: ${byGroup.pain || 0} | 传播: ${byGroup.reach || 0}\n📢 舆情: 积极 ${bySentiment.positive || 0} | 需关注 ${bySentiment.negative || 0}\n精选: ${stats.totalTweets} 条\n${DASHBOARD_URL}`
     };
   }
 
@@ -653,6 +731,20 @@ function loadSuccessStats() {
       .map(([topic]) => topic)
       .join('、');
     
+    // 新增：读取分组、舆情、洞察统计
+    const byGroup = selectionStats.byGroup || {};
+    const bySentiment = selectionStats.bySentiment || {};
+    const byInsightType = selectionStats.byInsightType || {};
+    
+    // 获取负面舆情预览（如有）
+    const negativeTweets = (data.top || [])
+      .filter(t => t.sentimentLabel === 'negative')
+      .slice(0, 2)  // 最多显示2条
+      .map(t => ({ 
+        author: t.author || 'Unknown', 
+        text: (t.text || '').slice(0, 50) 
+      }));
+    
     return {
       totalTweets: data.top?.length || 0,
       totalCandidates: selectionStats.totalCandidates || 0,
@@ -661,7 +753,13 @@ function loadSuccessStats() {
       skipped: stats.skipped || 0,
       runAt: data.runAt,
       languages,
-      topTopics
+      topTopics,
+      // 新增统计
+      byGroup,
+      bySentiment,
+      byInsightType,
+      negativeTweets,
+      hasNegativeSentiment: (bySentiment.negative || 0) > 0
     };
   } catch (e) {
     log('ERROR', 'Failed to load stats', { error: e.message });
