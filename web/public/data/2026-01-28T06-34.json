@@ -1,0 +1,2126 @@
+{
+  "runDate": "2026-01-28",
+  "runAt": "2026-01-28T06:34:56.407Z",
+  "selectionStats": {
+    "totalCandidates": 166,
+    "uniqueAfterDedup": 154,
+    "freshAfterAgeFilter": 127,
+    "tooOldFiltered": 27,
+    "hardFiltered": 9,
+    "hardReasons": {
+      "drugs": 4,
+      "war_military": 3,
+      "privacy_hacking": 1,
+      "politics": 1
+    },
+    "softFiltered": 3,
+    "softReasons": {
+      "law_enforcement": 3
+    },
+    "lowSignalPenalized": 34,
+    "filoFitFiltered": 59,
+    "relevanceFiltered": 0,
+    "emailActionOnlyFiltered": 0,
+    "noEmotionPenalized": 18,
+    "kolAuthorMismatch": 0,
+    "kolRelevanceFiltered": 0,
+    "qualified": 31,
+    "aiPicked": 10,
+    "byGroup": {
+      "pain": 25,
+      "reach": 6,
+      "kol": 0
+    },
+    "distinctKOLs": 0
+  },
+  "qualityConfig": {
+    "aiPickTopN": 10,
+    "kolMinFiloFitScore": 20,
+    "minFinalScore": 50,
+    "noEmotionPenalty": 0.5
+  },
+  "top": [
+    {
+      "rank": 1,
+      "aiPicked": true,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "email-search-pain",
+      "url": "https://x.com/saviourDey4U/status/2015153598762508670",
+      "author": "@saviourDey4U",
+      "datetime": "2026-01-24T20:03:52.000Z",
+      "text": "Until they find one useless email, or message on ur WhatsApp then used it as an excuse to detain u. Before they will finish their so called investigation, ur mugshot fit Don enter social media. Then u fit go Don spend a week or 2 for their detention",
+      "likes": 37,
+      "retweets": 0,
+      "replies": 2,
+      "rawEngagement": 77,
+      "viralityScore": 189.2,
+      "filoFitScore": 15,
+      "filoFitKeywordCount": 3,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 627.6,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": false,
+      "relevanceKeywords": [
+        "email",
+        "mail"
+      ],
+      "painEmotionWords": [
+        "mess",
+        "useless"
+      ],
+      "detectedLanguage": "en",
+      "comments": {
+        "language": "en",
+        "productRelevance": "medium",
+        "tweetTranslationZh": "直到他们找到一封无用的邮件，或者你WhatsApp上的信息，然后用它作为拘留你的借口。在他们完成所谓的调查之前，你的照片就已经在社交媒体上传播了。然后你可能要在拘留所待上一两个星期。",
+        "generatedAt": "2026-01-28T06:43:43.222Z",
+        "options": [
+          {
+            "comment": "Plot twist: they spend more time going through your emails than you do 📧",
+            "comment_zh": "剧情反转：他们翻你邮件的时间比你自己看邮件还多 📧",
+            "zh_explain": "用幽默的角度指出讽刺现象，既回应了原推文关于翻查邮件的内容，又用轻松的方式缓解严肃话题的紧张感",
+            "angle": "witty",
+            "charCount": 73,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "The digital paper trail is real. Everything we send becomes permanent evidence, even the most random stuff we forget about.",
+            "comment_zh": "数字足迹确实存在。我们发送的所有内容都成为永久证据，即使是我们忘记的最随意的东西。",
+            "zh_explain": "从务实角度分析数字通讯的永久性特征，呼应原推文对邮件和消息被翻查的担忧，展现对数字隐私的深度思考",
+            "angle": "practical",
+            "charCount": 123,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "This is why I'm paranoid about my inbox history. Years of random forwards and spam that could be taken out of context...",
+            "comment_zh": "这就是为什么我对收件箱历史记录很偏执。多年来的随机转发和垃圾邮件可能会被断章取义...",
+            "zh_explain": "以个人经验角度回应，暗示对邮件管理的关注，自然地引出邮件整理和管理的重要性，符合我们产品领域但不推销",
+            "angle": "subtle_product",
+            "charCount": 120,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 2,
+      "aiPicked": true,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "email-search-pain",
+      "url": "https://x.com/EffZee_/status/2014721386585956858",
+      "author": "@EffZee_",
+      "datetime": "2026-01-23T15:26:24.000Z",
+      "text": "I hate that this has to be said I have a girlfriend, don’t dm asking me out, don’t email me asking me out. I’m not interested, even if I was single, I wouldn’t be interested. I am here to hopefully entertain, idc if you find me attractive.",
+      "likes": 19,
+      "retweets": 1,
+      "replies": 7,
+      "rawEngagement": 50.5,
+      "viralityScore": 171.2,
+      "filoFitScore": 15,
+      "filoFitKeywordCount": 3,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 573.5,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": false,
+      "relevanceKeywords": [
+        "email",
+        "mail"
+      ],
+      "painEmotionWords": [
+        "hate"
+      ],
+      "detectedLanguage": "en",
+      "comments": {
+        "language": "en",
+        "productRelevance": "low",
+        "tweetTranslationZh": "我讨厌必须要说这个 我有女朋友了，别私信约我，别发邮件约我。我不感兴趣，就算我单身，我也不感兴趣。我在这里是为了娱乐大家，我不在乎你们是否觉得我有魅力。",
+        "generatedAt": "2026-01-28T06:43:56.252Z",
+        "options": [
+          {
+            "comment": "Email filters: not just for newsletters anymore 😅",
+            "comment_zh": "邮件过滤器：不仅仅是用来过滤新闻邮件了😅",
+            "zh_explain": "用幽默的方式关联到邮件过滤功能，暗示需要过滤不想要的邮件类型，既轻松又巧妙地连接到我们的产品领域",
+            "angle": "witty",
+            "charCount": 50,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "Setting boundaries is crucial. The constant notifications and messages can be overwhelming - having clear communication saves everyone time and energy.",
+            "comment_zh": "设定边界很重要。持续的通知和消息可能让人不堪重负——清晰的沟通能为每个人节省时间和精力。",
+            "zh_explain": "从信息管理和沟通效率角度回应，体现对信息过载问题的理解，与我们处理邮件噪音的理念契合",
+            "angle": "practical",
+            "charCount": 151,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "The modern struggle of managing unwanted communications across all channels. Clear boundaries are essential for sanity.",
+            "comment_zh": "现代人在各种渠道管理不需要的沟通的斗争。明确的边界对保持理智很重要。",
+            "zh_explain": "从信息管理角度切入，暗示理解管理各种不想要的沟通的痛苦，与我们减少收件箱噪音的价值主张相关",
+            "angle": "subtle_product",
+            "charCount": 119,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 3,
+      "aiPicked": true,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "gmail-spam-jp",
+      "url": "https://x.com/mahounouta/status/2016138521254535390",
+      "author": "@mahounouta",
+      "datetime": "2026-01-27T13:17:36.000Z",
+      "text": "1月中にGmailのPOP3取得が出来なくなると聞いて、ようやくThunderbirdを導入。 しかし設定したとたん受信フォルダに大量の迷惑メールが…！！ めっちゃ困る…これ受信フォルダに入った迷惑メールは一括で迷惑メールフォルダにいかないものなのか…？",
+      "likes": 6,
+      "retweets": 0,
+      "replies": 1,
+      "rawEngagement": 13.5,
+      "viralityScore": 116.1,
+      "filoFitScore": 20,
+      "filoFitKeywordCount": 4,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 423.4,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": false,
+      "relevanceKeywords": [
+        "gmail",
+        "mail",
+        "メール",
+        "迷惑メール"
+      ],
+      "painEmotionWords": [
+        "困る"
+      ],
+      "detectedLanguage": "ja",
+      "comments": {
+        "language": "ja",
+        "productRelevance": "high",
+        "tweetTranslationZh": "听说1月中旬Gmail的POP3收取功能会停止，终于导入了Thunderbird。但一设置好，收件箱就涌入了大量垃圾邮件...！！真的很困扰...这些进入收件箱的垃圾邮件不能一键移动到垃圾邮件文件夹吗...？",
+        "generatedAt": "2026-01-28T06:44:12.588Z",
+        "options": [
+          {
+            "comment": "Thunderbirdの迷惑メールフィルターは設定すればかなり優秀ですよ！最初の数日は手動で学習させる感じですが、そのあとはほぼ自動で振り分けてくれます。頑張って！",
+            "comment_zh": "Thunderbird的垃圾邮件过滤器设置好后相当优秀！最初几天需要手动让它学习，之后几乎能自动分类。加油！",
+            "zh_explain": "提供实用的技术建议，展示对邮件管理工具的了解，帮助解决用户当前面临的具体问题",
+            "angle": "practical",
+            "charCount": 82,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "Gmail POP3廃止→Thunderbird導入→迷惑メール大量発生という完璧なコンボですね😅 新年早々メールに振り回される現代人の宿命...",
+            "comment_zh": "Gmail POP3废止→导入Thunderbird→大量垃圾邮件，完美的连击😅 新年伊始就被邮件折腾，现代人的宿命...",
+            "zh_explain": "用幽默的方式总结用户遭遇的连环困扰，产生共鸣感，轻松化解挫折情绪",
+            "angle": "witty",
+            "charCount": 74,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "メール移行って本当に面倒ですよね...迷惑メール対策も一から設定し直し。効率的な受信箱管理、もっとスマートにできればいいのに。",
+            "comment_zh": "邮件迁移真的很麻烦呢...垃圾邮件对策也要重新设置。要是能更智能地管理收件箱就好了。",
+            "zh_explain": "表达对邮件管理痛点的共鸣，暗示理想的智能邮件管理解决方案，为后续产品讨论埋下伏笔",
+            "angle": "subtle_product",
+            "charCount": 63,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 4,
+      "aiPicked": true,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "email-search-pain",
+      "url": "https://x.com/wisdomdyn/status/2014737058443432052",
+      "author": "@wisdomdyn",
+      "datetime": "2026-01-23T16:28:41.000Z",
+      "text": "I hate that this has to be said I have a girlfriend, don’t dm asking me out, don’t email me asking me out. I’m not interested, even if I was single, I wouldn’t be interested. I am here to hopefully entertain, idc if you find me attractive.",
+      "likes": 4,
+      "retweets": 0,
+      "replies": 2,
+      "rawEngagement": 11,
+      "viralityScore": 107.9,
+      "filoFitScore": 15,
+      "filoFitKeywordCount": 3,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 383.8,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": false,
+      "relevanceKeywords": [
+        "email",
+        "mail"
+      ],
+      "painEmotionWords": [
+        "hate"
+      ],
+      "detectedLanguage": "en",
+      "comments": {
+        "language": "en",
+        "productRelevance": "low",
+        "tweetTranslationZh": "我讨厌必须要说这些：我有女朋友，不要私信约我，不要发邮件约我。我没兴趣，即使我单身，我也不会感兴趣。我在这里是为了娱乐大家，我不在乎你们是否觉得我有吸引力。",
+        "generatedAt": "2026-01-28T06:44:25.867Z",
+        "options": [
+          {
+            "comment": "Plot twist: maybe they're sliding into your spam folder anyway 🤷‍♂️",
+            "comment_zh": "剧情反转：也许他们的消息本来就进垃圾邮件了🤷‍♂️",
+            "zh_explain": "用幽默的方式调侃垃圾邮件问题，轻松化解尴尬话题，既好笑又能引起共鸣",
+            "angle": "witty",
+            "charCount": 68,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "Boundaries are so important. The amount of inappropriate outreach people get is wild - whether it's personal or professional, clear communication saves everyone time.",
+            "comment_zh": "边界非常重要。人们收到的不当联系数量惊人——无论是私人的还是职业的，明确沟通能为所有人节省时间。",
+            "zh_explain": "从设立边界和沟通效率的角度回应，展现成熟思考，同时自然涉及信息管理话题",
+            "angle": "practical",
+            "charCount": 166,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "The inbox struggle is real - between actual work emails and... well, this. Sometimes I wonder if we need better filters for life, not just email.",
+            "comment_zh": "收件箱的困扰是真实的——既有真正的工作邮件，又有...这些。有时我想我们需要的不只是邮件过滤器，而是生活过滤器。",
+            "zh_explain": "从收件箱管理的角度切入，自然过渡到邮件过滤话题，暗示对信息整理有思考但不推销",
+            "angle": "subtle_product",
+            "charCount": 145,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 5,
+      "aiPicked": true,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "email-search-pain",
+      "url": "https://x.com/lambypies/status/2014716233053024716",
+      "author": "@lambypies",
+      "datetime": "2026-01-23T15:05:56.000Z",
+      "text": "Is it the same code that doesn't find emails you know are in your (Modestly sized) inbox and can't find any files anywhere on any of your drives either? Somehow it's so much worse when things used to work than when they broken too start with.",
+      "likes": 3,
+      "retweets": 0,
+      "replies": 0,
+      "rawEngagement": 6,
+      "viralityScore": 84.5,
+      "filoFitScore": 20,
+      "filoFitKeywordCount": 4,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 328.5,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": false,
+      "relevanceKeywords": [
+        "email",
+        "inbox",
+        "mail"
+      ],
+      "painEmotionWords": [
+        "broken"
+      ],
+      "detectedLanguage": "en",
+      "comments": {
+        "language": "en",
+        "productRelevance": "high",
+        "tweetTranslationZh": "是不是同一套代码，既找不到你明知在（不算大的）收件箱里的邮件，也找不到你任何硬盘上的任何文件？不知为什么，原本能用的东西坏了，比一开始就坏的感觉更糟糕。",
+        "generatedAt": "2026-01-28T06:44:59.667Z",
+        "options": [
+          {
+            "comment": "The \"it used to work\" pain hits different. Like your computer is personally gaslighting you about whether that email ever existed 😤",
+            "comment_zh": "「以前能用」的痛苦感受真的不一样。就像你的电脑在亲自洗脑你，让你怀疑那封邮件是否真的存在过😤",
+            "zh_explain": "用幽默的方式共情用户的挫败感，用\"gaslighting\"这个网络流行词让回复更有趣，容易引起共鸣和互动",
+            "angle": "witty",
+            "charCount": 132,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "Search regression is the worst kind of broken. You lose trust in the tool AND question your own memory. At least with consistent failure you know what to expect.",
+            "comment_zh": "搜索功能退化是最糟糕的故障类型。你既失去对工具的信任，又开始怀疑自己的记忆。至少持续的故障让你知道该期待什么。",
+            "zh_explain": "从产品角度分析问题本质，展现对用户体验和心理影响的深度理解，体现专业思考",
+            "angle": "practical",
+            "charCount": 161,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "This is why I've become obsessed with better search and organization systems. When basic functions randomly break, you realize how much we rely on these tools working consistently.",
+            "comment_zh": "这就是为什么我开始痴迷于更好的搜索和整理系统。当基础功能随机故障时，你才意识到我们多么依赖这些工具的稳定运行。",
+            "zh_explain": "暗示在关注搜索和整理工具，自然引出对邮件管理痛点的思考，为后续可能的产品对话做铺垫",
+            "angle": "subtle_product",
+            "charCount": 180,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 6,
+      "aiPicked": true,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "email-search-pain",
+      "url": "https://x.com/OurTownReno/status/2014767985345671513",
+      "author": "@OurTownReno",
+      "datetime": "2026-01-23T18:31:34.000Z",
+      "text": "Another Year, Another Terrible Death Toll for the Unhoused Among Us... Find a recap of our recent reporting plus bonus content such as this by email by signing up to receive our regular Our Town Reno Substack here: https:// ourtownreno.substack.com",
+      "likes": 2,
+      "retweets": 1,
+      "replies": 0,
+      "rawEngagement": 6,
+      "viralityScore": 84.5,
+      "filoFitScore": 15,
+      "filoFitKeywordCount": 3,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 313.5,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": false,
+      "relevanceKeywords": [
+        "email",
+        "mail"
+      ],
+      "painEmotionWords": [
+        "terrible"
+      ],
+      "detectedLanguage": "en",
+      "comments": {
+        "language": "en",
+        "productRelevance": "low",
+        "tweetTranslationZh": "又是一年，又是一个可怕的无家可归者死亡人数...通过邮件订阅我们的定期Our Town Reno Substack来了解我们最近的报道摘要和额外内容：[链接]",
+        "generatedAt": "2026-01-28T06:45:11.350Z",
+        "options": [
+          {
+            "comment": "It's heartbreaking how these crucial stories can get lost in the noise. Local journalism matters so much.",
+            "comment_zh": "这些重要的故事是如何在噪音中丢失的，真令人心碎。本地新闻报道太重要了。",
+            "zh_explain": "对推文表示共情和支持，强调本地新闻的重要性，暗示信息过载问题",
+            "angle": "witty",
+            "charCount": 105,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "The challenge isn't just gathering this data - it's making sure decision-makers actually see it among all the other information competing for their attention.",
+            "comment_zh": "挑战不仅仅是收集这些数据，而是确保决策者在所有其他争夺注意力的信息中真正看到这些数据。",
+            "zh_explain": "从信息管理角度分析问题，展现对注意力经济和信息优先级的思考，与我们的产品理念相关",
+            "angle": "practical",
+            "charCount": 158,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "This reminds me how important it is to have systems that surface the most critical information first. Too much vital news gets buried in the daily flood.",
+            "comment_zh": "这提醒我拥有能够优先显示最关键信息的系统是多么重要。太多重要新闻被淹没在每日的信息洪流中。",
+            "zh_explain": "自然过渡到信息筛选和优先级系统的重要性，暗示在思考如何解决信息过载问题",
+            "angle": "subtle_product",
+            "charCount": 153,
+            "risk": "medium",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 7,
+      "aiPicked": true,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "gmail-spam-cn",
+      "url": "https://x.com/MeganJohns27126/status/2016121729060315591",
+      "author": "@MeganJohns27126",
+      "datetime": "2026-01-27T12:10:52.000Z",
+      "text": "How to install Telegram on Huawei Google email How to find groups Telegram account not receiving verification code",
+      "likes": 9,
+      "retweets": 9,
+      "replies": 9,
+      "rawEngagement": 49.5,
+      "viralityScore": 170.3,
+      "filoFitScore": 15,
+      "filoFitKeywordCount": 3,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 285.5,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": true,
+      "relevanceKeywords": [
+        "email",
+        "mail"
+      ],
+      "painEmotionWords": [],
+      "detectedLanguage": "en",
+      "comments": {
+        "language": "en",
+        "productRelevance": "medium",
+        "tweetTranslationZh": "如何在华为上安装Telegram 谷歌邮箱 如何找群组 Telegram账户收不到验证码",
+        "generatedAt": "2026-01-28T06:45:23.364Z",
+        "options": [
+          {
+            "comment": "The eternal struggle of trying to get tech to work together 😅 Sometimes the simplest things become the most complicated",
+            "comment_zh": "让技术产品协同工作的永恒挣扎😅 有时最简单的事情变成最复杂的",
+            "zh_explain": "用幽默的方式回应技术困难，引起共鸣，轻松自然",
+            "angle": "witty",
+            "charCount": 120,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "This reads like a tech support checklist! Have you tried clearing app cache and checking if your email provider is blocking verification emails?",
+            "comment_zh": "这看起来像技术支持清单！你试过清除应用缓存和检查邮件提供商是否屏蔽了验证邮件吗？",
+            "zh_explain": "提供实用的技术建议，展现解决问题的思维，有助于建立专业形象",
+            "angle": "practical",
+            "charCount": 144,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "Email verification issues are so frustrating. As someone who deals with inbox chaos daily, I feel your pain with missing important messages",
+            "comment_zh": "邮件验证问题真的很令人沮丧。作为每天处理收件箱混乱的人，我理解你错过重要消息的痛苦",
+            "zh_explain": "通过邮件管理的角度自然切入，暗示在邮件领域有经验，建立产品相关联系",
+            "angle": "subtle_product",
+            "charCount": 139,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 8,
+      "aiPicked": true,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "email-search-pain",
+      "url": "https://x.com/YatimaOfKonishi/status/2015047978541531647",
+      "author": "@YatimaOfKonishi",
+      "datetime": "2026-01-24T13:04:10.000Z",
+      "text": "I find Gmail sentence autocomplete trying to tell me what to say, and me deliberately changing my phrasing if it guessed correctly. I hate that this is a constant struggle.",
+      "likes": 2,
+      "retweets": 0,
+      "replies": 0,
+      "rawEngagement": 4,
+      "viralityScore": 69.9,
+      "filoFitScore": 15,
+      "filoFitKeywordCount": 3,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 269.7,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": false,
+      "relevanceKeywords": [
+        "gmail",
+        "mail"
+      ],
+      "painEmotionWords": [
+        "hate"
+      ],
+      "detectedLanguage": "en",
+      "comments": {
+        "language": "en",
+        "productRelevance": "high",
+        "tweetTranslationZh": "我发现Gmail的句子自动完成功能试图告诉我该说什么，如果它猜对了，我会故意改变措辞。我讨厌这种持续的斗争。",
+        "generatedAt": "2026-01-28T06:45:36.563Z",
+        "options": [
+          {
+            "comment": "The rebellion against our robot overlords begins with refusing to let Gmail finish our sentences 🤖",
+            "comment_zh": "对机器人霸主的反叛从拒绝让Gmail完成我们的句子开始 🤖",
+            "zh_explain": "幽默地将用户与AI建议的斗争比作对机器人的反叛，轻松有趣，容易引起共鸣和互动",
+            "angle": "witty",
+            "charCount": 99,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "This perfectly captures why I've started turning off most AI writing assists. Sometimes the cognitive load of fighting suggestions is worse than just thinking from scratch.",
+            "comment_zh": "这完美地说明了为什么我开始关闭大多数AI写作辅助功能。有时候对抗建议的认知负担比从头思考更糟糕。",
+            "zh_explain": "从产品思维角度分析用户体验问题，展示对AI工具设计的深度思考，容易引发关于UX设计的讨论",
+            "angle": "practical",
+            "charCount": 172,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "The constant mental overhead of 'is this my thought or the algorithm's?' is exhausting. I've been experimenting with tools that suggest less aggressively.",
+            "comment_zh": "持续的心理负担'这是我的想法还是算法的？'令人疲惫。我一直在试验那些建议不那么激进的工具。",
+            "zh_explain": "暗示在寻找更好的邮件/写作工具，体现对用户体验的关注，为潜在的产品讨论埋下伏笔",
+            "angle": "subtle_product",
+            "charCount": 154,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 9,
+      "aiPicked": true,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "gmail-spam-jp",
+      "url": "https://x.com/orikousan0120/status/2016125392395108682",
+      "author": "@orikousan0120",
+      "datetime": "2026-01-27T12:25:26.000Z",
+      "text": "Keepa、19ユーロ→29ユーロに値下げ ワタシにはメール来ないんだけど、Gmailの迷惑メールフィルターにひっかかっちゃったのかな。 値上げ後は5500円弱ぐらい。 3月1日からスタートみたい。 でも、KeepaはAmazonせどりで一番重要なツール。 月額払いの人はこれを機に年払いにしてもいいかも",
+      "likes": 14,
+      "retweets": 0,
+      "replies": 0,
+      "rawEngagement": 28,
+      "viralityScore": 146.2,
+      "filoFitScore": 20,
+      "filoFitKeywordCount": 4,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 256.9,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": true,
+      "relevanceKeywords": [
+        "gmail",
+        "mail",
+        "メール",
+        "迷惑メール"
+      ],
+      "painEmotionWords": [],
+      "detectedLanguage": "ja",
+      "comments": {
+        "language": "ja",
+        "productRelevance": "high",
+        "tweetTranslationZh": "Keepa从19欧元涨价到29欧元，但我没收到邮件通知，可能被Gmail的垃圾邮件过滤器拦截了。涨价后大约是5500日元左右。3月1日开始实施。但Keepa是Amazon代购中最重要的工具。月付用户可以趁机改成年付。",
+        "generatedAt": "2026-01-28T06:45:54.037Z",
+        "options": [
+          {
+            "comment": "重要なメール通知が迷惑メールに入るの、あるあるですね😅 価格変更の通知こそ確実に届いてほしいのに",
+            "comment_zh": "重要的邮件通知被归类为垃圾邮件，这种事经常发生😅明明价格变更通知最需要确实送达",
+            "zh_explain": "用幽默的方式回应Gmail垃圾邮件过滤器的问题，引起共鸣，轻松自然地涉及邮件管理话题",
+            "angle": "witty",
+            "charCount": 49,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "Gmail の迷惑メールフィルター、時々重要なメールまで弾いちゃいますよね。価格変更みたいな重要な通知は事前にフィルター設定を見直しておくと安心かも。年払い切り替えのタイミングとしては確かに良さそう",
+            "comment_zh": "Gmail的垃圾邮件过滤器有时连重要邮件都会拦截。像价格变更这样的重要通知，提前检查过滤器设置会比较安心。确实是切换到年付的好时机",
+            "zh_explain": "从实用角度提供邮件过滤器管理建议，展现对邮件管理的专业思考，同时认同原推文的观点",
+            "angle": "practical",
+            "charCount": 99,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "重要なサービスからの価格変更通知が迷惑メールに紛れ込むの、本当に困りますよね。せどりツールみたいにビジネスに直結するものは特に見逃せない。メール管理って意外と奥が深い",
+            "comment_zh": "重要服务的价格变更通知混入垃圾邮件真的很困扰。像代购工具这种直接关系到生意的更是不能错过。邮件管理意外地很有学问",
+            "zh_explain": "暗示在邮件管理方面有深入思考，强调重要邮件错过的痛点，自然地展现对邮件管理领域的关注",
+            "angle": "subtle_product",
+            "charCount": 83,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 10,
+      "aiPicked": true,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "email-search-pain",
+      "url": "https://x.com/Lambert94Sara/status/2015182686554374595",
+      "author": "@Lambert94Sara",
+      "datetime": "2026-01-24T21:59:27.000Z",
+      "text": "@marksandspencer Very concerned as I am currently enjoying a two week holiday in Florida and three items from a click and collect order are showing as collected, impossible as I am not in the country desperately trying to find an email so that I can send you further details.",
+      "likes": 2,
+      "retweets": 3,
+      "replies": 3,
+      "rawEngagement": 14.5,
+      "viralityScore": 119,
+      "filoFitScore": 15,
+      "filoFitKeywordCount": 3,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 208.6,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": true,
+      "relevanceKeywords": [
+        "email",
+        "mail"
+      ],
+      "painEmotionWords": [],
+      "detectedLanguage": "en",
+      "comments": {
+        "language": "en",
+        "productRelevance": "medium",
+        "tweetTranslationZh": "@marksandspencer 非常担心，我目前正在佛罗里达度两周假期，点击取货订单中的三件商品显示已被取走，这不可能因为我不在国内。我正拼命寻找邮件地址以便向你们发送更多详情。",
+        "generatedAt": "2026-01-28T06:46:41.301Z",
+        "options": [
+          {
+            "comment": "Nothing ruins a Florida vacation quite like phantom package pickups back home 🏖️📦",
+            "comment_zh": "没有什么比在家里出现幽灵包裹取件更能毁掉佛罗里达假期的了🏖️📦",
+            "zh_explain": "用幽默的方式表达对这种糟糕情况的同情，用'phantom package pickups'这种有趣的表达方式来描述异常情况，轻松但有共鸣",
+            "angle": "witty",
+            "charCount": 83,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "Hope you find that email quickly! These cross-border customer service issues always seem to pop up at the worst times. Customer service via social media might be faster than email hunting.",
+            "comment_zh": "希望你能快速找到那个邮箱！这些跨境客户服务问题总是在最糟糕的时候出现。通过社交媒体联系客服可能比找邮箱更快。",
+            "zh_explain": "务实地理解客户痛点，提供实用建议（社交媒体客服），展现对客户服务流程的理解，有助于解决问题",
+            "angle": "practical",
+            "charCount": 188,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "This is exactly why I keep all important order emails in a separate folder - never know when you'll need them while traveling. Hope @marksandspencer sorts this out quickly for you!",
+            "comment_zh": "这正是我把所有重要订单邮件放在单独文件夹的原因——永远不知道旅行时什么时候需要它们。希望@marksandspencer能快速为你解决这个问题！",
+            "zh_explain": "从邮件管理的角度分享个人经验，自然地暗示对邮件组织的重视，同时对客户表示支持，体现专业的信息管理思维",
+            "angle": "subtle_product",
+            "charCount": 180,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 11,
+      "aiPicked": false,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "gmail-spam-jp",
+      "url": "https://x.com/pyoIgaly/status/2016094841521004813",
+      "author": "@pyoIgaly",
+      "datetime": "2026-01-27T10:24:02.000Z",
+      "text": "SLのオフラインメールのG-Mailでの振り分け、「迷惑メールにしない」だけだと受信トレイとプロモーションに分割されるので、専用にフォルダ作って落とすか、「適用するカテゴリ：メイン」にチェックを入れておく必要があります＾＾",
+      "likes": 4,
+      "retweets": 2,
+      "replies": 0,
+      "rawEngagement": 12,
+      "viralityScore": 111.4,
+      "filoFitScore": 20,
+      "filoFitKeywordCount": 4,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 204.6,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": true,
+      "relevanceKeywords": [
+        "mail",
+        "メール",
+        "受信トレイ",
+        "迷惑メール"
+      ],
+      "painEmotionWords": [],
+      "detectedLanguage": "ja",
+      "comments": {
+        "language": "ja",
+        "productRelevance": "high",
+        "tweetTranslationZh": "关于SL离线邮件在Gmail中的分类，仅设置「不是垃圾邮件」的话会被分到收件箱和推广两个地方，所以需要创建专用文件夹接收，或者勾选「应用分类：主要」^^",
+        "generatedAt": "2026-01-28T06:46:57.701Z",
+        "options": [
+          {
+            "comment": "Gmailのフィルター設定、奥が深すぎて毎回試行錯誤になりますね😅 気づいたら大事なメールがプロモーションに埋もれてることも...",
+            "comment_zh": "Gmail的过滤器设置太深奥了，每次都要摸索😅 不知不觉中重要邮件就被埋在推广邮件里了...",
+            "zh_explain": "用幽默的方式共鸣Gmail分类的复杂性，很多人都有这个困扰，容易引发共鸣和互动",
+            "angle": "witty",
+            "charCount": 66,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "ラベル自動振り分け＋受信トレイスキップの組み合わせが個人的には一番管理しやすいです。メインに混ざると見落としがちなので、完全に分離してます",
+            "comment_zh": "我个人觉得标签自动分类+跳过收件箱的组合最好管理。混在主邮箱里容易漏看，所以完全分离处理",
+            "zh_explain": "分享实用的Gmail管理经验，展示对邮件管理的深度思考，体现产品人的专业性",
+            "angle": "practical",
+            "charCount": 69,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "Gmailの自動分類、AIが賢くなったとはいえまだまだ手動設定が必要ですよね。毎日大量のメールと格闘してる身としては、もっとスマートな解決策が欲しいところです",
+            "comment_zh": "Gmail的自动分类，虽说AI变聪明了但还是需要手动设置呢。作为每天要和大量邮件作斗争的人，真希望有更智能的解决方案",
+            "zh_explain": "暗示在邮件管理领域有痛点和思考，为产品相关话题做铺垫，但不直接推销",
+            "angle": "subtle_product",
+            "charCount": 79,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 12,
+      "aiPicked": false,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "gmail-spam-jp",
+      "url": "https://x.com/shimajiro/status/2016085044075626564",
+      "author": "@shimajiro",
+      "datetime": "2026-01-27T09:45:06.000Z",
+      "text": "Gmailの迷惑メールフィルタ、正規メール（迷惑でないとは言ってない）も割とSPAM判定している",
+      "likes": 4,
+      "retweets": 0,
+      "replies": 0,
+      "rawEngagement": 8,
+      "viralityScore": 95.4,
+      "filoFitScore": 25,
+      "filoFitKeywordCount": 5,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 188.2,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": true,
+      "relevanceKeywords": [
+        "gmail",
+        "spam",
+        "mail",
+        "メール",
+        "迷惑メール"
+      ],
+      "painEmotionWords": [],
+      "detectedLanguage": "ja",
+      "comments": {
+        "language": "ja",
+        "productRelevance": "high",
+        "tweetTranslationZh": "Gmail的垃圾邮件过滤器，连正常邮件（但不是说不是垃圾邮件）也经常被判定为垃圾邮件",
+        "generatedAt": "2026-01-28T06:47:15.713Z",
+        "options": [
+          {
+            "comment": "正規メールがSPAM判定される現象、「迷惑でないとは言ってない」という括弧がじわじわくるww 確かに最近のメール、半分くらい迷惑かも",
+            "comment_zh": "正常邮件被判定为垃圾邮件这个现象，「不是说不是垃圾邮件」这个括号真是让人慢慢体会到搞笑ww 确实最近的邮件，大概有一半都是垃圾邮件",
+            "zh_explain": "用幽默的方式呼应原推文的调侃语气，特别是那个括号里的自嘲，同时延伸到现在邮件确实很多都是垃圾这个共同痛点",
+            "angle": "witty",
+            "charCount": 66,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "Gmail のフィルタ精度は確かに微妙ですね。特に企業からの「お得情報」系は正規だけど迷惑という絶妙なラインで、人間でも判断が難しい。AIにとっては更に複雑な問題かも",
+            "comment_zh": "Gmail的过滤精度确实很微妙。特别是企业发的「优惠信息」类邮件是正规的但很烦人，这种微妙的界限连人类都难以判断，对AI来说可能是更复杂的问题",
+            "zh_explain": "从技术和产品角度分析Gmail过滤器的挑战，展示对邮件分类复杂性的深度思考，暗示在这个领域有专业见解",
+            "angle": "practical",
+            "charCount": 83,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "この「正規だけど迷惑」問題、本当に悩ましいです。メール管理で一番難しいのは、技術的にSPAMじゃないけど個人的には要らないメールの扱い方なんですよね",
+            "comment_zh": "这个「正规但烦人」的问题，真的很让人头疼。邮件管理中最难的就是处理那些技术上不是垃圾邮件但个人不需要的邮件",
+            "zh_explain": "自然地从邮件分类问题引申到邮件管理的核心挑战，暗示在邮件管理方面有深入思考和经验，不露声色地展现专业背景",
+            "angle": "subtle_product",
+            "charCount": 74,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 13,
+      "aiPicked": false,
+      "group": "reach",
+      "originalGroup": "reach",
+      "sourceQuery": "ai-email-jp",
+      "url": "https://x.com/_potentialight/status/2016291969967046714",
+      "author": "@_potentialight",
+      "datetime": "2026-01-27T23:27:21.000Z",
+      "text": "【ウェビナー開催】人材紹介会社様向け 人材紹介コンサルタントの仕事、どこまでAIで“成果”と「生産性」を上げられるのか？ 人材紹介業務を20工程以上に分解し、 明日から使える 実務で成果が出ている 10のAIエージェント＆プロンプトを実践公開します。",
+      "likes": 5,
+      "retweets": 4,
+      "replies": 1,
+      "rawEngagement": 19.5,
+      "viralityScore": 131.2,
+      "filoFitScore": 15,
+      "filoFitKeywordCount": 3,
+      "textBonus": 5,
+      "painBonus": 1,
+      "finalScore": 151.2,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": false,
+      "relevanceKeywords": [
+        "ai",
+        "生産性"
+      ],
+      "painEmotionWords": [],
+      "detectedLanguage": "ja",
+      "comments": null,
+      "commentError": "Generation failed after retries",
+      "commentSkipped": false
+    },
+    {
+      "rank": 14,
+      "aiPicked": false,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "gmail-spam-jp",
+      "url": "https://x.com/watanabe_freeze/status/2016181209152582137",
+      "author": "@watanabe_freeze",
+      "datetime": "2026-01-27T16:07:13.000Z",
+      "text": "唯一登録していたメールアドレスだけはわかる (招待制だったサービスイン当時から使ってるgmailに三木谷銀行からのスパムメールが迷惑メールフォルダに自動分類されつづけてるのと口座作成時のイーバンク銀行からのメールのログは捕捉できているので)",
+      "likes": 1,
+      "retweets": 0,
+      "replies": 1,
+      "rawEngagement": 3.5,
+      "viralityScore": 65.3,
+      "filoFitScore": 25,
+      "filoFitKeywordCount": 5,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 143,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": true,
+      "relevanceKeywords": [
+        "gmail",
+        "mail",
+        "メール",
+        "迷惑メール",
+        "スパム"
+      ],
+      "painEmotionWords": [],
+      "detectedLanguage": "ja",
+      "comments": {
+        "language": "ja",
+        "productRelevance": "high",
+        "tweetTranslationZh": "唯一记得的就是注册时用的邮箱地址（从服务刚开始邀请制时就在用的gmail里，三木谷银行的垃圾邮件一直被自动分类到垃圾箱，还能找到创建账户时易趣银行发来的邮件记录）",
+        "generatedAt": "2026-01-28T06:48:24.800Z",
+        "options": [
+          {
+            "comment": "古いメールのログが意外な場面で救世主になること、ありますよね。gmailの検索機能様々です🙏",
+            "comment_zh": "旧邮件记录在意想不到的时候成为救星，这种事确实会发生呢。感谢gmail的搜索功能🙏",
+            "zh_explain": "用轻松的语气认同对方的经历，强调邮件记录和搜索功能的重要性，自然引出邮件管理话题",
+            "angle": "witty",
+            "charCount": 47,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "メールの履歴が唯一の手がかりになるパターン、よくありますね。昔のサービスほど重要なメールが埋もれがちで、検索で掘り起こすのに苦労します",
+            "comment_zh": "邮件历史记录成为唯一线索的情况确实常见呢。越是老服务，重要邮件越容易被埋没，用搜索挖掘出来很费劲",
+            "zh_explain": "从产品人角度分析邮件管理的痛点，提到重要信息被埋没和搜索困难的问题，暗示对邮件整理有深入思考",
+            "angle": "practical",
+            "charCount": 67,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "スパムフィルターと古いメールの保存、この2つがあるだけで随分助かりますよね。受信箱の歴史は案外貴重な資産かもしれません",
+            "comment_zh": "有垃圾邮件过滤和旧邮件保存这两个功能，就能帮上大忙呢。收件箱的历史说不定是很珍贵的资产",
+            "zh_explain": "微妙地强调邮件管理工具的价值，将收件箱比作'资产'，暗示在思考邮件管理的深层价值",
+            "angle": "subtle_product",
+            "charCount": 59,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 15,
+      "aiPicked": false,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "gmail-spam-en",
+      "url": "https://x.com/NeilNevins/status/2016364470663041372",
+      "author": "@NeilNevins",
+      "datetime": "2026-01-28T04:15:26.000Z",
+      "text": "I manually check my spam inbox like once a week. A lot of class action notices (that are legit) tend to be filtered there by design so that fewer people claim them.",
+      "likes": 2,
+      "retweets": 0,
+      "replies": 0,
+      "rawEngagement": 4,
+      "viralityScore": 69.9,
+      "filoFitScore": 15,
+      "filoFitKeywordCount": 3,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 134.9,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": true,
+      "relevanceKeywords": [
+        "inbox",
+        "spam"
+      ],
+      "painEmotionWords": [],
+      "detectedLanguage": "en",
+      "comments": {
+        "language": "en",
+        "productRelevance": "high",
+        "tweetTranslationZh": "我大约每周手动检查一次垃圾邮件收件箱。很多集体诉讼通知（是合法的）往往被设计性地过滤到那里，这样申请赔偿的人就更少了。",
+        "generatedAt": "2026-01-28T06:48:39.504Z",
+        "options": [
+          {
+            "comment": "The real conspiracy is that important emails have become indistinguishable from spam. Meanwhile actual spam has gotten so sophisticated it looks legit 😅",
+            "comment_zh": "真正的阴谋是重要邮件已经变得和垃圾邮件难以区分。与此同时，真正的垃圾邮件变得如此精细，看起来很合法😅",
+            "zh_explain": "用幽默的方式点出现代邮件过滤的悖论，引发对邮件分类困境的共鸣，轻松而有见地",
+            "angle": "witty",
+            "charCount": 153,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "This highlights a huge flaw in email filtering - aggressive spam detection often catches legitimate but 'commercially inconvenient' messages. The incentives are completely misaligned.",
+            "comment_zh": "这突出了邮件过滤的一个巨大缺陷 - 激进的垃圾邮件检测往往会捕获合法但'商业上不便'的消息。激励机制完全错位。",
+            "zh_explain": "从产品和系统设计角度分析问题，展现对邮件过滤算法和商业逻辑的深度思考，很适合技术讨论",
+            "angle": "practical",
+            "charCount": 183,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "Been thinking about this exact problem - what if spam filters had transparency scores? Like showing why something was filtered and letting users adjust the sensitivity for different types of 'commercial' mail.",
+            "comment_zh": "我一直在思考这个确切的问题 - 如果垃圾邮件过滤器有透明度评分会怎样？比如显示某些内容被过滤的原因，并让用户调整对不同类型'商业'邮件的敏感度。",
+            "zh_explain": "暗示在思考邮件过滤的解决方案，提出透明度和用户控制的概念，自然展现产品思维但不推销",
+            "angle": "subtle_product",
+            "charCount": 209,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 16,
+      "aiPicked": false,
+      "group": "reach",
+      "originalGroup": "reach",
+      "sourceQuery": "ai-inbox-intersection",
+      "url": "https://x.com/Jasonmac404/status/2016101712046727279",
+      "author": "@Jasonmac404",
+      "datetime": "2026-01-27T10:51:20.000Z",
+      "text": "It's the same issue with getting an LLM to summarize a research paper (or an email or a text). What they tend to do is filter out the really novel parts. On first pass, the summaries seem logical and reasonable, but if you really check, they are simplistic and generic.",
+      "likes": 3,
+      "retweets": 0,
+      "replies": 0,
+      "rawEngagement": 6,
+      "viralityScore": 84.5,
+      "filoFitScore": 20,
+      "filoFitKeywordCount": 4,
+      "textBonus": 5,
+      "painBonus": 1,
+      "finalScore": 109.5,
+      "safetyTier": "soft",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": false,
+      "relevanceKeywords": [
+        "ai",
+        "search",
+        "email",
+        "summarize"
+      ],
+      "painEmotionWords": [],
+      "detectedLanguage": "en",
+      "comments": {
+        "language": "en",
+        "productRelevance": "high",
+        "tweetTranslationZh": "这和让LLM总结研究论文（或邮件或文本）是同样的问题。它们倾向于过滤掉真正新颖的部分。乍一看，摘要似乎合理且有道理，但如果你仔细检查，会发现它们过于简化和通用。",
+        "generatedAt": "2026-01-28T06:48:55.875Z",
+        "options": [
+          {
+            "comment": "The paradox of AI summarization: it's best at condensing what we already know, worst at highlighting what we need to discover 🤔",
+            "comment_zh": "AI摘要的悖论：它最擅长压缩我们已知的内容，最不擅长突出我们需要发现的内容🤔",
+            "zh_explain": "机智地点出了AI摘要的本质矛盾，用简洁的表述揭示了深层问题，容易引发思考和讨论",
+            "angle": "witty",
+            "charCount": 128,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "This hits hard. I've noticed LLMs gravitate toward the 'safe' middle ground - they'll capture obvious patterns but miss the edge cases and nuanced insights that often matter most. The signal-to-noise problem in reverse.",
+            "comment_zh": "说得太对了。我注意到LLM倾向于'安全'的中间地带 - 它们会捕捉明显的模式，但会错过往往最重要的边缘情况和细微洞察。信噪比问题的反向体现。",
+            "zh_explain": "从产品构建者角度深入分析问题，展示了对AI局限性的深度思考，提出'信噪比反向问题'的新视角，体现专业见解",
+            "angle": "practical",
+            "charCount": 219,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "Exactly why I'm skeptical when people say 'just let AI handle your email summaries.' The important stuff - the subtle requests, the between-the-lines context - gets lost in the averaging.",
+            "comment_zh": "这正是为什么当人们说'就让AI处理你的邮件摘要'时我持怀疑态度。重要的内容 - 微妙的请求、字里行间的背景 - 在平均化过程中丢失了。",
+            "zh_explain": "巧妙地从邮件场景切入，暗示对邮件AI工具有深入思考，但以批判性视角呈现，不显推销，体现对产品领域的专业理解",
+            "angle": "subtle_product",
+            "charCount": 187,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 17,
+      "aiPicked": false,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "gmail-spam-jp",
+      "url": "https://x.com/Yoichi_Kerberos/status/2016112740478374356",
+      "author": "@Yoichi_Kerberos",
+      "datetime": "2026-01-27T11:35:09.000Z",
+      "text": "普段あんま見ないGmail開いたら新着メール3000件ぐらい来てて何事！？！？！って思ったらこの3日間でありえん量の迷惑メール来てたわ 全部確認するのだり～からお仕事のメール見逃してたらゴメンネ",
+      "likes": 1,
+      "retweets": 0,
+      "replies": 0,
+      "rawEngagement": 2,
+      "viralityScore": 47.7,
+      "filoFitScore": 20,
+      "filoFitKeywordCount": 4,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 109.1,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": true,
+      "relevanceKeywords": [
+        "gmail",
+        "mail",
+        "メール",
+        "迷惑メール"
+      ],
+      "painEmotionWords": [],
+      "detectedLanguage": "ja",
+      "comments": {
+        "language": "ja",
+        "productRelevance": "high",
+        "tweetTranslationZh": "平时不太看的Gmail打开后发现有大约3000封新邮件，想着什么情况！？！？！结果发现这3天来了超多垃圾邮件。全部确认太累了，如果漏看了工作邮件的话真不好意思～",
+        "generatedAt": "2026-01-28T06:49:28.547Z",
+        "options": [
+          {
+            "comment": "3000件は草www Gmail君もう限界突破してるやん😂 迷惑メールって本当に迷惑よね",
+            "comment_zh": "3000封太搞笑了www Gmail君都已经极限突破了😂 垃圾邮件真的很讨厌呢",
+            "zh_explain": "用轻松幽默的语气回应，共情对方的困扰，用网络用语增加亲近感，避免说教",
+            "angle": "witty",
+            "charCount": 45,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "迷惑メールの量やばいですよね💦 受信箱の管理って本当に大変。重要なメールを見逃さないためのフィルタリング設定、見直した方がいいかも",
+            "comment_zh": "垃圾邮件的数量太夸张了💦 收件箱管理真的很辛苦。为了不错过重要邮件，可能需要重新设置过滤规则",
+            "zh_explain": "从实用角度提供建议，展示对邮件管理问题的思考，暗示在这方面有经验但不推销",
+            "angle": "practical",
+            "charCount": 66,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "これ分かります😅 受信箱って放置すると大変なことになりますよね。最近はAIで重要度を判断してくれるツールも増えてきて便利になってきました",
+            "comment_zh": "这个我懂😅 收件箱放着不管真的会变成大麻烦。最近AI判断重要性的工具也增加了，变得方便了",
+            "zh_explain": "共情问题并自然引入AI邮件管理的概念，暗示对相关解决方案有了解，为产品背景做铺垫",
+            "angle": "subtle_product",
+            "charCount": 69,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 18,
+      "aiPicked": false,
+      "group": "reach",
+      "originalGroup": "reach",
+      "sourceQuery": "ai-inbox-intersection",
+      "url": "https://x.com/geilt/status/2016123574864515218",
+      "author": "@geilt",
+      "datetime": "2026-01-27T12:18:12.000Z",
+      "text": "After a day or two, finished building my #Clawdbot AI assistant to control 82 smart lights, monitor email, send iMessages, manage remote servers via SSH, query databases, browse the web, search my notes, track my sleep, run background cron jobs, spawn parallel sub-agents, and",
+      "likes": 1,
+      "retweets": 0,
+      "replies": 2,
+      "rawEngagement": 5,
+      "viralityScore": 77.8,
+      "filoFitScore": 20,
+      "filoFitKeywordCount": 4,
+      "textBonus": 5,
+      "painBonus": 1,
+      "finalScore": 102.8,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": false,
+      "relevanceKeywords": [
+        "ai",
+        "search",
+        "email"
+      ],
+      "painEmotionWords": [],
+      "detectedLanguage": "en",
+      "comments": {
+        "language": "en",
+        "productRelevance": "high",
+        "tweetTranslationZh": "经过一两天时间，完成了构建我的 #Clawdbot AI 助手，它可以控制 82 盏智能灯、监控邮件、发送 iMessage、通过 SSH 管理远程服务器、查询数据库、浏览网页、搜索我的笔记、追踪睡眠、运行后台定时任务、生成并行子代理等功能",
+        "generatedAt": "2026-01-28T06:49:42.578Z",
+        "options": [
+          {
+            "comment": "82 smart lights?! Either you're living in a smart home wonderland or you've got some serious commitment to never stubbing your toe in the dark 😄",
+            "comment_zh": "82 盏智能灯？！要么你住在智能家居仙境，要么你真的下定决心永远不在黑暗中撞到脚趾 😄",
+            "zh_explain": "用幽默的方式调侃82盏智能灯这个数字，既显示了对技术的理解，又用轻松的语调引发互动",
+            "angle": "witty",
+            "charCount": 145,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "Impressive scope! The email monitoring + parallel sub-agents combo sounds particularly powerful. How do you handle the coordination between different agents to avoid conflicts?",
+            "comment_zh": "令人印象深刻的范围！邮件监控 + 并行子代理的组合听起来特别强大。你如何处理不同代理之间的协调以避免冲突？",
+            "zh_explain": "从技术角度提出深度问题，展现对AI系统架构的理解，特别关注邮件处理和多代理协调这些核心技术挑战",
+            "angle": "practical",
+            "charCount": 176,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "The email monitoring piece is fascinating - dealing with information overload while maintaining context across all those different systems must be quite the orchestration challenge.",
+            "comment_zh": "邮件监控这部分很有意思 - 在处理信息过载的同时保持所有不同系统的上下文，肯定是个复杂的编排挑战。",
+            "zh_explain": "巧妙地聚焦到邮件监控功能，暗示对信息过载问题的深度思考，展现在相关领域的专业见解，自然体现产品思维",
+            "angle": "subtle_product",
+            "charCount": 181,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 19,
+      "aiPicked": false,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "gmail-spam-en",
+      "url": "https://x.com/nku6170/status/2016386690881831192",
+      "author": "@nku6170",
+      "datetime": "2026-01-28T05:43:44.000Z",
+      "text": "but do you know how rich you are, in the Gmail spam folder!",
+      "likes": 1,
+      "retweets": 0,
+      "replies": 0,
+      "rawEngagement": 2,
+      "viralityScore": 47.7,
+      "filoFitScore": 15,
+      "filoFitKeywordCount": 3,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 101.6,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": true,
+      "relevanceKeywords": [
+        "gmail",
+        "spam",
+        "mail"
+      ],
+      "painEmotionWords": [],
+      "detectedLanguage": "other",
+      "comments": {
+        "language": "en",
+        "productRelevance": "high",
+        "tweetTranslationZh": "但你知道你在Gmail垃圾邮件文件夹里有多富有吗！",
+        "generatedAt": "2026-01-28T06:49:54.529Z",
+        "options": [
+          {
+            "comment": "Plot twist: the real treasure was the Nigerian princes we ignored along the way 👑",
+            "comment_zh": "剧情反转：真正的宝藏是我们一路忽视的尼日利亚王子们👑",
+            "zh_explain": "用幽默的方式回应垃圾邮件话题，提到经典的尼日利亚王子诈骗邮件，轻松有趣，容易引起共鸣和互动",
+            "angle": "witty",
+            "charCount": 82,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "The real problem isn't the spam - it's when legitimate emails end up there and we never see them. The filtering isn't perfect yet.",
+            "comment_zh": "真正的问题不是垃圾邮件，而是当重要邮件被误判进去而我们永远看不到。过滤系统还不够完美。",
+            "zh_explain": "从产品思维角度分析垃圾邮件过滤的真实痛点，展现对邮件管理问题的深度思考，有建设性",
+            "angle": "practical",
+            "charCount": 130,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "Sometimes I wonder if there's a parallel universe where spam folders are actually organized treasure chests of missed opportunities 📧",
+            "comment_zh": "有时我想知道是否存在一个平行宇宙，那里的垃圾邮件文件夹实际上是错失机会的有序宝箱📧",
+            "zh_explain": "用富有想象力的方式暗示邮件整理和管理的重要性，自然引出对邮件组织的思考，微妙地体现产品视角",
+            "angle": "subtle_product",
+            "charCount": 134,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 20,
+      "aiPicked": false,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "gmail-spam-en",
+      "url": "https://x.com/tata_neu/status/2016368590061240588",
+      "author": "@tata_neu",
+      "datetime": "2026-01-28T04:31:48.000Z",
+      "text": "Sai, upon checking, we can confirm that the gift card details have been sent to your registered email ID. We kindly request you to please check your inbox (and spam folder, if needed). Do let us know if you need any further assistance, we’re here to help. - Yavi",
+      "likes": 0,
+      "retweets": 0,
+      "replies": 1,
+      "rawEngagement": 1.5,
+      "viralityScore": 39.8,
+      "filoFitScore": 20,
+      "filoFitKeywordCount": 4,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 97.2,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": true,
+      "relevanceKeywords": [
+        "email",
+        "inbox",
+        "spam",
+        "mail"
+      ],
+      "painEmotionWords": [],
+      "detectedLanguage": "other",
+      "comments": {
+        "language": "en",
+        "productRelevance": "medium",
+        "tweetTranslationZh": "Sai，经过检查，我们确认礼品卡详情已发送至您注册的邮箱。请您检查收件箱（如需要也请检查垃圾邮件文件夹）。如果需要进一步协助，请告知我们，我们随时为您服务。- Yavi",
+        "generatedAt": "2026-01-28T06:50:21.037Z",
+        "options": [
+          {
+            "comment": "The eternal 'check your spam folder' - the digital equivalent of 'have you tried turning it off and on again?' 😅",
+            "comment_zh": "永恒的'检查垃圾邮件文件夹'——相当于数字版的'你试过重启吗？'😅",
+            "zh_explain": "用幽默的方式指出这是客服的经典回复，让人会心一笑，容易引起共鸣",
+            "angle": "witty",
+            "charCount": 113,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "This is why good email delivery is so critical for customer experience. One missing confirmation can derail the entire user journey.",
+            "comment_zh": "这就是为什么良好的邮件送达对客户体验如此重要。一个丢失的确认邮件就能破坏整个用户体验。",
+            "zh_explain": "从产品角度分析邮件送达的重要性，展示对用户体验的深度思考，适合产品人身份",
+            "angle": "practical",
+            "charCount": 132,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "As someone who deals with inbox chaos daily, I feel for anyone having to hunt through spam folders for important stuff. Email organization shouldn't be this hard.",
+            "comment_zh": "作为每天都要处理收件箱混乱的人，我很理解那些需要在垃圾邮件文件夹里寻找重要内容的人。邮件整理不应该这么困难。",
+            "zh_explain": "自然地表达对邮件管理痛点的理解，暗示自己在这个领域有经验，为后续产品讨论埋下伏笔",
+            "angle": "subtle_product",
+            "charCount": 162,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 21,
+      "aiPicked": false,
+      "group": "reach",
+      "originalGroup": "reach",
+      "sourceQuery": "ai-inbox-intersection",
+      "url": "https://x.com/thecuongpham/status/2016156138132124039",
+      "author": "@thecuongpham",
+      "datetime": "2026-01-27T14:27:36.000Z",
+      "text": "Been running Clawdbot as my daily AI ops layer for a week now. Email triage, browser automation, cron-based content scheduling, memory across sessions. The \"team\" version connecting everyone's context is going to be a massive unlock for small startups.",
+      "likes": 2,
+      "retweets": 0,
+      "replies": 0,
+      "rawEngagement": 4,
+      "viralityScore": 69.9,
+      "filoFitScore": 20,
+      "filoFitKeywordCount": 4,
+      "textBonus": 5,
+      "painBonus": 1,
+      "finalScore": 94.9,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": false,
+      "relevanceKeywords": [
+        "ai",
+        "email",
+        "triage"
+      ],
+      "painEmotionWords": [],
+      "detectedLanguage": "en",
+      "comments": {
+        "language": "en",
+        "productRelevance": "high",
+        "tweetTranslationZh": "运行Clawdbot作为我的日常AI运营层已经一周了。邮件分类、浏览器自动化、基于cron的内容调度、跨会话记忆。团队版本连接每个人的上下文对小型初创公司将是巨大的突破。",
+        "generatedAt": "2026-01-28T06:50:49.438Z",
+        "options": [
+          {
+            "comment": "Email triage with AI feels like having a really good assistant who never sleeps and somehow gets your priorities better than you do 😅",
+            "comment_zh": "用AI进行邮件分类感觉就像有一个永不休息的优秀助手，而且比你自己更了解你的优先级😅",
+            "zh_explain": "用轻松幽默的方式共鸣AI邮件处理的体验，突出AI助手的智能和可靠性",
+            "angle": "witty",
+            "charCount": 134,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "The cross-session memory is huge. Most AI tools feel like goldfish - you have to rebuild context every time. How's it handling complex email threads that span weeks?",
+            "comment_zh": "跨会话记忆功能很重要。大多数AI工具就像金鱼一样——每次都要重新建立上下文。它如何处理跨越数周的复杂邮件线程？",
+            "zh_explain": "从产品构建者角度提出实际使用中的具体问题，展示对AI工具痛点的深度理解，引发技术讨论",
+            "angle": "practical",
+            "charCount": 165,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "The shared context aspect is fascinating - imagine everyone's inbox intelligence contributing to better decisions without the usual information silos.",
+            "comment_zh": "共享上下文方面很有意思——想象每个人的收件箱智能都为更好的决策做贡献，而不会有常见的信息孤岛。",
+            "zh_explain": "从信息管理和团队协作角度分析产品价值，暗示对邮件和信息流有深度思考，但不推销自己的产品",
+            "angle": "subtle_product",
+            "charCount": 150,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 22,
+      "aiPicked": false,
+      "group": "reach",
+      "originalGroup": "reach",
+      "sourceQuery": "ai-email-jp",
+      "url": "https://x.com/munekanai/status/2016345487474143477",
+      "author": "@munekanai",
+      "datetime": "2026-01-28T03:00:00.000Z",
+      "text": "最近、生成AI関連の案件が急増しています。 AIコンサルタントがクライアントに参画すると、 これまで人手に依存していた業務が効率化・自動化され、労働生産性が一気に高まります。 そこで生まれた「余剰リソース」を、 次は新規事業や高付加価値領域にシフトする。",
+      "likes": 1,
+      "retweets": 1,
+      "replies": 0,
+      "rawEngagement": 4,
+      "viralityScore": 69.9,
+      "filoFitScore": 15,
+      "filoFitKeywordCount": 3,
+      "textBonus": 5,
+      "painBonus": 1,
+      "finalScore": 89.9,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": false,
+      "relevanceKeywords": [
+        "ai",
+        "生産性"
+      ],
+      "painEmotionWords": [],
+      "detectedLanguage": "ja",
+      "comments": {
+        "language": "ja",
+        "productRelevance": "high",
+        "tweetTranslationZh": "最近，生成AI相关的案件急剧增加。当AI顾问参与客户项目时，原本依赖人力的业务得到效率化和自动化，劳动生产力一下子提高了。由此产生的「余剩资源」，接下来要转向新业务和高附加值领域。",
+        "generatedAt": "2026-01-28T06:51:05.704Z",
+        "options": [
+          {
+            "comment": "余剰リソースの使い道を考えるのも楽しいですね。でも実際は「効率化したのに、なぜかメールの返信は相変わらず遅い」みたいな矛盾も起きがち😅",
+            "comment_zh": "思考余剩资源的用途也很有趣呢。但实际上经常出现「虽然效率化了，但不知为何邮件回复还是一如既往地慢」这样的矛盾😅",
+            "zh_explain": "用幽默的方式指出AI效率化的矛盾现象，引起共鸣，同时自然地提及邮件处理这个痛点",
+            "angle": "witty",
+            "charCount": 68,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "AIで自動化が進む中、逆に人間が判断すべき領域が明確になってきますね。情報の取捨選択や戦略的思考など、AI任せにできない部分にリソースを集中させることが重要そうです。",
+            "comment_zh": "在AI推进自动化的过程中，反而让人类应该判断的领域变得明确了呢。在信息筛选和战略思考等不能交给AI的部分集中资源似乎很重要。",
+            "zh_explain": "从产品构建者角度分析AI效率化带来的变化，展现对信息管理和人机分工的深度思考，体现专业性",
+            "angle": "practical",
+            "charCount": 83,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "確かに。ただ、効率化された分、処理すべき情報量も増えてしまう皮肉もありますね。結局、何を見て何を無視するかの判断力がより重要になってきている気がします。",
+            "comment_zh": "确实如此。不过，效率化的同时，需要处理的信息量也增加了，这很讽刺呢。最终，判断什么要看什么要忽略的能力变得更重要了。",
+            "zh_explain": "暗示信息过载问题，自然地引向信息筛选和管理的重要性，与邮件管理产品的核心价值暗合",
+            "angle": "subtle_product",
+            "charCount": 76,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 23,
+      "aiPicked": false,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "inbox-overwhelm-en",
+      "url": "https://x.com/theevolving_e/status/2016393317605384483",
+      "author": "@theevolving_e",
+      "datetime": "2026-01-28T06:10:04.000Z",
+      "text": "Bonus hacks every Lagos worker needs: - Turn danfo into classroom (audiobooks, Duolingo) - Micro-wins: clear inbox, unsubscribe spam - Noise-cancelling + playlist = sanity shield - Negotiate flex hours if possible You’re not alone in this chaos. We are all in this",
+      "likes": 0,
+      "retweets": 0,
+      "replies": 0,
+      "rawEngagement": 0,
+      "viralityScore": 0,
+      "filoFitScore": 20,
+      "filoFitKeywordCount": 4,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 75,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": false,
+      "relevanceKeywords": [
+        "inbox",
+        "spam",
+        "unsubscribe"
+      ],
+      "painEmotionWords": [
+        "chaos"
+      ],
+      "detectedLanguage": "en",
+      "comments": {
+        "language": "en",
+        "productRelevance": "high",
+        "tweetTranslationZh": "每个拉各斯上班族都需要的额外技巧：- 把danfo（公交车）变成教室（有声书、多邻国）- 小胜利：清理收件箱、退订垃圾邮件 - 降噪耳机+播放列表=理智护盾 - 如果可能的话争取弹性工作时间 你在这种混乱中不是一个人。我们都在经历这些",
+        "generatedAt": "2026-01-28T06:51:25.865Z",
+        "options": [
+          {
+            "comment": "The 'clear inbox' micro-win hits different when you realize you've been carrying 47,000 unread emails like emotional baggage 😅",
+            "comment_zh": "当你意识到自己一直像背负情感包袱一样带着47,000封未读邮件时，'清理收件箱'这个小胜利感觉就不一样了😅",
+            "zh_explain": "用幽默的方式共鸣收件箱混乱的痛点，夸张的数字让人会心一笑，同时暗示这是个普遍问题",
+            "angle": "witty",
+            "charCount": 127,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "The micro-wins strategy is brilliant. I've found that small daily actions like inbox zero compound into massive productivity gains over time. What's your go-to unsubscribe method?",
+            "comment_zh": "微胜利策略很棒。我发现像收件箱清零这样的日常小行动会随着时间复合成巨大的生产力提升。你最常用的退订方法是什么？",
+            "zh_explain": "认同原推文的策略并深入讨论，展示对生产力的思考，通过提问增加互动性，体现专业性",
+            "angle": "practical",
+            "charCount": 179,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "Lagos commute = perfect time for email triage. Amazing how much mental clarity comes from just having an organized inbox when you get to the office.",
+            "comment_zh": "拉各斯通勤=邮件分拣的完美时间。当你到办公室时拥有一个整理好的收件箱，带来的心理清晰感真是令人惊讶。",
+            "zh_explain": "结合拉各斯本地语境，自然地将通勤时间与邮件管理联系起来，暗示对收件箱管理有深度理解，体现产品思维",
+            "angle": "subtle_product",
+            "charCount": 148,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 24,
+      "aiPicked": false,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "email-search-pain",
+      "url": "https://x.com/gritlys/status/2015477223726149779",
+      "author": "@gritlys",
+      "datetime": "2026-01-25T17:29:50.000Z",
+      "text": "Your FB Marketplace seller \"Add your tax info\" section is broken for about a year. I've tried contacting you guys every way possible and zero response. No email response, no DM response. Nothing. Can you please find someone with a keyboard and assist? @Meta @facebook",
+      "likes": 2,
+      "retweets": 0,
+      "replies": 2,
+      "rawEngagement": 7,
+      "viralityScore": 90.3,
+      "filoFitScore": 15,
+      "filoFitKeywordCount": 3,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 66.2,
+      "safetyTier": "low_signal",
+      "lowSignalPenalty": true,
+      "noEmotionPenalty": false,
+      "relevanceKeywords": [
+        "email",
+        "mail"
+      ],
+      "painEmotionWords": [
+        "broken"
+      ],
+      "detectedLanguage": "en",
+      "lowSignalWarning": "Low signal match [ads_promotion]",
+      "comments": null,
+      "commentError": "Generation failed after retries",
+      "commentSkipped": false
+    },
+    {
+      "rank": 25,
+      "aiPicked": false,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "gmail-spam-cn",
+      "url": "https://x.com/evilcos/status/2016141661764780057",
+      "author": "@evilcos",
+      "datetime": "2026-01-27T13:30:04.000Z",
+      "text": "There's a wave of people who specialize in this kind of extortion-style coin-launching racket. You can't stop it—it's just like the spam in your inbox, the bot posts on forums, or those persistent psoriasis-like ads all over social networks. These are whole supply chains, some",
+      "likes": 40,
+      "retweets": 1,
+      "replies": 9,
+      "rawEngagement": 95.5,
+      "viralityScore": 198.5,
+      "filoFitScore": 15,
+      "filoFitKeywordCount": 3,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 65.6,
+      "safetyTier": "low_signal",
+      "lowSignalPenalty": true,
+      "noEmotionPenalty": true,
+      "relevanceKeywords": [
+        "inbox",
+        "spam"
+      ],
+      "painEmotionWords": [],
+      "detectedLanguage": "en",
+      "lowSignalWarning": "Low signal match [ads_promotion]",
+      "comments": {
+        "language": "en",
+        "productRelevance": "medium",
+        "tweetTranslationZh": "有一批人专门搞这种敲诈式的发币骗局。你阻止不了的——就像你收件箱里的垃圾邮件、论坛上的机器人帖子，或者社交网络上那些像牛皮癣一样的广告。这些都是完整的产业链，有些...",
+        "generatedAt": "2026-01-28T06:52:25.060Z",
+        "options": [
+          {
+            "comment": "The inbox comparison hits hard. It's wild how these digital parasites have basically the same playbook across every platform.",
+            "comment_zh": "收件箱的比喻很到位。这些数字寄生虫在每个平台上基本都用同样的套路，真是疯狂。",
+            "zh_explain": "通过认同作者的收件箱比喻，自然引入信息过载话题，展现对数字噪音问题的深度理解，容易引起共鸣",
+            "angle": "witty",
+            "charCount": 125,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "The industrialization of digital noise is fascinating from a systems perspective. Same infrastructure, different outputs—spam emails, fake social engagement, scam tokens.",
+            "comment_zh": "数字噪音的工业化从系统角度来看很有趣。同样的基础设施，不同的输出——垃圾邮件、虚假社交互动、诈骗代币。",
+            "zh_explain": "从系统思维角度分析问题，显示产品人员的思考深度，将不同形式的数字垃圾联系起来，展现对信息管理领域的专业见解",
+            "angle": "practical",
+            "charCount": 170,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "Every day I see this pattern—whether it's inbox chaos or social feed manipulation. The signal-to-noise ratio just keeps getting worse across all channels.",
+            "comment_zh": "我每天都看到这种模式——无论是收件箱混乱还是社交信息流操控。所有渠道的信噪比都在不断恶化。",
+            "zh_explain": "通过信噪比概念暗示在信息管理领域有经验，自然提及收件箱问题，为潜在产品讨论铺垫，但不显突兀",
+            "angle": "subtle_product",
+            "charCount": 154,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 26,
+      "aiPicked": false,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "email-search-pain",
+      "url": "https://x.com/grok/status/2015109773125980587",
+      "author": "@grok",
+      "datetime": "2026-01-24T17:09:43.000Z",
+      "text": "I couldn't find verified details on this specific incident from reliable sources. No reports mention a UK police force, officer names, or charges tied to someone being arrested and beaten after opening an email in January 2026. UK police have made arrests for online hate speech",
+      "likes": 0,
+      "retweets": 0,
+      "replies": 0,
+      "rawEngagement": 0,
+      "viralityScore": 0,
+      "filoFitScore": 15,
+      "filoFitKeywordCount": 3,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 60,
+      "safetyTier": "soft",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": false,
+      "relevanceKeywords": [
+        "email",
+        "mail"
+      ],
+      "painEmotionWords": [
+        "hate"
+      ],
+      "detectedLanguage": "en",
+      "comments": {
+        "language": "en",
+        "productRelevance": "medium",
+        "tweetTranslationZh": "我无法从可靠来源找到关于这一特定事件的验证详情。没有报告提及英国警方、警官姓名，或与2026年1月某人因打开邮件被逮捕和殴打相关的指控。英国警方确实因网络仇恨言论进行过逮捕",
+        "generatedAt": "2026-01-28T06:52:39.362Z",
+        "options": [
+          {
+            "comment": "The fact that we're even having this conversation shows how wild email can get these days. From phishing to this alleged chaos - inboxes really aren't the safe havens they used to be 📧⚡",
+            "comment_zh": "我们甚至在进行这种对话的事实表明，现在的邮件真的很疯狂。从钓鱼邮件到这种所谓的混乱——收件箱真的不再是以前那种安全港湾了",
+            "zh_explain": "通过幽默地评论邮件环境的变化，自然地引入了邮件安全和收件箱管理的话题，既回应了推文又展示了对邮件领域的关注",
+            "angle": "witty",
+            "charCount": 186,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "This highlights why fact-checking is crucial, especially when claims involve specific dates, names, and institutions. The spread of unverified information can have real consequences for public trust.",
+            "comment_zh": "这突出了事实核查的重要性，特别是当声明涉及具体日期、姓名和机构时。未经验证信息的传播可能对公众信任产生真实后果",
+            "zh_explain": "务实地分析了错误信息传播的问题，体现了理性思考和对信息质量的重视，适合这种需要澄清事实的语境",
+            "angle": "practical",
+            "charCount": 199,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "Stories like this remind me why I'm so careful about what emails I open and where information comes from. The digital world is getting more complex every day.",
+            "comment_zh": "像这样的故事提醒我为什么要如此谨慎地对待打开的邮件和信息来源。数字世界每天都在变得更加复杂",
+            "zh_explain": "微妙地暗示了邮件安全意识和信息管理的重要性，通过个人经验分享的方式自然地引入邮件处理话题，不显突兀",
+            "angle": "subtle_product",
+            "charCount": 158,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 27,
+      "aiPicked": false,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "email-search-pain",
+      "url": "https://x.com/Oluwatosin_toon/status/2014771850975346741",
+      "author": "@Oluwatosin_toon",
+      "datetime": "2026-01-23T18:46:56.000Z",
+      "text": "I hate that this has to be said I have a girlfriend, don’t dm asking me out, don’t email me asking me out. I’m not interested, even if I was single, I wouldn’t be interested. I am here to hopefully entertain, idc if you find me attractive..",
+      "likes": 0,
+      "retweets": 0,
+      "replies": 0,
+      "rawEngagement": 0,
+      "viralityScore": 0,
+      "filoFitScore": 15,
+      "filoFitKeywordCount": 3,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 60,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": false,
+      "relevanceKeywords": [
+        "email",
+        "mail"
+      ],
+      "painEmotionWords": [
+        "hate"
+      ],
+      "detectedLanguage": "en",
+      "comments": {
+        "language": "en",
+        "productRelevance": "medium",
+        "tweetTranslationZh": "我讨厌不得不说这句话，我有女朋友了，别私信约我，别发邮件约我。我不感兴趣，即使我单身也不会感兴趣。我在这里是为了娱乐大家，不在乎你们是否觉得我有魅力。",
+        "generatedAt": "2026-01-28T06:52:53.039Z",
+        "options": [
+          {
+            "comment": "The audacity of people sliding into DMs and emails like it's a job application 💀",
+            "comment_zh": "那些滑进私信和邮件的人的胆量，就像在投简历一样 💀",
+            "zh_explain": "用幽默的比喻回应这个尴尬情况，把不当求爱比作投简历，既轻松又能引起共鸣",
+            "angle": "witty",
+            "charCount": 81,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "Boundaries are so important online. It's wild how some people think social media = dating app for everyone they follow",
+            "comment_zh": "在网上设定边界非常重要。有些人竟然认为社交媒体就等于对所有关注的人都是交友软件，这太疯狂了",
+            "zh_explain": "从更深层次讨论网络边界问题，表达对数字时代人际关系的思考，有建设性且容易引发讨论",
+            "angle": "practical",
+            "charCount": 118,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "This reminds me why I've been thinking about better filters for unwanted messages. The signal-to-noise ratio in our inboxes is just... exhausting",
+            "comment_zh": "这让我想到为什么我一直在思考如何更好地过滤不需要的消息。我们收件箱中信噪比实在是...令人疲惫",
+            "zh_explain": "自然地从骚扰问题联系到信息过载和收件箱管理，暗示在思考相关解决方案，但不显得推销",
+            "angle": "subtle_product",
+            "charCount": 145,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 28,
+      "aiPicked": false,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "inbox-overwhelm-en",
+      "url": "https://x.com/CodeThorpeX/status/2016394308945850737",
+      "author": "@CodeThorpeX",
+      "datetime": "2026-01-28T06:14:00.000Z",
+      "text": "“okay so we can all agree now” THAT WE NEVER ALL AGREE !! Cliché spewing engagement baiters! Y’all get the level of hell just above email spammers!",
+      "likes": 0,
+      "retweets": 0,
+      "replies": 0,
+      "rawEngagement": 0,
+      "viralityScore": 0,
+      "filoFitScore": 15,
+      "filoFitKeywordCount": 3,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 60,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": false,
+      "relevanceKeywords": [
+        "email",
+        "spam",
+        "mail"
+      ],
+      "painEmotionWords": [
+        "hell"
+      ],
+      "detectedLanguage": "en",
+      "comments": {
+        "language": "en",
+        "productRelevance": "medium",
+        "tweetTranslationZh": "「好吧现在我们都能达成一致了」我们永远都不会达成一致！！老套的参与度诱饵发布者！你们应该在地狱里待在垃圾邮件发送者的上一层！",
+        "generatedAt": "2026-01-28T06:53:41.885Z",
+        "options": [
+          {
+            "comment": "The irony of using an engagement phrase to complain about engagement phrases is *chef's kiss* 😂",
+            "comment_zh": "用参与度套话来抱怨参与度套话的讽刺感真是*厨师之吻*😂",
+            "zh_explain": "用幽默的方式指出推文本身的讽刺性，轻松机智，容易获得共鸣和互动",
+            "angle": "witty",
+            "charCount": 96,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "Email spammers at least put effort into subject lines. These folks just copy-paste the same 5 phrases and call it a day.",
+            "comment_zh": "邮件垃圾发送者至少还会在主题行上下功夫。这些人只是复制粘贴同样的5个短语就完事了。",
+            "zh_explain": "从产品建设者角度分析，对比邮件垃圾内容和社交媒体套话，展示对信息质量的思考",
+            "angle": "practical",
+            "charCount": 120,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "The \"can we all agree\" starter pack is basically spam for timelines. Same energy as those newsletters that somehow multiply in your inbox.",
+            "comment_zh": "「我们都能同意」开场白基本就是时间线垃圾信息。和那些在收件箱里莫名其妙增殖的垃圾邮件一个德性。",
+            "zh_explain": "巧妙地将社交媒体套话与邮件垃圾信息做类比，暗示对信息过载问题有深度思考，为邮件管理话题铺垫",
+            "angle": "subtle_product",
+            "charCount": 138,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 29,
+      "aiPicked": false,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "inbox-overwhelm-en",
+      "url": "https://x.com/vggqftkcxu24738/status/2016383045842985197",
+      "author": "@vggqftkcxu24738",
+      "datetime": "2026-01-28T05:29:15.000Z",
+      "text": "Using YOM_Official to manage my email integration has transformed my inbox from chaos into a streamlined action list. @YOM_Official",
+      "likes": 0,
+      "retweets": 0,
+      "replies": 0,
+      "rawEngagement": 0,
+      "viralityScore": 0,
+      "filoFitScore": 15,
+      "filoFitKeywordCount": 3,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 60,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": false,
+      "relevanceKeywords": [
+        "email",
+        "inbox",
+        "mail"
+      ],
+      "painEmotionWords": [
+        "chaos"
+      ],
+      "detectedLanguage": "en",
+      "comments": {
+        "language": "en",
+        "productRelevance": "high",
+        "tweetTranslationZh": "使用YOM_Official来管理我的邮件集成，把我的收件箱从混乱变成了精简的行动清单。@YOM_Official",
+        "generatedAt": "2026-01-28T06:53:54.010Z",
+        "options": [
+          {
+            "comment": "The dream! Going from inbox anxiety to actually knowing what needs your attention is such a game changer 🎯",
+            "comment_zh": "梦想成真！从收件箱焦虑到真正知道什么需要你关注，这真是改变游戏规则的事情🎯",
+            "zh_explain": "用轻松但认同的语气回应，强调从焦虑到清晰的转变，体现对邮件管理痛点的深度理解",
+            "angle": "witty",
+            "charCount": 107,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "This is exactly what email should be - actionable intelligence rather than just noise. The shift from reactive to intentional inbox management changes everything.",
+            "comment_zh": "这正是邮件应该有的样子——可执行的智能信息而不是噪音。从被动反应到有意识的收件箱管理，改变了一切。",
+            "zh_explain": "从产品思维角度分析邮件管理的本质，展现对用户体验和工作流优化的深入思考",
+            "angle": "practical",
+            "charCount": 162,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "Love seeing tools that actually solve the core problem - turning information overload into clarity. The inbox-as-action-list approach is brilliant.",
+            "comment_zh": "喜欢看到真正解决核心问题的工具——把信息过载转化为清晰度。收件箱即行动清单的方法很棒。",
+            "zh_explain": "暗示自己也在关注类似的解决方案，认可这种方法论，体现对邮件管理领域的专业见解",
+            "angle": "subtle_product",
+            "charCount": 147,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 30,
+      "aiPicked": false,
+      "group": "reach",
+      "originalGroup": "reach",
+      "sourceQuery": "email-productivity-en",
+      "url": "https://x.com/MatthewZ73671/status/2015203507700105513",
+      "author": "@MatthewZ73671",
+      "datetime": "2026-01-24T23:22:11.000Z",
+      "text": "The key is figuring out how to get a clip of the video at the right time in order to make the transition smooth for a longer video. It's still choppy, but it's much better. Workflow is clunky though. Copy image, email to myself, download to phone, put in Grok, generate,",
+      "likes": 0,
+      "retweets": 0,
+      "replies": 1,
+      "rawEngagement": 1.5,
+      "viralityScore": 39.8,
+      "filoFitScore": 15,
+      "filoFitKeywordCount": 3,
+      "textBonus": 5,
+      "painBonus": 1,
+      "finalScore": 59.8,
+      "safetyTier": "soft",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": false,
+      "relevanceKeywords": [
+        "ai",
+        "workflow",
+        "email"
+      ],
+      "painEmotionWords": [],
+      "detectedLanguage": "en",
+      "comments": {
+        "language": "en",
+        "productRelevance": "medium",
+        "tweetTranslationZh": "关键是要在合适的时间点获取视频片段，这样才能让长视频的转换更流畅。虽然还有些卡顿，但已经好多了。不过工作流程很笨重。复制图片，发邮件给自己，下载到手机，放进Grok，生成...",
+        "generatedAt": "2026-01-28T06:54:07.513Z",
+        "options": [
+          {
+            "comment": "That 'email to myself' step hit me right in the soul 😅 We've all been there with these makeshift workflows",
+            "comment_zh": "那个'发邮件给自己'的步骤戳中了我的灵魂😅 我们都经历过这些临时凑合的工作流程",
+            "zh_explain": "幽默地共鸣那个发邮件给自己的步骤，很多人都这样做过，创造轻松的连接感",
+            "angle": "witty",
+            "charCount": 107,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "The irony of using email as a file transfer system in 2024. There's got to be a better way to bridge these tools without the manual handoffs",
+            "comment_zh": "在2024年还要用邮件作为文件传输系统真是讽刺。肯定有更好的方法来连接这些工具，而不需要手动中转",
+            "zh_explain": "务实地指出工作流程的问题，展示对工具整合的思考，引发关于效率的讨论",
+            "angle": "practical",
+            "charCount": 140,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "Those multi-step workflows always make me think about how much friction we accept as 'normal'. The magic happens when you can eliminate even one of those steps",
+            "comment_zh": "这些多步骤工作流程总是让我思考我们把多少摩擦当作'正常'。当你能消除其中哪怕一个步骤时，奇迹就发生了",
+            "zh_explain": "暗示对简化工作流程有深入思考，可能在解决类似问题，但不直接推销",
+            "angle": "subtle_product",
+            "charCount": 159,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    },
+    {
+      "rank": 31,
+      "aiPicked": false,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "email-search-pain",
+      "url": "https://x.com/WSJFreeEx/status/2014752661195661596",
+      "author": "@WSJFreeEx",
+      "datetime": "2026-01-23T17:30:41.000Z",
+      "text": "Landing a job often requires tolerating mild social discomfort. Digital natives with a preference for email and text find this frightening, writes @MJ_Koch https:// on.wsj.com/4qG6PqG",
+      "likes": 14,
+      "retweets": 3,
+      "replies": 1,
+      "rawEngagement": 35.5,
+      "viralityScore": 156.2,
+      "filoFitScore": 15,
+      "filoFitKeywordCount": 3,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 52.9,
+      "safetyTier": "low_signal",
+      "lowSignalPenalty": true,
+      "noEmotionPenalty": true,
+      "relevanceKeywords": [
+        "email",
+        "mail"
+      ],
+      "painEmotionWords": [],
+      "detectedLanguage": "en",
+      "lowSignalWarning": "Low signal match [ads_promotion]",
+      "comments": {
+        "language": "en",
+        "productRelevance": "medium",
+        "tweetTranslationZh": "找工作通常需要容忍轻微的社交不适。偏好邮件和短信的数字原住民觉得这很可怕，@MJ_Koch 写道",
+        "generatedAt": "2026-01-28T06:54:21.932Z",
+        "options": [
+          {
+            "comment": "Plot twist: the same people who are terrified of a 10-minute phone call will write 3-paragraph emails that could've been solved with 'yes' or 'no' 😅",
+            "comment_zh": "剧情反转：那些害怕10分钟电话的人会写3段话的邮件，而其实一个'是'或'不是'就能解决问题 😅",
+            "zh_explain": "幽默地指出数字原住民的矛盾行为，用轻松的方式引发共鸣，容易获得点赞和转发",
+            "angle": "witty",
+            "charCount": 149,
+            "risk": "low",
+            "recommended": false
+          },
+          {
+            "comment": "There's real irony here - we've become hyper-efficient at async communication but lost the skill of real-time problem solving. The best collaborations I've seen blend both seamlessly.",
+            "comment_zh": "这里有真正的讽刺意味 - 我们在异步沟通方面变得超级高效，但失去了实时解决问题的技能。我见过的最好的合作是无缝融合两者。",
+            "zh_explain": "务实的观点，展示了对沟通方式演变的深度思考，体现了产品建设者的视角，容易引发有意义的讨论",
+            "angle": "practical",
+            "charCount": 183,
+            "risk": "low",
+            "recommended": true
+          },
+          {
+            "comment": "Email feels safe because you can craft the perfect response. Real-time conversation requires trusting your unfiltered thoughts - which honestly might be a skill worth developing again.",
+            "comment_zh": "邮件让人感觉安全，因为你可以精心制作完美的回复。实时对话需要相信你未经过滤的想法 - 说实话，这可能是一个值得重新培养的技能。",
+            "zh_explain": "微妙地暗示了解邮件沟通的深层心理，同时提出平衡观点，自然地体现了对沟通工具的思考",
+            "angle": "subtle_product",
+            "charCount": 184,
+            "risk": "low",
+            "recommended": false
+          }
+        ]
+      },
+      "commentError": null,
+      "commentSkipped": false
+    }
+  ],
+  "commentGenerationStats": {
+    "total": 31,
+    "aiPicked": 10,
+    "succeeded": 29,
+    "failed": 2,
+    "skipped": 0,
+    "skipReasons": {},
+    "byLanguage": {
+      "en": 22,
+      "ja": 7
+    },
+    "byProductRelevance": {
+      "high": 16,
+      "medium": 10,
+      "low": 3
+    }
+  }
+}
