@@ -87,33 +87,35 @@ export function StatsBar({ stats, showAiPicked, onToggleAiPicked, languageFilter
 
   return (
     <div className="bg-white/80 backdrop-blur-sm border-b border-stone-200/60 relative z-20">
-      <div className="max-w-6xl mx-auto px-6 py-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-6 md:gap-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-6 md:gap-8">
         {/* Stats Cards */}
-        <div className="flex items-center gap-2 bg-gradient-to-r from-amber-50 to-orange-50 px-4 py-2 rounded-2xl border border-amber-200/50 w-full sm:w-auto sm:min-w-[180px]">
-          <div className="w-8 h-8 bg-amber-500 rounded-xl flex items-center justify-center">
-            <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+        <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:items-center sm:gap-2">
+          <div className="flex items-center gap-2 bg-gradient-to-r from-amber-50 to-orange-50 px-3 py-2 sm:px-4 rounded-2xl border border-amber-200/50 w-full sm:w-auto sm:min-w-[180px]">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-amber-500 rounded-xl flex items-center justify-center">
+              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2Z"/>
             </svg>
           </div>
-          <div>
-            <span className="text-2xl font-bold text-stone-800">
-              {showAiPicked ? stats.aiPicked : stats.total}
-            </span>
-            <span className="text-sm text-stone-500 ml-1.5">
-              {showAiPicked ? 'AI 精选' : '全部推文'}
-            </span>
+            <div>
+              <span className="text-xl sm:text-2xl font-bold text-stone-800">
+                {showAiPicked ? stats.aiPicked : stats.total}
+              </span>
+              <span className="text-xs sm:text-sm text-stone-500 ml-1.5">
+                {showAiPicked ? 'AI 精选' : '全部推文'}
+              </span>
+            </div>
           </div>
-        </div>
-        
-        <div className="flex items-center gap-2 bg-stone-50 px-4 py-2 rounded-2xl border border-stone-200/50 w-full sm:w-auto sm:min-w-[200px]">
-          <div className="w-8 h-8 bg-emerald-500 rounded-xl flex items-center justify-center">
-            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          
+          <div className="flex items-center gap-2 bg-stone-50 px-3 py-2 sm:px-4 rounded-2xl border border-stone-200/50 w-full sm:w-auto sm:min-w-[200px]">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-emerald-500 rounded-xl flex items-center justify-center">
+              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <div>
-            <span className="text-2xl font-bold text-stone-800">{stats.withComments}</span>
-            <span className="text-sm text-stone-500 ml-1.5">已生成回复</span>
+            <div>
+              <span className="text-xl sm:text-2xl font-bold text-stone-800">{stats.withComments}</span>
+              <span className="text-xs sm:text-sm text-stone-500 ml-1.5">已生成回复</span>
+            </div>
           </div>
         </div>
         
@@ -217,13 +219,13 @@ export function StatsBar({ stats, showAiPicked, onToggleAiPicked, languageFilter
         )}
         
         {/* Toggle Switch */}
-        <div className="flex items-center justify-between sm:justify-start gap-3 bg-stone-100/80 px-4 py-2 rounded-2xl w-full sm:w-auto sm:ml-auto">
-          <span className={`text-sm font-medium transition-colors ${!showAiPicked ? 'text-stone-600' : 'text-stone-400'}`}>
+        <div className="flex flex-wrap items-center justify-between sm:justify-start gap-2 bg-stone-100/80 px-3 py-2 rounded-2xl w-full sm:w-auto sm:ml-auto">
+          <span className={`text-xs sm:text-sm font-medium transition-colors ${!showAiPicked ? 'text-stone-600' : 'text-stone-400'}`}>
             全部
           </span>
           <button
             onClick={onToggleAiPicked}
-            className={`relative w-12 h-6 rounded-full transition-all duration-300 ${
+            className={`relative w-12 h-6 rounded-full transition-all duration-300 shrink-0 ${
               showAiPicked 
                 ? 'bg-gradient-to-r from-amber-400 to-orange-500 shadow-inner shadow-amber-600/20' 
                 : 'bg-stone-300'
@@ -236,7 +238,7 @@ export function StatsBar({ stats, showAiPicked, onToggleAiPicked, languageFilter
               }`}
             />
           </button>
-          <span className={`text-sm font-medium transition-colors ${showAiPicked ? 'text-amber-600' : 'text-stone-400'}`}>
+          <span className={`text-xs sm:text-sm font-medium transition-colors ${showAiPicked ? 'text-amber-600' : 'text-stone-400'}`}>
             AI 精选
           </span>
         </div>

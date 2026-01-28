@@ -66,11 +66,11 @@ export function CategoryFilter({ value, onChange, stats }: CategoryFilterProps) 
   }, [value]);
 
   return (
-    <div ref={containerRef} className="relative inline-flex items-center">
+    <div ref={containerRef} className="relative flex w-full items-center sm:inline-flex sm:w-auto">
       <button
         type="button"
         onClick={() => setOpen(prev => !prev)}
-        className="inline-flex items-center gap-2 px-4 h-9 rounded-full text-sm font-medium bg-stone-100 text-stone-600 hover:bg-stone-200 border border-stone-200/50 whitespace-nowrap"
+        className="inline-flex w-full items-center justify-between gap-2 px-4 h-9 rounded-full text-sm font-medium bg-stone-100 text-stone-600 hover:bg-stone-200 border border-stone-200/50 whitespace-nowrap sm:w-auto"
         aria-haspopup="listbox"
         aria-expanded={open}
       >

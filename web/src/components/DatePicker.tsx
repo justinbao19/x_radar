@@ -87,8 +87,8 @@ export function DatePicker({ value, onChange, availableDates }: DatePickerProps)
   };
 
   return (
-    <div className="relative inline-flex flex-col items-start sm:inline-flex sm:flex-row sm:items-center sm:pb-6 lg:pb-0">
-      <div className="flex flex-nowrap items-center gap-2 overflow-x-auto">
+    <div className="relative w-full max-w-full flex flex-col items-start sm:w-auto sm:inline-flex sm:flex-row sm:items-center sm:pb-6 lg:pb-0">
+      <div className="flex flex-wrap items-center gap-2 w-full max-w-full sm:flex-nowrap sm:overflow-x-auto">
         {presets.map(preset => (
           <button
             key={preset.key}

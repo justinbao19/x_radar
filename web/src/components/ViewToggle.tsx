@@ -39,12 +39,12 @@ const viewOptions: { mode: ViewMode; label: string; icon: React.ReactNode }[] = 
 
 export function ViewToggle({ value, onChange }: ViewToggleProps) {
   return (
-    <div className="inline-flex bg-stone-100 rounded-2xl p-1 border border-stone-200/50">
+    <div className="flex w-full bg-stone-100 rounded-2xl p-1 border border-stone-200/50 sm:inline-flex sm:w-auto">
       {viewOptions.map(option => (
         <button
           key={option.mode}
           onClick={() => onChange(option.mode)}
-          className={`flex items-center justify-center gap-2 px-3 h-9 rounded-xl text-sm font-medium whitespace-nowrap transition-all duration-200 ${
+          className={`flex flex-1 items-center justify-center gap-2 px-3 h-9 rounded-xl text-sm font-medium whitespace-nowrap transition-all duration-200 sm:flex-none ${
             value === option.mode
               ? 'bg-white text-stone-800 shadow-md border border-stone-200/50'
               : 'text-stone-500 hover:text-stone-700 hover:bg-stone-50'

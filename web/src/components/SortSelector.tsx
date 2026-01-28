@@ -56,11 +56,11 @@ export function SortSelector({ value, onChange }: SortSelectorProps) {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative">
+    <div ref={containerRef} className="relative w-full sm:w-auto">
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-4 py-2 bg-white border border-stone-200 rounded-full hover:border-stone-300 hover:bg-stone-50 transition-all text-sm font-medium text-stone-700 shadow-sm"
+        className="flex w-full items-center justify-between gap-2 px-4 py-2 bg-white border border-stone-200 rounded-full hover:border-stone-300 hover:bg-stone-50 transition-all text-sm font-medium text-stone-700 shadow-sm sm:w-auto"
         aria-haspopup="listbox"
         aria-expanded={open}
       >

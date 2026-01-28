@@ -232,24 +232,24 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
             New
           </span>
         )}
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex items-center gap-3 min-w-0">
             <span className="w-7 h-7 rounded-lg bg-gradient-to-br from-stone-800 to-stone-900 text-white text-xs font-bold flex items-center justify-center shadow-sm">
               {tweet.rank}
             </span>
             <div className="w-11 h-11 rounded-full bg-gradient-to-br from-stone-100 to-stone-200 flex items-center justify-center text-stone-600 font-semibold text-lg border border-stone-200/50">
               {initial}
             </div>
-            <div>
+            <div className="min-w-0">
               <a 
                 href={authorUrl} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="font-semibold text-stone-800 hover:text-amber-600 transition-colors"
+                className="block max-w-[180px] truncate font-semibold text-stone-800 hover:text-amber-600 transition-colors sm:max-w-none"
               >
                 {authorHandle}
               </a>
-              <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+              <div className="hidden sm:flex flex-wrap items-center gap-1.5 mt-1.5">
                 <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${groupColor}`}>
                   {groupLabel}
                 </span>
@@ -275,17 +275,55 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
               </div>
             </div>
           </div>
-          {(() => {
-            const scoreStyle = getScoreStyle(tweet.finalScore);
-            return (
-              <div className={`text-right px-3 py-2 rounded-xl border ${scoreStyle.bg}`}>
-                <div className={`text-xl font-bold ${scoreStyle.text}`}>
-                  {formatNumber(tweet.finalScore)}
+          <div className="hidden sm:block shrink-0">
+            {(() => {
+              const scoreStyle = getScoreStyle(tweet.finalScore);
+              return (
+                <div className={`text-right px-3 py-2 rounded-xl border ${scoreStyle.bg}`}>
+                  <div className={`text-xl font-bold ${scoreStyle.text}`}>
+                    {formatNumber(tweet.finalScore)}
+                  </div>
+                  <div className="text-xs text-stone-400 uppercase tracking-wide">Score</div>
                 </div>
-                <div className="text-xs text-stone-400 uppercase tracking-wide">Score</div>
-              </div>
-            );
-          })()}
+              );
+            })()}
+          </div>
+          <div className="flex flex-wrap items-center gap-2 sm:hidden">
+            <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${groupColor}`}>
+              {groupLabel}
+            </span>
+            <span className="text-xs text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-full border border-stone-200/50 flex items-center gap-1">
+              <span>{languageInfo.flag}</span>
+              <span>{languageInfo.label}</span>
+            </span>
+            <span className="text-xs text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-full border border-stone-200/50 flex items-center gap-1">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              {formatRelativeTime(tweet.datetime)}
+            </span>
+            {tweet.aiPicked !== false && (
+              <span className="text-xs font-semibold text-amber-700 bg-gradient-to-r from-amber-100 to-orange-100 px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-amber-200/50">
+                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2Z"/>
+                </svg>
+                精选
+              </span>
+            )}
+            <div className="ml-auto shrink-0">
+              {(() => {
+                const scoreStyle = getScoreStyle(tweet.finalScore);
+                return (
+                  <div className={`text-right px-3 py-2 rounded-xl border ${scoreStyle.bg}`}>
+                    <div className={`text-xl font-bold ${scoreStyle.text}`}>
+                      {formatNumber(tweet.finalScore)}
+                    </div>
+                    <div className="text-xs text-stone-400 uppercase tracking-wide">Score</div>
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -313,7 +351,7 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
         )}
 
         {/* Metrics */}
-        <div className="flex flex-wrap items-center gap-4 mt-4 text-stone-500">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4 mt-4 text-stone-500">
           <div className="flex items-center gap-1.5 text-sm hover:text-rose-500 transition-colors cursor-default">
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
@@ -336,7 +374,7 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
             href={tweet.url} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="ml-auto inline-flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-stone-800 to-stone-900 text-white text-sm font-medium rounded-full hover:from-stone-700 hover:to-stone-800 transition-all shadow-lg shadow-stone-900/20 hover:shadow-stone-900/30"
+            className="w-full sm:w-auto sm:ml-auto inline-flex items-center justify-center gap-2 px-5 py-2 bg-gradient-to-r from-stone-800 to-stone-900 text-white text-sm font-medium rounded-full hover:from-stone-700 hover:to-stone-800 transition-all shadow-lg shadow-stone-900/20 hover:shadow-stone-900/30"
           >
             查看原推文
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

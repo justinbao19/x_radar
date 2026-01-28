@@ -208,7 +208,7 @@ export default function Dashboard() {
       
       {/* Auth Status */}
       {manifest?.authStatus && !manifest.authStatus.valid && (
-        <div className="max-w-6xl mx-auto px-6 py-4">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4">
           <AuthAlert status={manifest.authStatus} />
         </div>
       )}
@@ -225,14 +225,14 @@ export default function Dashboard() {
       )}
 
       {/* Filters */}
-      <div className="max-w-6xl mx-auto px-6 py-6 space-y-4">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-4">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <DatePicker 
             value={dateRange} 
             onChange={setDateRange}
             availableDates={availableDates}
           />
-          <div className="flex flex-col items-start gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4 sm:gap-y-2">
+          <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4 sm:gap-y-2">
             <CategoryFilter 
               value={categories} 
               onChange={setCategories}
@@ -253,7 +253,7 @@ export default function Dashboard() {
       {/* Content */}
       <main
         ref={mainRef}
-        className={`max-w-6xl mx-auto px-6 pb-12 relative transition-opacity duration-200 ${mainOpacity}`}
+        className={`max-w-6xl mx-auto px-4 sm:px-6 pb-12 relative transition-opacity duration-200 ${mainOpacity}`}
         style={frozenHeight ? { minHeight: `${frozenHeight}px` } : undefined}
       >
         {isInitialLoading ? (
@@ -354,7 +354,7 @@ export default function Dashboard() {
       )}
 
       {/* Footer */}
-      <footer className="max-w-6xl mx-auto px-6 py-10">
+      <footer className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
         <div className="border-t border-stone-200/60 pt-8">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 text-sm text-stone-400">
             <div className="flex items-center gap-2">
