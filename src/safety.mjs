@@ -404,6 +404,9 @@ export function isCustomerServiceNotice(text) {
     { pattern: /details\s+(have\s+been|has\s+been)\s+sent\s+to\s+(your|the)/i, name: 'details_sent' },
     { pattern: /we\s+(kindly\s+)?request\s+you\s+to/i, name: 'kindly_request' },
     { pattern: /if\s+(there\s+are\s+)?any\s+issues.*contact/i, name: 'any_issues_contact' },
+    { pattern: /if\s+you.*can'?t\s+find.*please\s+email/i, name: 'cant_find_please_email' },
+    { pattern: /(inbox|spam)\s+(folder|folders).*please\s+email/i, name: 'folder_please_email' },
+    { pattern: /can'?t\s+find\s+(the\s+)?(message|email|file).*email\s+\S+@/i, name: 'cant_find_email_support' },
     
     // Japanese patterns - service notification style
     { pattern: /ご確認(ください|を|いただけ)/i, name: 'jp_please_check' },
@@ -430,6 +433,96 @@ export function isCustomerServiceNotice(text) {
   }
   
   return { isNotice: false };
+}
+
+// ============ Competitor Product Promotion Detection ============
+
+// Load competitor products from denylist
+const COMPETITOR_PRODUCTS = (denylist.low_signal?.competitor_products || []).map(p => p.toLowerCase());
+
+/**
+ * Detect if text is promoting a competitor email/productivity product
+ * @param {string} text - Text to check
+ * @returns {{ isPromotion: boolean, product?: string, pattern?: string }}
+ */
+export function isCompetitorPromotion(text) {
+  if (!text) return { isPromotion: false };
+  const lowerText = text.toLowerCase();
+  
+  // Check for direct competitor product mentions
+  for (const product of COMPETITOR_PRODUCTS) {
+    if (lowerText.includes(product)) {
+      return { isPromotion: true, product, pattern: 'product_name' };
+    }
+  }
+  
+  // Check for promotional language patterns for generic products
+  const promotionalPatterns = [
+    { pattern: /meet\s+\w+\s*[-–—:]\s*(voice|ai|email|your|the)/i, name: 'meet_product' },
+    { pattern: /using\s+@?\w+\s+to\s+(manage|organize|handle|triage|clean)/i, name: 'using_to_manage' },
+    { pattern: /\w+\s+turns\s+.*into\s+(structured|organized|actionable|clean)/i, name: 'turns_into' },
+    { pattern: /try\s+@?\w+\s+for\s+(email|inbox|productivity)/i, name: 'try_for_email' },
+    { pattern: /\w+\s+is\s+(my|the)\s+(favorite|best|go-to)\s+(email|inbox|mail)/i, name: 'favorite_email' },
+    { pattern: /switched\s+to\s+@?\w+\s+(for|and)\s+(email|inbox|my)/i, name: 'switched_to' },
+    { pattern: /\w+\s+has\s+(transformed|revolutionized|changed)\s+(my|the)\s+(inbox|email)/i, name: 'transformed_inbox' },
+    { pattern: /(finally|just)\s+(found|discovered)\s+@?\w+\s+(for|to)/i, name: 'discovered_product' },
+    // Japanese
+    { pattern: /\w+で(メール|受信箱)を(管理|整理)/i, name: 'jp_manage_with' },
+    // Chinese
+    { pattern: /用\w+来(管理|整理)(邮件|邮箱)/i, name: 'cn_manage_with' }
+  ];
+  
+  for (const { pattern, name } of promotionalPatterns) {
+    if (pattern.test(text)) {
+      // Extract potential product name
+      const match = text.match(pattern);
+      return { isPromotion: true, product: match?.[0], pattern: name };
+    }
+  }
+  
+  return { isPromotion: false };
+}
+
+// ============ Viral Template Detection ============
+
+/**
+ * Known viral copypasta templates that contain email keywords but are not about email
+ * These are copy-pasted text that goes viral, not genuine email pain points
+ */
+const VIRAL_TEMPLATE_PATTERNS = [
+  // "I have a girlfriend/boyfriend, don't DM or email me" template
+  // Note: Handle both regular apostrophe (') and Unicode curly apostrophe (')
+  {
+    pattern: /i\s+hate\s+that\s+this\s+has\s+to\s+be\s+said.*i\s+have\s+a\s+(girl|boy)friend.*don['\u2019]?t\s+(dm|email)/i,
+    name: 'relationship_boundary_copypasta'
+  },
+  // Generic "email me to get X" spam
+  {
+    pattern: /email\s+me\s+(at|to)\s+\S+@\S+\s+(for|to\s+get)/i,
+    name: 'email_for_offer'
+  },
+  // Thread/list posts just mentioning email as one item
+  {
+    pattern: /^\d+[\.\)]\s*.*(email|mail)/im,
+    name: 'numbered_list_mention'
+  }
+];
+
+/**
+ * Detect if text is a known viral template/copypasta
+ * @param {string} text - Text to check
+ * @returns {{ isViral: boolean, template?: string }}
+ */
+export function isViralTemplate(text) {
+  if (!text) return { isViral: false };
+  
+  for (const { pattern, name } of VIRAL_TEMPLATE_PATTERNS) {
+    if (pattern.test(text)) {
+      return { isViral: true, template: name };
+    }
+  }
+  
+  return { isViral: false };
 }
 
 // ============ Exports ============

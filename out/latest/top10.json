@@ -17,18 +17,21 @@
     "softReasons": {
       "law_enforcement": 6
     },
-    "lowSignalPenalized": 33,
+    "lowSignalPenalized": 38,
     "filoFitFiltered": 52,
     "relevanceFiltered": 2,
     "emailActionOnlyFiltered": 2,
     "noEmotionPenalized": 18,
+    "customerServicePenalized": 1,
+    "competitorPenalized": 2,
+    "viralTemplateFiltered": 5,
     "kolAuthorMismatch": 0,
     "kolRelevanceFiltered": 0,
-    "qualified": 32,
+    "qualified": 29,
     "aiPicked": 10,
     "byGroup": {
-      "pain": 28,
-      "reach": 4,
+      "pain": 26,
+      "reach": 3,
       "kol": 0
     },
     "distinctKOLs": 0
@@ -42,68 +45,6 @@
   "top": [
     {
       "rank": 1,
-      "aiPicked": true,
-      "group": "pain",
-      "originalGroup": "pain",
-      "sourceQuery": "email-search-pain",
-      "url": "https://x.com/EffZee_/status/2014721386585956858",
-      "author": "@EffZee_",
-      "datetime": "2026-01-23T15:26:24.000Z",
-      "text": "I hate that this has to be said I have a girlfriend, don’t dm asking me out, don’t email me asking me out. I’m not interested, even if I was single, I wouldn’t be interested. I am here to hopefully entertain, idc if you find me attractive.",
-      "likes": 19,
-      "retweets": 1,
-      "replies": 7,
-      "rawEngagement": 50.5,
-      "viralityScore": 171.2,
-      "filoFitScore": 15,
-      "filoFitKeywordCount": 3,
-      "textBonus": 5,
-      "painBonus": 3,
-      "finalScore": 573.5,
-      "safetyTier": "clean",
-      "lowSignalPenalty": false,
-      "noEmotionPenalty": false,
-      "relevanceKeywords": [
-        "email",
-        "mail"
-      ],
-      "painEmotionWords": [
-        "hate"
-      ]
-    },
-    {
-      "rank": 2,
-      "aiPicked": true,
-      "group": "pain",
-      "originalGroup": "pain",
-      "sourceQuery": "email-search-pain",
-      "url": "https://x.com/FourEyedBae/status/2014627974952243668",
-      "author": "@FourEyedBae",
-      "datetime": "2026-01-23T09:15:13.000Z",
-      "text": "I hate that this has to be said I have a boyfriend, don’t dm asking me out, don’t email me asking me out. I’m not interested, even if I was single, I wouldn’t be interested. I am here to hopefully entertain, idc if you find me attractive.",
-      "likes": 10,
-      "retweets": 3,
-      "replies": 5,
-      "rawEngagement": 33.5,
-      "viralityScore": 153.8,
-      "filoFitScore": 15,
-      "filoFitKeywordCount": 3,
-      "textBonus": 5,
-      "painBonus": 3,
-      "finalScore": 521.3,
-      "safetyTier": "clean",
-      "lowSignalPenalty": false,
-      "noEmotionPenalty": false,
-      "relevanceKeywords": [
-        "email",
-        "mail"
-      ],
-      "painEmotionWords": [
-        "hate"
-      ]
-    },
-    {
-      "rank": 3,
       "aiPicked": true,
       "group": "pain",
       "originalGroup": "pain",
@@ -125,6 +66,9 @@
       "safetyTier": "clean",
       "lowSignalPenalty": false,
       "noEmotionPenalty": false,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
       "relevanceKeywords": [
         "gmail",
         "mail",
@@ -135,38 +79,7 @@
       ]
     },
     {
-      "rank": 4,
-      "aiPicked": true,
-      "group": "pain",
-      "originalGroup": "pain",
-      "sourceQuery": "email-search-pain",
-      "url": "https://x.com/wisdomdyn/status/2014737058443432052",
-      "author": "@wisdomdyn",
-      "datetime": "2026-01-23T16:28:41.000Z",
-      "text": "I hate that this has to be said I have a girlfriend, don’t dm asking me out, don’t email me asking me out. I’m not interested, even if I was single, I wouldn’t be interested. I am here to hopefully entertain, idc if you find me attractive.",
-      "likes": 4,
-      "retweets": 0,
-      "replies": 2,
-      "rawEngagement": 11,
-      "viralityScore": 107.9,
-      "filoFitScore": 15,
-      "filoFitKeywordCount": 3,
-      "textBonus": 5,
-      "painBonus": 3,
-      "finalScore": 383.8,
-      "safetyTier": "clean",
-      "lowSignalPenalty": false,
-      "noEmotionPenalty": false,
-      "relevanceKeywords": [
-        "email",
-        "mail"
-      ],
-      "painEmotionWords": [
-        "hate"
-      ]
-    },
-    {
-      "rank": 5,
+      "rank": 2,
       "aiPicked": true,
       "group": "pain",
       "originalGroup": "pain",
@@ -188,6 +101,9 @@
       "safetyTier": "clean",
       "lowSignalPenalty": false,
       "noEmotionPenalty": false,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
       "relevanceKeywords": [
         "inbox",
         "gmail",
@@ -198,7 +114,7 @@
       ]
     },
     {
-      "rank": 6,
+      "rank": 3,
       "aiPicked": true,
       "group": "pain",
       "originalGroup": "pain",
@@ -220,6 +136,9 @@
       "safetyTier": "clean",
       "lowSignalPenalty": false,
       "noEmotionPenalty": false,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
       "relevanceKeywords": [
         "email",
         "inbox",
@@ -230,7 +149,7 @@
       ]
     },
     {
-      "rank": 7,
+      "rank": 4,
       "aiPicked": true,
       "group": "pain",
       "originalGroup": "pain",
@@ -252,6 +171,9 @@
       "safetyTier": "clean",
       "lowSignalPenalty": false,
       "noEmotionPenalty": false,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
       "relevanceKeywords": [
         "email",
         "mail"
@@ -261,38 +183,7 @@
       ]
     },
     {
-      "rank": 8,
-      "aiPicked": true,
-      "group": "pain",
-      "originalGroup": "pain",
-      "sourceQuery": "email-search-pain",
-      "url": "https://x.com/Olawherz/status/2014704328603275741",
-      "author": "@Olawherz",
-      "datetime": "2026-01-23T14:18:37.000Z",
-      "text": "I hate that this has to be said I have a girlfriend, don’t dm asking me out, don’t email me asking me out. I’m not interested, even if I was single, I wouldn’t be interested. I am here to hopefully entertain, idc if you find me attractive.",
-      "likes": 0,
-      "retweets": 1,
-      "replies": 2,
-      "rawEngagement": 5,
-      "viralityScore": 77.8,
-      "filoFitScore": 15,
-      "filoFitKeywordCount": 3,
-      "textBonus": 5,
-      "painBonus": 3,
-      "finalScore": 293.4,
-      "safetyTier": "clean",
-      "lowSignalPenalty": false,
-      "noEmotionPenalty": false,
-      "relevanceKeywords": [
-        "email",
-        "mail"
-      ],
-      "painEmotionWords": [
-        "hate"
-      ]
-    },
-    {
-      "rank": 9,
+      "rank": 5,
       "aiPicked": true,
       "group": "pain",
       "originalGroup": "pain",
@@ -314,6 +205,9 @@
       "safetyTier": "clean",
       "lowSignalPenalty": false,
       "noEmotionPenalty": true,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
       "relevanceKeywords": [
         "gmail",
         "mail",
@@ -323,7 +217,7 @@
       "painEmotionWords": []
     },
     {
-      "rank": 10,
+      "rank": 6,
       "aiPicked": true,
       "group": "pain",
       "originalGroup": "pain",
@@ -345,6 +239,9 @@
       "safetyTier": "clean",
       "lowSignalPenalty": false,
       "noEmotionPenalty": true,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
       "relevanceKeywords": [
         "email",
         "inbox",
@@ -353,39 +250,8 @@
       "painEmotionWords": []
     },
     {
-      "rank": 11,
-      "aiPicked": false,
-      "group": "pain",
-      "originalGroup": "pain",
-      "sourceQuery": "gmail-spam-jp",
-      "url": "https://x.com/Ryoichi__X10A/status/2015992573052256650",
-      "author": "@Ryoichi__X10A",
-      "datetime": "2026-01-27T03:37:39.000Z",
-      "text": "静岡イベントの連絡 迷惑メールフォルダに着弾してました(Gmail) 見つからない人はそちらもご確認を",
-      "likes": 2,
-      "retweets": 2,
-      "replies": 0,
-      "rawEngagement": 8,
-      "viralityScore": 95.4,
-      "filoFitScore": 25,
-      "filoFitKeywordCount": 5,
-      "textBonus": 5,
-      "painBonus": 3,
-      "finalScore": 188.2,
-      "safetyTier": "clean",
-      "lowSignalPenalty": false,
-      "noEmotionPenalty": true,
-      "relevanceKeywords": [
-        "gmail",
-        "mail",
-        "メール",
-        "迷惑メール"
-      ],
-      "painEmotionWords": []
-    },
-    {
-      "rank": 12,
-      "aiPicked": false,
+      "rank": 7,
+      "aiPicked": true,
       "group": "pain",
       "originalGroup": "pain",
       "sourceQuery": "inbox-overwhelm-jp",
@@ -406,6 +272,9 @@
       "safetyTier": "clean",
       "lowSignalPenalty": false,
       "noEmotionPenalty": false,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
       "relevanceKeywords": [
         "メール"
       ],
@@ -415,8 +284,8 @@
       ]
     },
     {
-      "rank": 13,
-      "aiPicked": false,
+      "rank": 8,
+      "aiPicked": true,
       "group": "pain",
       "originalGroup": "pain",
       "sourceQuery": "gmail-spam-jp",
@@ -437,6 +306,9 @@
       "safetyTier": "clean",
       "lowSignalPenalty": false,
       "noEmotionPenalty": true,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
       "relevanceKeywords": [
         "gmail",
         "outlook",
@@ -447,8 +319,8 @@
       "painEmotionWords": []
     },
     {
-      "rank": 14,
-      "aiPicked": false,
+      "rank": 9,
+      "aiPicked": true,
       "group": "pain",
       "originalGroup": "pain",
       "sourceQuery": "gmail-spam-jp",
@@ -469,6 +341,9 @@
       "safetyTier": "clean",
       "lowSignalPenalty": false,
       "noEmotionPenalty": true,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
       "relevanceKeywords": [
         "gmail",
         "mail",
@@ -478,8 +353,8 @@
       "painEmotionWords": []
     },
     {
-      "rank": 15,
-      "aiPicked": false,
+      "rank": 10,
+      "aiPicked": true,
       "group": "pain",
       "originalGroup": "pain",
       "sourceQuery": "gmail-spam-jp",
@@ -500,6 +375,9 @@
       "safetyTier": "clean",
       "lowSignalPenalty": false,
       "noEmotionPenalty": true,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
       "relevanceKeywords": [
         "gmail",
         "spam",
@@ -510,7 +388,7 @@
       "painEmotionWords": []
     },
     {
-      "rank": 16,
+      "rank": 11,
       "aiPicked": false,
       "group": "reach",
       "originalGroup": "reach",
@@ -532,6 +410,9 @@
       "safetyTier": "clean",
       "lowSignalPenalty": false,
       "noEmotionPenalty": false,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
       "relevanceKeywords": [
         "ai",
         "email",
@@ -541,7 +422,7 @@
       "painEmotionWords": []
     },
     {
-      "rank": 17,
+      "rank": 12,
       "aiPicked": false,
       "group": "reach",
       "originalGroup": "reach",
@@ -563,6 +444,9 @@
       "safetyTier": "clean",
       "lowSignalPenalty": false,
       "noEmotionPenalty": false,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
       "relevanceKeywords": [
         "ai",
         "生産性"
@@ -570,7 +454,7 @@
       "painEmotionWords": []
     },
     {
-      "rank": 18,
+      "rank": 13,
       "aiPicked": false,
       "group": "pain",
       "originalGroup": "pain",
@@ -592,6 +476,9 @@
       "safetyTier": "clean",
       "lowSignalPenalty": false,
       "noEmotionPenalty": true,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
       "relevanceKeywords": [
         "inbox",
         "spam",
@@ -600,7 +487,7 @@
       "painEmotionWords": []
     },
     {
-      "rank": 19,
+      "rank": 14,
       "aiPicked": false,
       "group": "pain",
       "originalGroup": "pain",
@@ -622,6 +509,9 @@
       "safetyTier": "clean",
       "lowSignalPenalty": false,
       "noEmotionPenalty": true,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
       "relevanceKeywords": [
         "gmail",
         "mail",
@@ -631,7 +521,42 @@
       "painEmotionWords": []
     },
     {
-      "rank": 20,
+      "rank": 15,
+      "aiPicked": false,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "email-search-pain",
+      "url": "https://x.com/EffZee_/status/2014721386585956858",
+      "author": "@EffZee_",
+      "datetime": "2026-01-23T15:26:24.000Z",
+      "text": "I hate that this has to be said I have a girlfriend, don’t dm asking me out, don’t email me asking me out. I’m not interested, even if I was single, I wouldn’t be interested. I am here to hopefully entertain, idc if you find me attractive.",
+      "likes": 19,
+      "retweets": 1,
+      "replies": 7,
+      "rawEngagement": 50.5,
+      "viralityScore": 171.2,
+      "filoFitScore": 15,
+      "filoFitKeywordCount": 3,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 86,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": false,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": true,
+      "relevanceKeywords": [
+        "email",
+        "mail"
+      ],
+      "painEmotionWords": [
+        "hate"
+      ],
+      "viralTemplate": "relationship_boundary_copypasta"
+    },
+    {
+      "rank": 16,
       "aiPicked": false,
       "group": "pain",
       "originalGroup": "pain",
@@ -653,6 +578,9 @@
       "safetyTier": "low_signal",
       "lowSignalPenalty": true,
       "noEmotionPenalty": false,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
       "relevanceKeywords": [
         "email",
         "mail"
@@ -662,37 +590,42 @@
       ]
     },
     {
-      "rank": 21,
+      "rank": 17,
       "aiPicked": false,
-      "group": "reach",
-      "originalGroup": "reach",
-      "sourceQuery": "ai-inbox-intersection",
-      "url": "https://x.com/grok/status/2015873430596305082",
-      "author": "@grok",
-      "datetime": "2026-01-26T19:44:13.000Z",
-      "text": "Based on ClawdBot's features as a local AI agent, here are 5 top tasks to automate for an easier life: 1. Email handling: Draft, send, and summarize messages offline. 2. Calendar management: Schedule events and set reminders automatically. 3. Document summaries: Quickly condense",
-      "likes": 0,
-      "retweets": 0,
-      "replies": 1,
-      "rawEngagement": 1.5,
-      "viralityScore": 39.8,
-      "filoFitScore": 30,
-      "filoFitKeywordCount": 6,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "email-search-pain",
+      "url": "https://x.com/FourEyedBae/status/2014627974952243668",
+      "author": "@FourEyedBae",
+      "datetime": "2026-01-23T09:15:13.000Z",
+      "text": "I hate that this has to be said I have a boyfriend, don’t dm asking me out, don’t email me asking me out. I’m not interested, even if I was single, I wouldn’t be interested. I am here to hopefully entertain, idc if you find me attractive.",
+      "likes": 10,
+      "retweets": 3,
+      "replies": 5,
+      "rawEngagement": 33.5,
+      "viralityScore": 153.8,
+      "filoFitScore": 15,
+      "filoFitKeywordCount": 3,
       "textBonus": 5,
-      "painBonus": 1,
-      "finalScore": 74.8,
+      "painBonus": 3,
+      "finalScore": 78.2,
       "safetyTier": "clean",
       "lowSignalPenalty": false,
       "noEmotionPenalty": false,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": true,
       "relevanceKeywords": [
-        "ai",
         "email",
-        "summarize"
+        "mail"
       ],
-      "painEmotionWords": []
+      "painEmotionWords": [
+        "hate"
+      ],
+      "viralTemplate": "relationship_boundary_copypasta"
     },
     {
-      "rank": 22,
+      "rank": 18,
       "aiPicked": false,
       "group": "pain",
       "originalGroup": "pain",
@@ -714,6 +647,9 @@
       "safetyTier": "low_signal",
       "lowSignalPenalty": true,
       "noEmotionPenalty": true,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
       "relevanceKeywords": [
         "email",
         "mail"
@@ -721,7 +657,7 @@
       "painEmotionWords": []
     },
     {
-      "rank": 23,
+      "rank": 19,
       "aiPicked": false,
       "group": "pain",
       "originalGroup": "pain",
@@ -743,6 +679,9 @@
       "safetyTier": "low_signal",
       "lowSignalPenalty": true,
       "noEmotionPenalty": true,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
       "relevanceKeywords": [
         "email",
         "inbox",
@@ -752,7 +691,7 @@
       "painEmotionWords": []
     },
     {
-      "rank": 24,
+      "rank": 20,
       "aiPicked": false,
       "group": "pain",
       "originalGroup": "pain",
@@ -774,6 +713,9 @@
       "safetyTier": "low_signal",
       "lowSignalPenalty": true,
       "noEmotionPenalty": false,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
       "relevanceKeywords": [
         "email",
         "mail"
@@ -783,38 +725,7 @@
       ]
     },
     {
-      "rank": 25,
-      "aiPicked": false,
-      "group": "pain",
-      "originalGroup": "pain",
-      "sourceQuery": "email-search-pain",
-      "url": "https://x.com/olusojee/status/2014697414708334874",
-      "author": "@olusojee",
-      "datetime": "2026-01-23T13:51:09.000Z",
-      "text": "I hate that this has to be said I have a boyfriend, don’t dm asking me out, don’t email me asking me out. I’m not interested, even if I was single, I wouldn’t be interested. I am here to hopefully entertain, idc if you find me attractive.",
-      "likes": 0,
-      "retweets": 0,
-      "replies": 0,
-      "rawEngagement": 0,
-      "viralityScore": 0,
-      "filoFitScore": 15,
-      "filoFitKeywordCount": 3,
-      "textBonus": 5,
-      "painBonus": 3,
-      "finalScore": 60,
-      "safetyTier": "clean",
-      "lowSignalPenalty": false,
-      "noEmotionPenalty": false,
-      "relevanceKeywords": [
-        "email",
-        "mail"
-      ],
-      "painEmotionWords": [
-        "hate"
-      ]
-    },
-    {
-      "rank": 26,
+      "rank": 21,
       "aiPicked": false,
       "group": "pain",
       "originalGroup": "pain",
@@ -836,6 +747,9 @@
       "safetyTier": "clean",
       "lowSignalPenalty": false,
       "noEmotionPenalty": false,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
       "relevanceKeywords": [
         "email",
         "mail"
@@ -845,7 +759,7 @@
       ]
     },
     {
-      "rank": 27,
+      "rank": 22,
       "aiPicked": false,
       "group": "pain",
       "originalGroup": "pain",
@@ -867,6 +781,9 @@
       "safetyTier": "clean",
       "lowSignalPenalty": false,
       "noEmotionPenalty": false,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
       "relevanceKeywords": [
         "email",
         "mail"
@@ -876,7 +793,7 @@
       ]
     },
     {
-      "rank": 28,
+      "rank": 23,
       "aiPicked": false,
       "group": "pain",
       "originalGroup": "pain",
@@ -898,6 +815,9 @@
       "safetyTier": "clean",
       "lowSignalPenalty": false,
       "noEmotionPenalty": false,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
       "relevanceKeywords": [
         "gmail",
         "mail"
@@ -907,7 +827,7 @@
       ]
     },
     {
-      "rank": 29,
+      "rank": 24,
       "aiPicked": false,
       "group": "pain",
       "originalGroup": "pain",
@@ -929,6 +849,9 @@
       "safetyTier": "clean",
       "lowSignalPenalty": false,
       "noEmotionPenalty": false,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
       "relevanceKeywords": [
         "gmail",
         "mail",
@@ -940,7 +863,7 @@
       ]
     },
     {
-      "rank": 30,
+      "rank": 25,
       "aiPicked": false,
       "group": "reach",
       "originalGroup": "reach",
@@ -962,6 +885,9 @@
       "safetyTier": "soft",
       "lowSignalPenalty": false,
       "noEmotionPenalty": false,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
       "relevanceKeywords": [
         "ai",
         "workflow",
@@ -970,7 +896,77 @@
       "painEmotionWords": []
     },
     {
-      "rank": 31,
+      "rank": 26,
+      "aiPicked": false,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "email-search-pain",
+      "url": "https://x.com/wisdomdyn/status/2014737058443432052",
+      "author": "@wisdomdyn",
+      "datetime": "2026-01-23T16:28:41.000Z",
+      "text": "I hate that this has to be said I have a girlfriend, don’t dm asking me out, don’t email me asking me out. I’m not interested, even if I was single, I wouldn’t be interested. I am here to hopefully entertain, idc if you find me attractive.",
+      "likes": 4,
+      "retweets": 0,
+      "replies": 2,
+      "rawEngagement": 11,
+      "viralityScore": 107.9,
+      "filoFitScore": 15,
+      "filoFitKeywordCount": 3,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 57.6,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": false,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": true,
+      "relevanceKeywords": [
+        "email",
+        "mail"
+      ],
+      "painEmotionWords": [
+        "hate"
+      ],
+      "viralTemplate": "relationship_boundary_copypasta"
+    },
+    {
+      "rank": 27,
+      "aiPicked": false,
+      "group": "pain",
+      "originalGroup": "pain",
+      "sourceQuery": "gmail-spam-jp",
+      "url": "https://x.com/Ryoichi__X10A/status/2015992573052256650",
+      "author": "@Ryoichi__X10A",
+      "datetime": "2026-01-27T03:37:39.000Z",
+      "text": "静岡イベントの連絡 迷惑メールフォルダに着弾してました(Gmail) 見つからない人はそちらもご確認を",
+      "likes": 2,
+      "retweets": 2,
+      "replies": 0,
+      "rawEngagement": 8,
+      "viralityScore": 95.4,
+      "filoFitScore": 25,
+      "filoFitKeywordCount": 5,
+      "textBonus": 5,
+      "painBonus": 3,
+      "finalScore": 56.5,
+      "safetyTier": "clean",
+      "lowSignalPenalty": false,
+      "noEmotionPenalty": true,
+      "customerServicePenalty": true,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
+      "relevanceKeywords": [
+        "gmail",
+        "mail",
+        "メール",
+        "迷惑メール"
+      ],
+      "painEmotionWords": [],
+      "customerServicePattern": "jp_please_check"
+    },
+    {
+      "rank": 28,
       "aiPicked": false,
       "group": "pain",
       "originalGroup": "pain",
@@ -992,6 +988,9 @@
       "safetyTier": "low_signal",
       "lowSignalPenalty": true,
       "noEmotionPenalty": false,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
       "relevanceKeywords": [
         "email",
         "mail"
@@ -1001,7 +1000,7 @@
       ]
     },
     {
-      "rank": 32,
+      "rank": 29,
       "aiPicked": false,
       "group": "pain",
       "originalGroup": "pain",
@@ -1023,6 +1022,9 @@
       "safetyTier": "low_signal",
       "lowSignalPenalty": true,
       "noEmotionPenalty": true,
+      "customerServicePenalty": false,
+      "competitorPenalty": false,
+      "viralTemplatePenalty": false,
       "relevanceKeywords": [
         "email",
         "mail"

@@ -82,6 +82,14 @@
       "newsletter", "weekly digest", "daily tips", "subscribe now",
       "最速で", "成功の秘訣", "無料で", "今すぐ登録",
       "免费领取", "立即获取", "限时优惠"
+    ],
+    "competitor_products": [
+      "assertec", "assertant", "clawdbot", "lumin", "superhuman", "spark mail",
+      "mailman", "sanebox", "hey.com", "hey email", "clean email", "cleanfox",
+      "yom_official", "mailbird", "airmail", "polymail", "newton mail",
+      "mailspring", "canary mail", "edison mail", "spike email", "tuta mail",
+      "proton mail", "zoho mail", "shortwave", "front app", "missive",
+      "skiff mail", "tutanota", "fastmail", "mailbox.org"
     ]
   },
   "_meta": {

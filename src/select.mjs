@@ -22,9 +22,17 @@ import {
   countFiloFitKeywords,
   isEmailActionOnly,
   checkPainEmotion,
+  isCustomerServiceNotice,
+  isCompetitorPromotion,
+  isViralTemplate,
   MIN_FILO_FIT,
   LOW_SIGNAL_PENALTY
 } from './safety.mjs';
+
+// Penalty multipliers for new filters
+const CUSTOMER_SERVICE_PENALTY = 0.3;  // 70% penalty for customer service notices
+const COMPETITOR_PENALTY = 0.25;        // 75% penalty for competitor promotions
+const VIRAL_TEMPLATE_PENALTY = 0.15;    // 85% penalty for viral copypasta
 
 // Quality threshold config (replaces fixed quota)
 const QUALITY_CONFIG = {
@@ -320,6 +328,69 @@ function selectTop10(rawData) {
   
   log('INFO', `After context check: ${contextQualifiedTweets.length} (emailActionOnly: ${filterStats.emailActionOnlyFiltered}, noEmotionPenalized: ${filterStats.noEmotionPenalized})`);
   
+  // ============ Customer Service Notice Check ============
+  // Detect service providers telling users to check email (not user pain points)
+  filterStats.customerServicePenalized = 0;
+  
+  for (const tweet of contextQualifiedTweets) {
+    const csCheck = isCustomerServiceNotice(tweet.text);
+    if (csCheck.isNotice) {
+      tweet.finalScore = Math.round(tweet.finalScore * CUSTOMER_SERVICE_PENALTY * 10) / 10;
+      tweet.customerServicePenalty = true;
+      tweet.customerServicePattern = csCheck.pattern;
+      filterStats.customerServicePenalized++;
+      log('DEBUG', `Customer service notice penalized: ${tweet.url}`, {
+        pattern: csCheck.pattern,
+        newScore: tweet.finalScore
+      });
+    }
+  }
+  
+  log('INFO', `Customer service notices penalized: ${filterStats.customerServicePenalized}`);
+  
+  // ============ Competitor Product Check ============
+  // Detect competitor email/productivity product promotions
+  filterStats.competitorPenalized = 0;
+  
+  for (const tweet of contextQualifiedTweets) {
+    const compCheck = isCompetitorPromotion(tweet.text);
+    if (compCheck.isPromotion) {
+      tweet.finalScore = Math.round(tweet.finalScore * COMPETITOR_PENALTY * 10) / 10;
+      tweet.competitorPenalty = true;
+      tweet.competitorProduct = compCheck.product;
+      filterStats.competitorPenalized++;
+      log('DEBUG', `Competitor promotion penalized: ${tweet.url}`, {
+        product: compCheck.product,
+        pattern: compCheck.pattern,
+        newScore: tweet.finalScore
+      });
+    }
+  }
+  
+  log('INFO', `Competitor promotions penalized: ${filterStats.competitorPenalized}`);
+  
+  // ============ Viral Template Check ============
+  // Filter out viral copypasta that contains email keywords but is off-topic
+  filterStats.viralTemplateFiltered = 0;
+  
+  const nonViralTweets = contextQualifiedTweets.filter(tweet => {
+    const viralCheck = isViralTemplate(tweet.text);
+    if (viralCheck.isViral) {
+      // Heavy penalty instead of hard filter - allows very high engagement viral content through with penalty
+      tweet.finalScore = Math.round(tweet.finalScore * VIRAL_TEMPLATE_PENALTY * 10) / 10;
+      tweet.viralTemplatePenalty = true;
+      tweet.viralTemplate = viralCheck.template;
+      filterStats.viralTemplateFiltered++;
+      log('DEBUG', `Viral template penalized: ${tweet.url}`, {
+        template: viralCheck.template,
+        newScore: tweet.finalScore
+      });
+    }
+    return true; // Keep all tweets but with penalty
+  });
+  
+  log('INFO', `Viral templates penalized: ${filterStats.viralTemplateFiltered}`);
+  
   // ============ KOL Author Verification ============
   // Verify that KOL tweets are actually from the expected KOL accounts
   filterStats.kolAuthorMismatch = 0;
@@ -440,8 +511,16 @@ function selectTop10(rawData) {
     safetyTier: t.safetyTier,
     lowSignalPenalty: t.lowSignalPenalty || false,
     noEmotionPenalty: t.noEmotionPenalty || false,
+    customerServicePenalty: t.customerServicePenalty || false,
+    competitorPenalty: t.competitorPenalty || false,
+    viralTemplatePenalty: t.viralTemplatePenalty || false,
     relevanceKeywords: t.relevanceKeywords || [],
-    painEmotionWords: t.painEmotionWords || []
+    painEmotionWords: t.painEmotionWords || [],
+    // Additional penalty details (if applicable)
+    ...(t.customerServicePattern && { customerServicePattern: t.customerServicePattern }),
+    ...(t.competitorProduct && { competitorProduct: t.competitorProduct }),
+    ...(t.viralTemplate && { viralTemplate: t.viralTemplate }),
+    ...(t.lowSignalWarning && { lowSignalWarning: t.lowSignalWarning })
   }));
   
   // Count stats by group
