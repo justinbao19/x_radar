@@ -17,6 +17,10 @@ const AUTH_STATUS_FILE = 'out/auth-status.json';
 const COMMENTS_FILE = 'out/latest/top10_with_comments.json';
 const DASHBOARD_URL = process.env.DASHBOARD_URL || 'https://x-radar.vercel.app';
 
+// Telegram Bot API
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+
 // ============ Logging ============
 
 function log(level, message, data = {}) {
@@ -310,6 +314,167 @@ async function sendWebhook(authStatus) {
     log('ERROR', 'Webhook sending failed', { error: e.message });
     return false;
   }
+}
+
+// ============ Telegram Bot ============
+
+/**
+ * Escape special characters for Telegram MarkdownV2
+ */
+function escapeMarkdownV2(text) {
+  if (!text) return '';
+  return String(text).replace(/([_*\[\]()~`>#+=|{}.!-])/g, '\\$1');
+}
+
+/**
+ * Send message via Telegram Bot API
+ */
+async function sendTelegramMessage(text, inlineKeyboard = null) {
+  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+    log('WARN', 'TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID not set, skipping Telegram');
+    return false;
+  }
+
+  const body = {
+    chat_id: TELEGRAM_CHAT_ID,
+    text,
+    parse_mode: 'MarkdownV2',
+    disable_web_page_preview: true
+  };
+
+  if (inlineKeyboard) {
+    body.reply_markup = { inline_keyboard: inlineKeyboard };
+  }
+
+  try {
+    const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      log('ERROR', 'Telegram send failed', { status: response.status, error });
+      return false;
+    }
+
+    log('INFO', 'Telegram message sent');
+    return true;
+  } catch (e) {
+    log('ERROR', 'Telegram sending failed', { error: e.message });
+    return false;
+  }
+}
+
+/**
+ * Send success notification via Telegram
+ */
+async function sendTelegramSuccess(stats) {
+  const { byGroup = {}, bySentiment = {}, byInsightType = {}, negativeTweets = [] } = stats;
+  const hasNegative = stats.hasNegativeSentiment;
+
+  const runTime = new Date().toLocaleString('zh-CN', { 
+    timeZone: 'Asia/Shanghai',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
+  // Build message with MarkdownV2 format
+  const title = hasNegative ? '⚠️ *X Radar 有新舆情*' : '✅ *X Radar 扫描完成*';
+  
+  let message = `${title}\n\n`;
+  
+  // 痛点雷达区
+  const painTotal = (byGroup.pain || 0) + (byGroup.reach || 0) + (byGroup.kol || 0);
+  if (painTotal > 0) {
+    message += `🎯 *痛点雷达*\n`;
+    message += `痛点: ${byGroup.pain || 0} \\| 传播: ${byGroup.reach || 0} \\| KOL: ${byGroup.kol || 0}\n\n`;
+  }
+  
+  // Filo舆情区
+  message += `📢 *Filo舆情*\n`;
+  const sentimentTotal = byGroup.sentiment || 0;
+  if (sentimentTotal > 0) {
+    const negativeCount = bySentiment.negative || 0;
+    const negativeLabel = negativeCount > 0 ? `⚠️ 需关注: ${negativeCount}` : `需关注: 0`;
+    message += `✓ 积极: ${bySentiment.positive || 0} \\| ○ 中性: ${bySentiment.neutral || 0} \\| ${escapeMarkdownV2(negativeLabel)}\n`;
+    
+    // 负面舆情预览
+    if (negativeTweets.length > 0) {
+      message += `\n`;
+      negativeTweets.forEach(t => {
+        message += `• ${escapeMarkdownV2(t.author)}: ${escapeMarkdownV2(t.text)}\\.\\.\\.\n`;
+      });
+    }
+  } else {
+    message += `暂无品牌提及\n`;
+  }
+  message += `\n`;
+  
+  // 用户洞察区
+  message += `💡 *用户洞察*\n`;
+  const insightTotal = byGroup.insight || 0;
+  if (insightTotal > 0) {
+    message += `功能需求: ${byInsightType.feature_request || 0} \\| AI需求: ${byInsightType.ai_demand || 0} \\| 竞品好评: ${byInsightType.competitor_praise || 0}\n\n`;
+  } else {
+    message += `暂无新洞察\n\n`;
+  }
+  
+  // 底部统计
+  message += `━━━━━━━━━━━━━━━\n`;
+  message += `📊 精选推文: *${stats.totalTweets}* 条 \\| 🕐 ${escapeMarkdownV2(runTime)}`;
+
+  // Inline keyboard with button
+  const keyboard = [[
+    { text: '📊 查看详情', url: DASHBOARD_URL }
+  ]];
+
+  return sendTelegramMessage(message, keyboard);
+}
+
+/**
+ * Send failure notification via Telegram
+ */
+async function sendTelegramFailure(failureInfo) {
+  const runTime = new Date().toLocaleString('zh-CN', { 
+    timeZone: 'Asia/Shanghai',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
+  const runUrl = failureInfo.runUrl || 'https://github.com/justinbao19/x_radar/actions';
+
+  let message = `❌ *X Radar 运行失败*\n\n`;
+  message += `*失败步骤:* ${escapeMarkdownV2(failureInfo.step || 'Unknown')}\n`;
+  message += `*时间:* ${escapeMarkdownV2(runTime)}\n\n`;
+  message += `*错误信息:*\n`;
+  message += `\`${escapeMarkdownV2(failureInfo.error || '未知错误，请查看 GitHub Actions 日志')}\``;
+
+  const keyboard = [[
+    { text: '📋 查看日志', url: runUrl }
+  ]];
+
+  return sendTelegramMessage(message, keyboard);
+}
+
+/**
+ * Send auth failed notification via Telegram
+ */
+async function sendTelegramAuthFailed(authStatus) {
+  let message = `⚠️ *X Radar 登录失效*\n\n`;
+  message += `*失败原因:* ${escapeMarkdownV2(authStatus.reason || 'Unknown')}\n`;
+  message += `*检查时间:* ${escapeMarkdownV2(authStatus.checkedAt || new Date().toISOString())}\n\n`;
+  message += `*修复步骤:*\n`;
+  message += `1\\. \`npm run login\`\n`;
+  message += `2\\. \`base64 \\-i auth/state\\.json \\| tr \\-d '\\\\n' \\| gh secret set X\\_STORAGE\\_STATE\\_B64\`\n`;
+  message += `3\\. \`gh workflow run "X Radar Pipeline"\``;
+
+  return sendTelegramMessage(message);
 }
 
 // ============ Failure Notification (Webhook only) ============
@@ -785,8 +950,19 @@ async function main() {
     }
 
     log('INFO', 'Sending success notification...', stats);
-    const result = await sendSuccessWebhook(stats);
-    log('INFO', 'Success notification complete', { sent: result });
+    const results = await Promise.allSettled([
+      sendSuccessWebhook(stats),
+      sendTelegramSuccess(stats)
+    ]);
+    const successCount = results.filter(r => r.status === 'fulfilled' && r.value === true).length;
+    log('INFO', 'Success notification complete', { 
+      total: 2, 
+      succeeded: successCount,
+      results: results.map((r, i) => ({
+        channel: ['webhook', 'telegram'][i],
+        success: r.status === 'fulfilled' && r.value === true
+      }))
+    });
     return;
   }
 
@@ -799,8 +975,19 @@ async function main() {
     };
 
     log('INFO', 'Sending failure notification...', failureInfo);
-    const result = await sendFailureWebhook(failureInfo);
-    log('INFO', 'Failure notification complete', { sent: result });
+    const results = await Promise.allSettled([
+      sendFailureWebhook(failureInfo),
+      sendTelegramFailure(failureInfo)
+    ]);
+    const successCount = results.filter(r => r.status === 'fulfilled' && r.value === true).length;
+    log('INFO', 'Failure notification complete', { 
+      total: 2, 
+      succeeded: successCount,
+      results: results.map((r, i) => ({
+        channel: ['webhook', 'telegram'][i],
+        success: r.status === 'fulfilled' && r.value === true
+      }))
+    });
     return;
   }
 
@@ -827,15 +1014,16 @@ async function main() {
   const results = await Promise.allSettled([
     createGitHubIssue(authStatus),
     sendEmail(authStatus),
-    sendWebhook(authStatus)
+    sendWebhook(authStatus),
+    sendTelegramAuthFailed(authStatus)
   ]);
 
   const successCount = results.filter(r => r.status === 'fulfilled' && r.value === true).length;
   log('INFO', 'Notification complete', { 
-    total: 3, 
+    total: 4, 
     succeeded: successCount,
     results: results.map((r, i) => ({
-      channel: ['github-issue', 'email', 'webhook'][i],
+      channel: ['github-issue', 'email', 'webhook', 'telegram'][i],
       success: r.status === 'fulfilled' && r.value === true
     }))
   });

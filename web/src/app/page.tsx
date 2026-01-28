@@ -299,14 +299,14 @@ export default function Dashboard() {
       )}
 
       {/* Filters */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-4">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 space-y-3">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
           <DatePicker 
             value={dateRange} 
             onChange={setDateRange}
             availableDates={availableDates}
           />
-          <div className="flex flex-row flex-wrap items-center gap-3 sm:gap-4 sm:gap-y-2">
+          <div className="flex flex-row flex-wrap items-center gap-2">
             <CategoryFilter 
               value={categories} 
               onChange={setCategories}

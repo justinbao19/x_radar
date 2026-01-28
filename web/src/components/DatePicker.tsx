@@ -239,10 +239,10 @@ export function DatePicker({ value, onChange, availableDates }: DatePickerProps)
           <button
             key={preset.key}
             onClick={() => handlePresetClick(preset.key)}
-            className={`inline-flex items-center px-4 h-9 rounded-full text-sm font-medium whitespace-nowrap shrink-0 transition-all duration-200 ${
+            className={`inline-flex items-center px-3 h-8 rounded-lg text-sm font-medium whitespace-nowrap shrink-0 transition-colors ${
               activePreset === preset.key
-                ? 'bg-gradient-to-r from-stone-800 to-stone-900 text-white shadow-md shadow-stone-900/20'
-                : 'bg-stone-100 text-stone-600 hover:bg-stone-200 border border-stone-200/50'
+                ? 'bg-stone-800 text-white'
+                : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
             }`}
           >
             {preset.label}
@@ -250,16 +250,16 @@ export function DatePicker({ value, onChange, availableDates }: DatePickerProps)
         ))}
         <button
           onClick={() => setShowCustom(!showCustom)}
-          className={`inline-flex items-center gap-2 px-4 h-9 rounded-full text-sm font-medium whitespace-nowrap shrink-0 transition-all duration-200 ${
+          className={`inline-flex items-center gap-1.5 px-3 h-8 rounded-lg text-sm font-medium whitespace-nowrap shrink-0 transition-colors ${
             showCustom || (!activePreset && availableDates)
-              ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md shadow-amber-500/25'
-              : 'bg-stone-100 text-stone-600 hover:bg-stone-200 border border-stone-200/50'
+              ? 'bg-stone-800 text-white'
+              : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
           }`}
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
-          选择日期
+          选择
         </button>
       </div>
 
@@ -273,55 +273,55 @@ export function DatePicker({ value, onChange, availableDates }: DatePickerProps)
               setHoverDate(null);
             }}
           />
-          <div className="fixed inset-x-0 top-20 z-40 px-4 sm:px-0 sm:absolute sm:top-full sm:left-0 sm:inset-auto sm:mt-3">
-            <div className="w-[320px] max-w-[90vw] sm:w-[320px] mx-auto sm:mx-0 bg-white rounded-2xl border border-stone-200 shadow-xl shadow-stone-200/50 animate-fade-in overflow-hidden">
+          <div className="fixed inset-x-0 top-20 z-40 px-4 sm:px-0 sm:absolute sm:top-full sm:left-0 sm:inset-auto sm:mt-2">
+            <div className="w-[300px] max-w-[90vw] sm:w-[300px] mx-auto sm:mx-0 bg-white rounded-xl border border-stone-200 shadow-lg animate-fade-in overflow-hidden">
               {/* Calendar Header */}
-              <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-amber-50 to-orange-50 border-b border-amber-100">
+              <div className="flex items-center justify-between px-3 py-2.5 bg-stone-50 border-b border-stone-100">
                 <button
                   onClick={handlePrevMonth}
                   disabled={!canGoPrev}
-                  className={`p-1.5 rounded-lg transition-all ${
+                  className={`p-1 rounded-lg transition-colors ${
                     canGoPrev 
-                      ? 'hover:bg-amber-100 text-stone-600' 
+                      ? 'hover:bg-stone-200 text-stone-600' 
                       : 'text-stone-300 cursor-not-allowed'
                   }`}
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
-                <div className="text-base font-semibold text-stone-800">
+                <div className="text-sm font-semibold text-stone-800">
                   {viewYear}年 {MONTHS[viewMonth]}
                 </div>
                 <button
                   onClick={handleNextMonth}
                   disabled={!canGoNext}
-                  className={`p-1.5 rounded-lg transition-all ${
+                  className={`p-1 rounded-lg transition-colors ${
                     canGoNext 
-                      ? 'hover:bg-amber-100 text-stone-600' 
+                      ? 'hover:bg-stone-200 text-stone-600' 
                       : 'text-stone-300 cursor-not-allowed'
                   }`}
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
               </div>
 
               {/* Weekday Headers */}
-              <div className="grid grid-cols-7 px-3 pt-3">
+              <div className="grid grid-cols-7 px-2 pt-2">
                 {WEEKDAYS.map(day => (
-                  <div key={day} className="text-center text-xs font-medium text-stone-400 py-2">
+                  <div key={day} className="text-center text-xs font-medium text-stone-400 py-1.5">
                     {day}
                   </div>
                 ))}
               </div>
 
               {/* Calendar Grid */}
-              <div className="grid grid-cols-7 px-3 pb-3 gap-y-1">
+              <div className="grid grid-cols-7 px-2 pb-2 gap-y-0.5">
                 {calendarDays.map((date, index) => {
                   if (!date) {
-                    return <div key={`empty-${index}`} className="h-9" />;
+                    return <div key={`empty-${index}`} className="h-8" />;
                   }
                   
                   const dateStr = toDateStr(date);
@@ -336,21 +336,21 @@ export function DatePicker({ value, onChange, availableDates }: DatePickerProps)
                       onMouseEnter={() => rangeStart && isAvailable && setHoverDate(dateStr)}
                       onMouseLeave={() => setHoverDate(null)}
                       disabled={!isAvailable}
-                      className={`h-9 w-full rounded-lg text-sm font-medium transition-all relative ${
+                      className={`h-8 w-full rounded-lg text-sm font-medium transition-colors relative ${
                         !isAvailable
                           ? 'text-stone-300 cursor-not-allowed'
                           : state === 'start'
-                            ? 'bg-amber-500 text-white shadow-sm'
+                            ? 'bg-stone-800 text-white'
                             : state === 'hover-range'
-                              ? 'bg-amber-100 text-amber-700'
+                              ? 'bg-stone-200 text-stone-800'
                               : isToday
-                                ? 'bg-stone-100 text-stone-800 hover:bg-amber-100 hover:text-amber-700'
-                                : 'text-stone-700 hover:bg-amber-50 hover:text-amber-700'
+                                ? 'bg-stone-100 text-stone-800 hover:bg-stone-200'
+                                : 'text-stone-700 hover:bg-stone-100'
                       }`}
                     >
                       {date.getDate()}
                       {isToday && !state && (
-                        <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-amber-500" />
+                        <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-stone-800" />
                       )}
                     </button>
                   );
@@ -358,32 +358,30 @@ export function DatePicker({ value, onChange, availableDates }: DatePickerProps)
               </div>
 
               {/* Selection Status */}
-              <div className="px-4 py-3 bg-stone-50 border-t border-stone-100">
+              <div className="px-3 py-2.5 bg-stone-50 border-t border-stone-100">
                 <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="text-stone-500">
-                      {!rangeStart ? '点击选择开始日期' : '点击选择结束日期'}
-                    </span>
-                  </div>
+                  <span className="text-stone-500">
+                    {!rangeStart ? '点击选择开始日期' : '点击选择结束日期'}
+                  </span>
                   {rangeStart && (
                     <button
                       onClick={() => {
                         setRangeStart(null);
                         setHoverDate(null);
                       }}
-                      className="text-amber-600 hover:text-amber-700 font-medium"
+                      className="text-stone-600 hover:text-stone-800 font-medium"
                     >
                       重置
                     </button>
                   )}
                 </div>
                 {rangeStart && (
-                  <div className="mt-2 flex items-center gap-2 text-sm">
-                    <span className="px-2 py-1 bg-amber-500 text-white rounded-md text-xs font-medium">
+                  <div className="mt-1.5 flex items-center gap-2 text-sm">
+                    <span className="px-2 py-0.5 bg-stone-800 text-white rounded text-xs font-medium">
                       {new Date(rangeStart + 'T00:00:00').getMonth() + 1}/{new Date(rangeStart + 'T00:00:00').getDate()}
                     </span>
                     <span className="text-stone-400">→</span>
-                    <span className="px-2 py-1 bg-stone-200 text-stone-500 rounded-md text-xs">
+                    <span className="px-2 py-0.5 bg-stone-200 text-stone-500 rounded text-xs">
                       {hoverDate 
                         ? `${new Date(hoverDate + 'T00:00:00').getMonth() + 1}/${new Date(hoverDate + 'T00:00:00').getDate()}`
                         : '?'

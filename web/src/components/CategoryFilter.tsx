@@ -128,13 +128,13 @@ export function CategoryFilter({ value, onChange, stats, radarCategory = 'pain_r
       <button
         type="button"
         onClick={() => setOpen(prev => !prev)}
-        className="inline-flex items-center gap-2 px-4 h-9 rounded-full text-sm font-medium bg-stone-100 text-stone-600 hover:bg-stone-200 border border-stone-200/50 whitespace-nowrap"
+        className="inline-flex items-center gap-1.5 px-3 h-8 rounded-lg text-sm font-medium bg-stone-100 text-stone-600 hover:bg-stone-200 transition-colors whitespace-nowrap"
         aria-haspopup="listbox"
         aria-expanded={open}
       >
         <span className="text-stone-500">分类</span>
-        <span className="text-stone-700 max-w-[160px] truncate">{selectedLabel}</span>
-        <svg className={`w-4 h-4 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <span className="text-stone-700 max-w-[100px] truncate">{selectedLabel}</span>
+        <svg className={`w-3.5 h-3.5 text-stone-400 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
@@ -148,9 +148,9 @@ export function CategoryFilter({ value, onChange, stats, radarCategory = 'pain_r
           {/* Dropdown */}
           <div
             role="listbox"
-            className="fixed left-4 right-4 top-1/3 z-50 w-auto max-w-[280px] mx-auto rounded-2xl bg-white border border-stone-200 shadow-xl p-2 sm:absolute sm:left-0 sm:right-auto sm:top-full sm:mt-2 sm:w-60 sm:max-w-none sm:mx-0 sm:shadow-lg sm:shadow-stone-200/50"
+            className="fixed left-4 right-4 top-1/3 z-50 w-auto max-w-[240px] mx-auto rounded-xl bg-white border border-stone-200 shadow-lg p-1.5 sm:absolute sm:left-0 sm:right-auto sm:top-full sm:mt-2 sm:w-48 sm:max-w-none sm:mx-0"
           >
-            <div className="text-xs text-stone-400 px-3 py-1.5 sm:hidden">选择分类</div>
+            <div className="text-xs text-stone-400 px-2 py-1 sm:hidden">选择分类</div>
             {categories.map(cat => {
               const isActive = value.includes(cat.key);
               const count = getCount(cat.key);
@@ -159,9 +159,9 @@ export function CategoryFilter({ value, onChange, stats, radarCategory = 'pain_r
                 <button
                   key={cat.key}
                   onClick={() => handleClick(cat.key)}
-                  className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 sm:py-2 rounded-xl text-sm font-medium transition-all ${
+                  className={`w-full flex items-center justify-between gap-2 px-2 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                     isActive
-                      ? `${cat.activeColor} text-white shadow-sm`
+                      ? 'bg-stone-800 text-white'
                       : 'text-stone-600 hover:bg-stone-100'
                   }`}
                   role="option"
@@ -172,8 +172,8 @@ export function CategoryFilter({ value, onChange, stats, radarCategory = 'pain_r
                     {cat.label}
                   </span>
                   {count !== undefined && (
-                    <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                      isActive ? 'bg-white/20' : 'bg-stone-200/80'
+                    <span className={`text-xs ${
+                      isActive ? 'text-stone-300' : 'text-stone-400'
                     }`}>
                       {count}
                     </span>

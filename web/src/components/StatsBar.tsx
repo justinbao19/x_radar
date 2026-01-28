@@ -86,158 +86,207 @@ export function StatsBar({ stats, showAiPicked, onToggleAiPicked, languageFilter
   }, []);
 
   return (
-    <div className="bg-white/80 backdrop-blur-sm border-b border-stone-200/60 relative z-20">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-6 md:gap-8">
-        {/* Stats Cards */}
-        <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:items-center sm:gap-4">
-          <div className="flex items-center gap-2 bg-gradient-to-r from-amber-50 to-orange-50 px-3 py-2 sm:px-4 rounded-2xl border border-amber-200/50 w-full sm:w-auto sm:min-w-[180px]">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-amber-500 rounded-xl flex items-center justify-center">
-              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2Z"/>
-            </svg>
-          </div>
-            <div>
-              <span className="text-xl sm:text-2xl font-bold text-stone-800">
-                {showAiPicked ? stats.aiPicked : stats.total}
+    <div className="bg-stone-50/80 backdrop-blur-sm border-b border-stone-200/60 relative z-20">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-2.5 sm:py-3">
+        {/* Mobile: Two rows layout */}
+        <div className="flex flex-col gap-2 sm:hidden">
+          {/* Row 1: Stats + Toggle */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 bg-stone-100 px-3 h-8 rounded-lg">
+                <span className="w-2 h-2 rounded-full bg-amber-500" />
+                <span className="text-sm font-semibold text-stone-800">
+                  {showAiPicked ? stats.aiPicked : stats.total}
+                </span>
+                <span className="text-sm text-stone-500">
+                  {showAiPicked ? '精选' : '全部'}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 bg-stone-100 px-3 h-8 rounded-lg">
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                <span className="text-sm font-semibold text-stone-800">{stats.withComments}</span>
+                <span className="text-sm text-stone-500">回复</span>
+              </div>
+            </div>
+            {/* Toggle Switch */}
+            <div className="flex items-center gap-1.5 bg-stone-100 px-2.5 h-8 rounded-lg">
+              <span className={`text-sm font-medium transition-colors ${!showAiPicked ? 'text-stone-700' : 'text-stone-400'}`}>
+                全部
               </span>
-              <span className="text-xs sm:text-sm text-stone-500 ml-1.5">
-                {showAiPicked ? 'AI 精选' : '全部推文'}
+              <button
+                onClick={onToggleAiPicked}
+                className={`relative w-9 h-5 rounded-full transition-all duration-200 ${
+                  showAiPicked ? 'bg-amber-500' : 'bg-stone-300'
+                }`}
+                aria-label={showAiPicked ? '显示全部推文' : '仅显示AI精选'}
+              >
+                <span 
+                  className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-all duration-200 ${
+                    showAiPicked ? 'left-[18px]' : 'left-0.5'
+                  }`}
+                />
+              </button>
+              <span className={`text-sm font-medium transition-colors ${showAiPicked ? 'text-amber-600' : 'text-stone-400'}`}>
+                精选
               </span>
             </div>
           </div>
-          
-          <div className="flex items-center gap-2 bg-stone-50 px-3 py-2 sm:px-4 rounded-2xl border border-stone-200/50 w-full sm:w-auto sm:min-w-[200px]">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-emerald-500 rounded-xl flex items-center justify-center">
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-            <div>
-              <span className="text-xl sm:text-2xl font-bold text-stone-800">{stats.withComments}</span>
-              <span className="text-xs sm:text-sm text-stone-500 ml-1.5">已生成回复</span>
-            </div>
-          </div>
-        </div>
-        
-        {/* Language & Toggle Row */}
-        <div className="flex items-center justify-between gap-3 sm:flex-nowrap sm:justify-end sm:flex-1">
+          {/* Row 2: Language selector (if needed) */}
           {languageCount > 0 && (
-            <div ref={langRef} className="relative flex items-center bg-stone-50 px-3 py-2 rounded-2xl border border-stone-200/50 z-30 shrink-0">
+            <div ref={langRef} className="relative">
               <button
                 type="button"
                 onClick={() => setLangOpen(prev => !prev)}
-                className="flex items-center gap-2"
+                className="flex items-center gap-1.5 bg-stone-100 px-3 h-8 rounded-lg text-sm text-stone-600"
                 aria-haspopup="dialog"
                 aria-expanded={langOpen}
               >
-                <div className="flex -space-x-2">
+                <div className="flex -space-x-1">
                   {activeFlag ? (
-                    <span className="w-6 h-6 rounded-full bg-white border border-stone-200 flex items-center justify-center text-xs">
-                      {activeFlag}
-                    </span>
+                    <span className="text-sm">{activeFlag}</span>
                   ) : (
-                    <>
-                      {previewFlags.map(item => (
-                        <span
-                          key={item.code}
-                          className="w-6 h-6 rounded-full bg-white border border-stone-200 flex items-center justify-center text-xs"
-                        >
-                          {item.flag}
-                        </span>
-                      ))}
-                      {languageCount > previewFlags.length && (
-                        <span className="w-6 h-6 rounded-full bg-white border border-stone-200 flex items-center justify-center text-[10px] text-stone-500">
-                          +{languageCount - previewFlags.length}
-                        </span>
-                      )}
-                    </>
+                    previewFlags.slice(0, 3).map(item => (
+                      <span key={item.code} className="text-sm">{item.flag}</span>
+                    ))
                   )}
                 </div>
-                <span className="hidden lg:inline text-sm font-semibold text-stone-700 whitespace-nowrap">
-                  {labelText}
+                <span className="text-sm text-stone-500">
+                  {activeLabel || `${languageCount}种语言`}
                 </span>
-                <svg className={`w-4 h-4 text-stone-400 transition-transform ${langOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className={`w-3.5 h-3.5 text-stone-400 transition-transform ${langOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-              {langOpen && (
-                <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 w-64 rounded-2xl bg-white border border-stone-200 shadow-lg shadow-stone-200/50 p-2 z-50">
-                  <div className="text-xs text-stone-500 px-2 py-1">语言分布</div>
-                  <div className="max-h-56 overflow-auto">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        onLanguageChange('all');
-                        setLangOpen(false);
-                      }}
-                      className={`w-full flex items-center justify-between px-2 py-1.5 rounded-xl text-sm transition-colors ${
-                        languageFilter === 'all'
-                          ? 'bg-stone-100 text-stone-800'
-                          : 'text-stone-600 hover:bg-stone-50'
-                      }`}
-                    >
-                      <span className="flex items-center gap-2">
-                        <span className="w-5 h-5 rounded-full bg-stone-100 border border-stone-200 flex items-center justify-center text-xs">
-                          🌐
-                        </span>
-                        全部语言
-                      </span>
-                      <span className="text-stone-500">{languageCount}</span>
-                    </button>
-                    {languages.map(item => (
-                      <button
-                        key={item.code}
-                        type="button"
-                        onClick={() => {
-                          onLanguageChange(item.key);
-                          setLangOpen(false);
-                        }}
-                        className={`w-full flex items-center justify-between px-2 py-1.5 rounded-xl text-sm transition-colors ${
-                          activeLanguage === item.key
-                            ? 'bg-amber-50 text-amber-700'
-                            : 'text-stone-700 hover:bg-stone-50'
-                        }`}
-                      >
-                        <span className="flex items-center gap-2">
-                          <span className="w-5 h-5 rounded-full bg-stone-100 border border-stone-200 flex items-center justify-center text-xs">
-                            {item.flag}
-                          </span>
-                          {item.label}
-                        </span>
-                        <span className="text-stone-500">{item.count}</span>
-                      </button>
-                    ))}
-                  </div>
+            </div>
+          )}
+        </div>
+
+        {/* Desktop: Single row layout */}
+        <div className="hidden sm:flex items-center gap-4">
+          <div className="flex items-center gap-1.5 bg-stone-100 px-3 h-8 rounded-lg">
+            <span className="w-2 h-2 rounded-full bg-amber-500" />
+            <span className="text-sm font-semibold text-stone-800">
+              {showAiPicked ? stats.aiPicked : stats.total}
+            </span>
+            <span className="text-xs text-stone-500">
+              {showAiPicked ? 'AI精选' : '全部'}
+            </span>
+          </div>
+          
+          <div className="flex items-center gap-1.5 bg-stone-100 px-3 h-8 rounded-lg">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span className="text-sm font-semibold text-stone-800">{stats.withComments}</span>
+            <span className="text-xs text-stone-500">已回复</span>
+          </div>
+          
+          <div className="flex-1" />
+          
+          {/* Language Selector - Desktop */}
+          {languageCount > 0 && (
+            <div ref={langRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setLangOpen(prev => !prev)}
+                className="flex items-center gap-1.5 bg-stone-100 px-3 h-8 rounded-lg text-sm text-stone-600 hover:bg-stone-200 transition-colors"
+                aria-haspopup="dialog"
+                aria-expanded={langOpen}
+              >
+                <div className="flex -space-x-1">
+                  {activeFlag ? (
+                    <span className="text-sm">{activeFlag}</span>
+                  ) : (
+                    previewFlags.slice(0, 3).map(item => (
+                      <span key={item.code} className="text-sm">{item.flag}</span>
+                    ))
+                  )}
                 </div>
-              )}
+                {languageCount > 3 && !activeFlag && (
+                  <span className="text-xs text-stone-400">+{languageCount - 3}</span>
+                )}
+                <svg className={`w-3.5 h-3.5 text-stone-400 transition-transform ${langOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
             </div>
           )}
           
-          {/* Toggle Switch */}
-          <div className="inline-flex items-center gap-2 bg-stone-100/80 px-3 py-2 rounded-2xl shrink-0">
-            <span className={`text-xs sm:text-sm font-medium transition-colors ${!showAiPicked ? 'text-stone-600' : 'text-stone-400'}`}>
+          {/* Toggle Switch - Desktop */}
+          <div className="flex items-center gap-1.5 bg-stone-100 px-2 h-8 rounded-lg">
+            <span className={`text-xs font-medium transition-colors ${!showAiPicked ? 'text-stone-700' : 'text-stone-400'}`}>
               全部
             </span>
             <button
               onClick={onToggleAiPicked}
-              className={`relative w-11 h-6 rounded-full transition-all duration-300 shrink-0 ${
-                showAiPicked 
-                  ? 'bg-gradient-to-r from-amber-400 to-orange-500 shadow-inner shadow-amber-600/20' 
-                  : 'bg-stone-300'
+              className={`relative w-9 h-5 rounded-full transition-all duration-200 ${
+                showAiPicked ? 'bg-amber-500' : 'bg-stone-300'
               }`}
               aria-label={showAiPicked ? '显示全部推文' : '仅显示AI精选'}
             >
               <span 
-                className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-all duration-300 ease-out ${
-                  showAiPicked ? 'left-6 shadow-amber-200' : 'left-0.5'
+                className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-all duration-200 ${
+                  showAiPicked ? 'left-[18px]' : 'left-0.5'
                 }`}
               />
             </button>
-            <span className={`text-xs sm:text-sm font-medium transition-colors ${showAiPicked ? 'text-amber-600' : 'text-stone-400'}`}>
-              AI 精选
+            <span className={`text-xs font-medium transition-colors ${showAiPicked ? 'text-amber-600' : 'text-stone-400'}`}>
+              精选
             </span>
           </div>
         </div>
+
+        {/* Language Dropdown - Shared */}
+        {langOpen && (
+          <>
+            <div 
+              className="fixed inset-0 bg-black/20 z-40 sm:hidden" 
+              onClick={() => setLangOpen(false)}
+            />
+            <div className="fixed left-4 right-4 top-1/3 z-50 max-w-[240px] mx-auto rounded-xl bg-white border border-stone-200 shadow-lg p-1.5 sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:w-52 sm:max-w-none sm:mx-0">
+              <div className="text-xs text-stone-400 px-2 py-1">语言筛选</div>
+              <div className="max-h-52 overflow-auto">
+                <button
+                  type="button"
+                  onClick={() => {
+                    onLanguageChange('all');
+                    setLangOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-sm transition-colors ${
+                    languageFilter === 'all'
+                      ? 'bg-stone-800 text-white'
+                      : 'text-stone-600 hover:bg-stone-100'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <span className="text-sm">🌐</span>
+                    全部
+                  </span>
+                  <span className={languageFilter === 'all' ? 'text-stone-300' : 'text-stone-400'}>{languageCount}</span>
+                </button>
+                {languages.map(item => (
+                  <button
+                    key={item.code}
+                    type="button"
+                    onClick={() => {
+                      onLanguageChange(item.key);
+                      setLangOpen(false);
+                    }}
+                    className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-sm transition-colors ${
+                      activeLanguage === item.key
+                        ? 'bg-stone-800 text-white'
+                        : 'text-stone-600 hover:bg-stone-100'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="text-sm">{item.flag}</span>
+                      {item.label}
+                    </span>
+                    <span className={activeLanguage === item.key ? 'text-stone-300' : 'text-stone-400'}>{item.count}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

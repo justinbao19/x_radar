@@ -60,14 +60,15 @@ export function SortSelector({ value, onChange }: SortSelectorProps) {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-stone-200 rounded-full hover:border-stone-300 hover:bg-stone-50 transition-all text-sm font-medium text-stone-700 shadow-sm"
+        className="inline-flex items-center gap-1.5 px-3 h-8 bg-stone-100 rounded-lg hover:bg-stone-200 transition-colors text-sm font-medium text-stone-600"
         aria-haspopup="listbox"
         aria-expanded={open}
       >
-        <span className="text-amber-600">{currentOption.icon}</span>
-        <span>{currentOption.label}</span>
+        <span className="text-stone-500">{currentOption.icon}</span>
+        <span className="hidden sm:inline">{currentOption.label}</span>
+        <span className="sm:hidden">排序</span>
         <svg 
-          className={`w-4 h-4 text-stone-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} 
+          className={`w-3.5 h-3.5 text-stone-400 transition-transform ${open ? 'rotate-180' : ''}`} 
           fill="none" 
           stroke="currentColor" 
           viewBox="0 0 24 24"
@@ -84,8 +85,8 @@ export function SortSelector({ value, onChange }: SortSelectorProps) {
             onClick={() => setOpen(false)}
           />
           {/* Dropdown */}
-          <div className="fixed left-4 right-4 top-1/3 z-50 w-auto max-w-[200px] mx-auto bg-white border border-stone-200 rounded-2xl shadow-xl py-1 animate-fade-in sm:absolute sm:right-0 sm:left-auto sm:top-full sm:mt-2 sm:w-40 sm:max-w-none sm:mx-0 sm:shadow-lg sm:shadow-stone-200/50">
-            <div className="text-xs text-stone-400 px-3 py-1.5 sm:hidden">排序方式</div>
+          <div className="fixed left-4 right-4 top-1/3 z-50 w-auto max-w-[180px] mx-auto bg-white border border-stone-200 rounded-xl shadow-lg p-1.5 animate-fade-in sm:absolute sm:right-0 sm:left-auto sm:top-full sm:mt-2 sm:w-36 sm:max-w-none sm:mx-0">
+            <div className="text-xs text-stone-400 px-2 py-1 sm:hidden">排序方式</div>
             {sortOptions.map(option => (
               <button
                 key={option.value}
@@ -94,21 +95,16 @@ export function SortSelector({ value, onChange }: SortSelectorProps) {
                   onChange(option.value);
                   setOpen(false);
                 }}
-                className={`w-full flex items-center gap-2.5 px-3 py-2.5 sm:py-2 text-sm transition-colors ${
+                className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-sm transition-colors ${
                   value === option.value
-                    ? 'bg-amber-50 text-amber-700'
-                    : 'text-stone-600 hover:bg-stone-50'
+                    ? 'bg-stone-800 text-white'
+                    : 'text-stone-600 hover:bg-stone-100'
                 }`}
               >
-                <span className={value === option.value ? 'text-amber-600' : 'text-stone-400'}>
+                <span className={value === option.value ? 'text-stone-300' : 'text-stone-400'}>
                   {option.icon}
                 </span>
                 {option.label}
-                {value === option.value && (
-                  <svg className="w-4 h-4 ml-auto text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                )}
               </button>
             ))}
           </div>
