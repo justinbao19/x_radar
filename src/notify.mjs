@@ -508,13 +508,13 @@ async function sendSuccessWebhook(stats) {
             tag: 'div',
             fields: [
               { is_short: true, text: { tag: 'lark_md', content: `**精选推文:** ${stats.totalTweets} 条` } },
-              { is_short: true, text: { tag: 'lark_md', content: `**生成回复:** ${stats.succeeded}/${stats.total}` } }
+              { is_short: true, text: { tag: 'lark_md', content: `**本次扫描:** ${stats.totalCandidates} 条` } }
             ]
           },
           {
             tag: 'div',
             fields: [
-              { is_short: true, text: { tag: 'lark_md', content: `**需求类:** ${stats.painCount} 条 · **曝光类:** ${stats.reachCount} 条` } },
+              { is_short: true, text: { tag: 'lark_md', content: `**生成回复:** ${stats.succeeded}/${stats.total}` } },
               { is_short: true, text: { tag: 'lark_md', content: `**更新时间:** ${runTime}` } }
             ]
           },
@@ -552,8 +552,8 @@ async function sendSuccessWebhook(stats) {
           type: 'section',
           fields: [
             { type: 'mrkdwn', text: `*精选推文:* ${stats.totalTweets} 条` },
+            { type: 'mrkdwn', text: `*本次扫描:* ${stats.totalCandidates} 条` },
             { type: 'mrkdwn', text: `*生成回复:* ${stats.succeeded}/${stats.total}` },
-            { type: 'mrkdwn', text: `*需求类:* ${stats.painCount} 条 · *曝光类:* ${stats.reachCount} 条` },
             { type: 'mrkdwn', text: `*更新时间:* ${runTime}` }
           ]
         },
@@ -582,8 +582,8 @@ async function sendSuccessWebhook(stats) {
         color: 5763719, // Green
         fields: [
           { name: '精选推文', value: `${stats.totalTweets} 条`, inline: true },
+          { name: '本次扫描', value: `${stats.totalCandidates} 条`, inline: true },
           { name: '生成回复', value: `${stats.succeeded}/${stats.total}`, inline: true },
-          { name: '分类', value: `需求类: ${stats.painCount} 条 · 曝光类: ${stats.reachCount} 条`, inline: false },
           { name: '更新时间', value: runTime, inline: true }
         ],
         url: DASHBOARD_URL
@@ -659,8 +659,6 @@ function loadSuccessStats() {
       total: stats.total || 0,
       succeeded: stats.succeeded || 0,
       skipped: stats.skipped || 0,
-      painCount: selectionStats.painSelected || 0,
-      reachCount: selectionStats.reachSelected || 0,
       runAt: data.runAt,
       languages,
       topTopics
