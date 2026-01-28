@@ -1,16 +1,21 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { CategoryFilter as CategoryFilterType } from '@/lib/types';
+import { CategoryFilter as CategoryFilterType, RadarCategory, Tweet } from '@/lib/types';
 import { TweetStats } from '@/lib/data';
 
 interface CategoryFilterProps {
   value: CategoryFilterType[];
   onChange: (categories: CategoryFilterType[]) => void;
   stats?: TweetStats;
+  radarCategory?: RadarCategory;
+  radarFilteredTweets?: Tweet[];
 }
 
-const categories: { key: CategoryFilterType; label: string; color: string; activeColor: string }[] = [
+type FilterOption = { key: CategoryFilterType; label: string; color: string; activeColor: string };
+
+// Pain Radar filters
+const painRadarFilters: FilterOption[] = [
   { key: 'all', label: '全部', color: 'bg-stone-500', activeColor: 'bg-gradient-to-r from-stone-700 to-stone-800' },
   { key: 'new', label: '新推文', color: 'bg-emerald-500', activeColor: 'bg-gradient-to-r from-emerald-500 to-teal-500' },
   { key: 'pain', label: '痛点', color: 'bg-rose-500', activeColor: 'bg-gradient-to-r from-rose-500 to-rose-600' },
@@ -18,9 +23,37 @@ const categories: { key: CategoryFilterType; label: string; color: string; activ
   { key: 'kol', label: 'KOL', color: 'bg-purple-500', activeColor: 'bg-gradient-to-r from-purple-500 to-purple-600' },
 ];
 
-export function CategoryFilter({ value, onChange, stats }: CategoryFilterProps) {
+// Sentiment filters (Filo舆情)
+const sentimentFilters: FilterOption[] = [
+  { key: 'all', label: '全部', color: 'bg-stone-500', activeColor: 'bg-gradient-to-r from-stone-700 to-stone-800' },
+  { key: 'negative', label: '需关注', color: 'bg-red-500', activeColor: 'bg-gradient-to-r from-red-500 to-red-600' },
+  { key: 'positive', label: '积极', color: 'bg-green-500', activeColor: 'bg-gradient-to-r from-green-500 to-green-600' },
+  { key: 'neutral', label: '中性', color: 'bg-stone-400', activeColor: 'bg-gradient-to-r from-stone-500 to-stone-600' },
+];
+
+// Insight filters (用户洞察)
+const insightFilters: FilterOption[] = [
+  { key: 'all', label: '全部', color: 'bg-stone-500', activeColor: 'bg-gradient-to-r from-stone-700 to-stone-800' },
+  { key: 'feature_request', label: '功能需求', color: 'bg-amber-500', activeColor: 'bg-gradient-to-r from-amber-500 to-amber-600' },
+  { key: 'competitor_praise', label: '竞品好评', color: 'bg-indigo-500', activeColor: 'bg-gradient-to-r from-indigo-500 to-indigo-600' },
+  { key: 'ai_demand', label: 'AI需求', color: 'bg-cyan-500', activeColor: 'bg-gradient-to-r from-cyan-500 to-cyan-600' },
+];
+
+export function CategoryFilter({ value, onChange, stats, radarCategory = 'pain_radar', radarFilteredTweets = [] }: CategoryFilterProps) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Select filters based on radar category
+  const categories = useMemo(() => {
+    switch (radarCategory) {
+      case 'filo_sentiment':
+        return sentimentFilters;
+      case 'user_insight':
+        return insightFilters;
+      default:
+        return painRadarFilters;
+    }
+  }, [radarCategory]);
 
   const handleClick = (key: CategoryFilterType) => {
     if (key === 'all') {
@@ -49,14 +82,37 @@ export function CategoryFilter({ value, onChange, stats }: CategoryFilterProps) 
   }, []);
 
   const getCount = (key: CategoryFilterType): number | undefined => {
-    if (!stats) return undefined;
-    switch (key) {
-      case 'all': return stats.total;
-      case 'new': return stats.byCategory.new;
-      case 'pain': return stats.byCategory.pain;
-      case 'reach': return stats.byCategory.reach;
-      case 'kol': return stats.byCategory.kol;
+    // For pain radar, use stats
+    if (radarCategory === 'pain_radar' && stats) {
+      switch (key) {
+        case 'all': return stats.total;
+        case 'new': return stats.byCategory.new;
+        case 'pain': return stats.byCategory.pain;
+        case 'reach': return stats.byCategory.reach;
+        case 'kol': return stats.byCategory.kol;
+      }
     }
+    
+    // For sentiment and insight, count from radarFilteredTweets
+    if (radarCategory === 'filo_sentiment') {
+      switch (key) {
+        case 'all': return radarFilteredTweets.length;
+        case 'positive': return radarFilteredTweets.filter(t => t.sentimentLabel === 'positive').length;
+        case 'negative': return radarFilteredTweets.filter(t => t.sentimentLabel === 'negative').length;
+        case 'neutral': return radarFilteredTweets.filter(t => t.sentimentLabel === 'neutral').length;
+      }
+    }
+    
+    if (radarCategory === 'user_insight') {
+      switch (key) {
+        case 'all': return radarFilteredTweets.length;
+        case 'feature_request': return radarFilteredTweets.filter(t => t.insightType === 'feature_request').length;
+        case 'competitor_praise': return radarFilteredTweets.filter(t => t.insightType === 'competitor_praise').length;
+        case 'ai_demand': return radarFilteredTweets.filter(t => t.insightType === 'ai_demand').length;
+      }
+    }
+    
+    return undefined;
   };
 
   const selectedLabel = useMemo(() => {
@@ -65,7 +121,7 @@ export function CategoryFilter({ value, onChange, stats }: CategoryFilterProps) 
       .filter(cat => cat.key !== 'all' && value.includes(cat.key))
       .map(cat => cat.label)
       .join(' / ') || '全部';
-  }, [value]);
+  }, [value, categories]);
 
   return (
     <div ref={containerRef} className="relative inline-flex items-center">

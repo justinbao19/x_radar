@@ -90,6 +90,116 @@ function countKeywordMatches(text) {
 // Pain group bonus multiplier (pain tweets are more valuable for engagement)
 const PAIN_GROUP_BONUS = 3;
 
+// ============ Sentiment Classification (Filo舆情) ============
+
+/**
+ * Classify sentiment of a tweet about Filo
+ * @param {string} text - Tweet text
+ * @returns {'positive' | 'negative' | 'neutral'}
+ */
+function classifySentiment(text) {
+  if (!text) return 'neutral';
+  const lowerText = text.toLowerCase();
+  
+  // Negative patterns - check first (negative feedback is more important)
+  const negativePatterns = [
+    /\b(bug|bugs|broken|issue|issues|problem|problems)\b/i,
+    /\b(hate|worst|terrible|disappointed|disappointing|frustrated|annoying)\b/i,
+    /\b(doesn't work|doesn\'t work|does not work|cant|can't|cannot)\b/i,
+    /\b(crash|crashes|crashing|slow|laggy|lag)\b/i,
+    /\b(bad|poor|awful|horrible|useless|waste)\b/i,
+    /不好用|问题|差评|坑|垃圾|难用|卡|崩/,
+    /バグ|問題|使いにくい|ひどい|最悪/
+  ];
+  
+  for (const pattern of negativePatterns) {
+    if (pattern.test(text)) {
+      return 'negative';
+    }
+  }
+  
+  // Positive patterns
+  const positivePatterns = [
+    /\b(love|loving|loved|amazing|awesome|great|excellent|fantastic)\b/i,
+    /\b(best|recommend|recommended|helpful|solved|perfect|beautiful)\b/i,
+    /\b(thanks|thank you|thank u|thx|grateful)\b/i,
+    /\b(game changer|life saver|life-saver|must have|must-have)\b/i,
+    /\b(impressed|impressive|brilliant|wonderful|incredible)\b/i,
+    /完美|好用|推荐|感谢|解决了|神器|太棒|喜欢|爱/,
+    /最高|素晴らしい|便利|助かる|おすすめ|ありがとう/
+  ];
+  
+  for (const pattern of positivePatterns) {
+    if (pattern.test(text)) {
+      return 'positive';
+    }
+  }
+  
+  return 'neutral';
+}
+
+// ============ Insight Type Classification (用户洞察) ============
+
+/**
+ * Classify insight type for user insight tweets
+ * @param {string} text - Tweet text
+ * @param {string} sourceName - Source query name for context
+ * @returns {'feature_request' | 'competitor_praise' | 'ai_demand' | 'general'}
+ */
+function classifyInsightType(text, sourceName = '') {
+  if (!text) return 'general';
+  
+  // Check source name first for strong signals
+  if (sourceName.includes('competitor')) {
+    return 'competitor_praise';
+  }
+  if (sourceName.includes('ai-email') || sourceName.includes('ai_email')) {
+    return 'ai_demand';
+  }
+  
+  // Competitor praise patterns
+  const competitorPatterns = [
+    /\b(superhuman|spark|edison|shortwave|hey email|hey\.com)\b/i,
+    /\b(mailspring|airmail|newton|polymail|front app)\b/i
+  ];
+  
+  for (const pattern of competitorPatterns) {
+    if (pattern.test(text)) {
+      return 'competitor_praise';
+    }
+  }
+  
+  // AI demand patterns
+  const aiDemandPatterns = [
+    /\b(AI email|email AI|smart inbox|AI inbox|AI mail)\b/i,
+    /\b(AI assistant|AI agent|automation|automate|auto-)\b/i,
+    /AI邮件|智能邮箱|自动化|AIエージェント|AI秘書/
+  ];
+  
+  for (const pattern of aiDemandPatterns) {
+    if (pattern.test(text)) {
+      return 'ai_demand';
+    }
+  }
+  
+  // Feature request patterns
+  const featureRequestPatterns = [
+    /\b(wish|hope|want|need|would be great|should have|would love)\b/i,
+    /\b(feature request|requesting|please add|needs to have)\b/i,
+    /\b(why doesn't|why can't|why isn't|if only)\b/i,
+    /希望|想要|要是能|需要|功能|期待/,
+    /欲しい|したい|機能|あったらいい/
+  ];
+  
+  for (const pattern of featureRequestPatterns) {
+    if (pattern.test(text)) {
+      return 'feature_request';
+    }
+  }
+  
+  return 'general';
+}
+
 // Max tweets per KOL in final selection (prevent single KOL domination)
 const MAX_PER_KOL = 1;
 
@@ -137,9 +247,15 @@ function selectTop10(rawData) {
   
   for (const source of rawData.sources || []) {
     for (const tweet of source.tweets || []) {
+      // sentiment and insight keep their group, kol becomes reach, others stay as-is
+      let group = source.group;
+      if (source.group === 'kol') {
+        group = 'reach';
+      }
+      
       allTweets.push({
         ...tweet,
-        group: source.group === 'kol' ? 'reach' : source.group,
+        group: group,
         sourceQuery: source.name,
         originalGroup: source.group
       });
@@ -251,7 +367,24 @@ function selectTop10(rawData) {
   });
   
   // ============ Minimum FiloFit Threshold ============
+  // Skip for sentiment group (brand mentions don't need keyword matching)
   const filoFitQualified = filteredTweets.filter(t => {
+    // Sentiment group: skip FiloFit check entirely (brand mentions are inherently relevant)
+    if (t.group === 'sentiment') {
+      return true;
+    }
+    
+    // Insight group: use lower threshold (user discussions may not have email keywords)
+    if (t.group === 'insight') {
+      // Insight only needs minimal relevance
+      if (t.filoFitScore < 5) { // At least 1 keyword
+        filterStats.filoFitFiltered++;
+        log('DEBUG', `Insight FiloFit too low: ${t.url}`, { filoFitScore: t.filoFitScore });
+        return false;
+      }
+      return true;
+    }
+    
     const check = checkMinFiloFit(t.filoFitScore);
     if (!check.pass) {
       filterStats.filoFitFiltered++;
@@ -268,7 +401,23 @@ function selectTop10(rawData) {
   log('INFO', `After FiloFit threshold (>=${MIN_FILO_FIT}): ${filoFitQualified.length} (filtered: ${filterStats.filoFitFiltered})`);
   
   // ============ Group Relevance Check ============
+  // Skip for sentiment and insight groups (they have their own relevance via query)
   const relevantTweets = filoFitQualified.filter(t => {
+    // Sentiment group: skip relevance check (brand mentions are inherently relevant)
+    // Also classify sentiment here
+    if (t.group === 'sentiment') {
+      t.sentimentLabel = classifySentiment(t.text);
+      t.relevanceKeywords = [];
+      return true;
+    }
+    
+    // Insight group: skip standard relevance check, classify insight type
+    if (t.group === 'insight') {
+      t.insightType = classifyInsightType(t.text, t.sourceQuery);
+      t.relevanceKeywords = [];
+      return true;
+    }
+    
     let relevanceCheck;
     
     if (t.group === 'pain') {
@@ -295,10 +444,16 @@ function selectTop10(rawData) {
   
   // ============ Email Action Only Check ============
   // Filter out tweets that just mention "sending email" without actual pain points
+  // Skip for sentiment and insight groups
   filterStats.emailActionOnlyFiltered = 0;
   filterStats.noEmotionPenalized = 0;
   
   const contextQualifiedTweets = relevantTweets.filter(t => {
+    // Skip context checks for sentiment and insight groups
+    if (t.group === 'sentiment' || t.group === 'insight') {
+      return true;
+    }
+    
     if (t.group === 'pain') {
       // Check if this is just an email action, not a pain point
       if (isEmailActionOnly(t.text)) {
@@ -516,6 +671,10 @@ function selectTop10(rawData) {
     viralTemplatePenalty: t.viralTemplatePenalty || false,
     relevanceKeywords: t.relevanceKeywords || [],
     painEmotionWords: t.painEmotionWords || [],
+    // Sentiment label (for sentiment group)
+    ...(t.sentimentLabel && { sentimentLabel: t.sentimentLabel }),
+    // Insight type (for insight group)
+    ...(t.insightType && { insightType: t.insightType }),
     // Additional penalty details (if applicable)
     ...(t.customerServicePattern && { customerServicePattern: t.customerServicePattern }),
     ...(t.competitorProduct && { competitorProduct: t.competitorProduct }),
@@ -527,7 +686,19 @@ function selectTop10(rawData) {
   const painCount = finalSelection.filter(t => t.group === 'pain').length;
   const reachCount = finalSelection.filter(t => t.group === 'reach').length;
   const kolCount = finalSelection.filter(t => t.originalGroup === 'kol').length;
+  const sentimentCount = finalSelection.filter(t => t.group === 'sentiment').length;
+  const insightCount = finalSelection.filter(t => t.group === 'insight').length;
   const aiPickedCount = finalSelection.filter(t => t.aiPicked).length;
+  
+  // Count sentiment labels
+  const sentimentPositive = finalSelection.filter(t => t.sentimentLabel === 'positive').length;
+  const sentimentNegative = finalSelection.filter(t => t.sentimentLabel === 'negative').length;
+  const sentimentNeutral = finalSelection.filter(t => t.sentimentLabel === 'neutral').length;
+  
+  // Count insight types
+  const insightFeatureRequest = finalSelection.filter(t => t.insightType === 'feature_request').length;
+  const insightCompetitorPraise = finalSelection.filter(t => t.insightType === 'competitor_praise').length;
+  const insightAiDemand = finalSelection.filter(t => t.insightType === 'ai_demand').length;
   
   // Count distinct KOLs
   const kolsInFinal = finalSelection
@@ -546,7 +717,19 @@ function selectTop10(rawData) {
     byGroup: {
       pain: painCount,
       reach: reachCount,
-      kol: kolCount
+      kol: kolCount,
+      sentiment: sentimentCount,
+      insight: insightCount
+    },
+    bySentiment: {
+      positive: sentimentPositive,
+      negative: sentimentNegative,
+      neutral: sentimentNeutral
+    },
+    byInsightType: {
+      feature_request: insightFeatureRequest,
+      competitor_praise: insightCompetitorPraise,
+      ai_demand: insightAiDemand
     },
     distinctKOLs
   };

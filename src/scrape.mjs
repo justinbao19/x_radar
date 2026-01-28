@@ -440,6 +440,28 @@ function buildSourceList() {
     });
   }
   
+  // Sentiment queries (Filo舆情)
+  for (const q of queries.sentiment || []) {
+    allSources.push({
+      group: 'sentiment',
+      name: q.name,
+      query: q.query,
+      searchUrl: buildSearchUrl(q.query),
+      max: q.max || 30
+    });
+  }
+  
+  // Insight queries (用户洞察)
+  for (const q of queries.insight || []) {
+    allSources.push({
+      group: 'insight',
+      name: q.name,
+      query: q.query,
+      searchUrl: buildSearchUrl(q.query),
+      max: q.max || 30
+    });
+  }
+  
   // KOL queries - with topic filter and denyTerms
   if (existsSync(INFLUENCERS_FILE)) {
     const influencers = JSON.parse(readFileSync(INFLUENCERS_FILE, 'utf-8'));
@@ -473,21 +495,28 @@ function buildSourceList() {
   const painSources = allSources.filter(s => s.group === 'pain');
   const reachSources = allSources.filter(s => s.group === 'reach');
   const kolSources = allSources.filter(s => s.group === 'kol');
+  const sentimentSources = allSources.filter(s => s.group === 'sentiment');
+  const insightSources = allSources.filter(s => s.group === 'insight');
   
-  // Allocate: ~60% pain, ~25% reach, ~15% kol (pain-first strategy)
-  let painCount = Math.max(2, Math.floor(MAX_SOURCES_PER_RUN * 0.6));
-  let reachCount = Math.max(1, Math.floor(MAX_SOURCES_PER_RUN * 0.25));
-  let kolCount = Math.max(0, MAX_SOURCES_PER_RUN - painCount - reachCount);
+  // Always include ALL sentiment and insight sources (they're usually few and important)
+  const alwaysInclude = [...sentimentSources, ...insightSources];
+  const remainingSlots = Math.max(0, MAX_SOURCES_PER_RUN - alwaysInclude.length);
+  
+  // Allocate remaining slots: ~60% pain, ~25% reach, ~15% kol (pain-first strategy)
+  let painCount = Math.max(2, Math.floor(remainingSlots * 0.6));
+  let reachCount = Math.max(1, Math.floor(remainingSlots * 0.25));
+  let kolCount = Math.max(0, remainingSlots - painCount - reachCount);
   
   // Backfill if a group has fewer sources
   const painAvailable = Math.min(painCount, painSources.length);
   const reachAvailable = Math.min(reachCount, reachSources.length);
   const kolAvailable = Math.min(kolCount, kolSources.length);
   
-  let remaining = MAX_SOURCES_PER_RUN - painAvailable - reachAvailable - kolAvailable;
+  let remaining = remainingSlots - painAvailable - reachAvailable - kolAvailable;
   
   // Distribute remaining slots
   const selectedSources = [
+    ...alwaysInclude,
     ...shuffle(painSources).slice(0, painAvailable),
     ...shuffle(reachSources).slice(0, reachAvailable),
     ...shuffle(kolSources).slice(0, kolAvailable)
@@ -511,7 +540,9 @@ function buildSourceList() {
   log('INFO', `Random sampling: selected ${finalSources.length} of ${allSources.length} sources`, {
     pain: finalSources.filter(s => s.group === 'pain').length,
     reach: finalSources.filter(s => s.group === 'reach').length,
-    kol: finalSources.filter(s => s.group === 'kol').length
+    kol: finalSources.filter(s => s.group === 'kol').length,
+    sentiment: finalSources.filter(s => s.group === 'sentiment').length,
+    insight: finalSources.filter(s => s.group === 'insight').length
   });
   
   return finalSources;
@@ -649,7 +680,9 @@ async function main() {
     byGroup: {
       pain: results.filter(r => r.group === 'pain').reduce((sum, r) => sum + r.tweetCount, 0),
       reach: results.filter(r => r.group === 'reach').reduce((sum, r) => sum + r.tweetCount, 0),
-      kol: results.filter(r => r.group === 'kol').reduce((sum, r) => sum + r.tweetCount, 0)
+      kol: results.filter(r => r.group === 'kol').reduce((sum, r) => sum + r.tweetCount, 0),
+      sentiment: results.filter(r => r.group === 'sentiment').reduce((sum, r) => sum + r.tweetCount, 0),
+      insight: results.filter(r => r.group === 'insight').reduce((sum, r) => sum + r.tweetCount, 0)
     }
   };
   

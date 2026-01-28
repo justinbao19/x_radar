@@ -176,14 +176,51 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
   const groupLabels: Record<string, string> = {
     pain: '痛点',
     reach: '传播',
-    kol: 'KOL'
+    kol: 'KOL',
+    sentiment: '舆情',
+    insight: '洞察'
   };
   const groupLabel = tweet.originalGroup === 'kol' ? 'KOL' : groupLabels[tweet.group] || tweet.group;
-  const groupColor = tweet.group === 'pain' 
-    ? 'bg-rose-50 text-rose-700 border border-rose-200/50' 
-    : tweet.originalGroup === 'kol'
-      ? 'bg-purple-50 text-purple-700 border border-purple-200/50'
-      : 'bg-sky-50 text-sky-700 border border-sky-200/50';
+  
+  // Group color based on group type
+  const getGroupColor = () => {
+    if (tweet.group === 'pain') return 'bg-rose-50 text-rose-700 border border-rose-200/50';
+    if (tweet.originalGroup === 'kol') return 'bg-purple-50 text-purple-700 border border-purple-200/50';
+    if (tweet.group === 'sentiment') return 'bg-orange-50 text-orange-700 border border-orange-200/50';
+    if (tweet.group === 'insight') return 'bg-cyan-50 text-cyan-700 border border-cyan-200/50';
+    return 'bg-sky-50 text-sky-700 border border-sky-200/50';
+  };
+  const groupColor = getGroupColor();
+  
+  // Sentiment label styling
+  const getSentimentStyle = () => {
+    switch (tweet.sentimentLabel) {
+      case 'negative':
+        return { label: '需关注', color: 'bg-red-100 text-red-700 border border-red-300', icon: '⚠️' };
+      case 'positive':
+        return { label: '积极', color: 'bg-green-50 text-green-700 border border-green-200', icon: '✓' };
+      case 'neutral':
+        return { label: '中性', color: 'bg-stone-100 text-stone-600 border border-stone-200', icon: '○' };
+      default:
+        return null;
+    }
+  };
+  const sentimentStyle = getSentimentStyle();
+  
+  // Insight type label styling
+  const getInsightStyle = () => {
+    switch (tweet.insightType) {
+      case 'feature_request':
+        return { label: '功能需求', color: 'bg-amber-50 text-amber-700 border border-amber-200' };
+      case 'competitor_praise':
+        return { label: '竞品好评', color: 'bg-indigo-50 text-indigo-700 border border-indigo-200' };
+      case 'ai_demand':
+        return { label: 'AI需求', color: 'bg-cyan-50 text-cyan-700 border border-cyan-200' };
+      default:
+        return null;
+    }
+  };
+  const insightStyle = getInsightStyle();
   
   const authorHandle = tweet.author?.startsWith('@') ? tweet.author : `@${tweet.author}`;
   const authorUrl = `https://x.com/${authorHandle.slice(1)}`;
@@ -222,8 +259,14 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
   const detectedLang = (tweet.detectedLanguage || 'unknown').toLowerCase();
   const languageInfo = languageMap[detectedLang] || { flag: '❔', label: '未知' };
 
+  // Special styling for negative sentiment tweets
+  const isNegativeSentiment = tweet.sentimentLabel === 'negative';
+  const cardBorderClass = isNegativeSentiment 
+    ? 'border-red-300 ring-2 ring-red-100' 
+    : 'border-stone-200/80 hover:border-stone-300';
+  
   return (
-    <article className="bg-white rounded-2xl border border-stone-200/80 overflow-hidden hover:border-stone-300 hover:shadow-xl hover:shadow-stone-200/50 transition-all duration-300 card-hover break-inside-avoid relative">
+    <article className={`bg-white rounded-2xl border overflow-hidden hover:shadow-xl hover:shadow-stone-200/50 transition-all duration-300 card-hover break-inside-avoid relative ${cardBorderClass}`}>
       {/* Header */}
       <div className="p-6 pb-4 relative">
         {/* New Badge */}
@@ -250,6 +293,19 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
                 <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${groupColor}`}>
                   {groupLabel}
                 </span>
+                {/* Sentiment Label */}
+                {sentimentStyle && (
+                  <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1 ${sentimentStyle.color}`}>
+                    <span>{sentimentStyle.icon}</span>
+                    {sentimentStyle.label}
+                  </span>
+                )}
+                {/* Insight Type Label */}
+                {insightStyle && (
+                  <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${insightStyle.color}`}>
+                    {insightStyle.label}
+                  </span>
+                )}
                 <span
                   className="text-xs text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-full border border-stone-200/50 flex items-center gap-1"
                   title={languageInfo.label}
@@ -292,6 +348,19 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
             <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${groupColor}`}>
               {groupLabel}
             </span>
+            {/* Sentiment Label - Mobile */}
+            {sentimentStyle && (
+              <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1 ${sentimentStyle.color}`}>
+                <span>{sentimentStyle.icon}</span>
+                {sentimentStyle.label}
+              </span>
+            )}
+            {/* Insight Type Label - Mobile */}
+            {insightStyle && (
+              <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${insightStyle.color}`}>
+                {insightStyle.label}
+              </span>
+            )}
             <span
               className="text-xs text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-full border border-stone-200/50 flex items-center gap-1"
               title={languageInfo.label}

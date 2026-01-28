@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { 
   Header, 
+  RadarSelector,
   DatePicker, 
   ViewToggle, 
   CategoryFilter, 
@@ -26,7 +27,7 @@ import {
   getUniqueDates,
   isTweetNew
 } from '@/lib/data';
-import { Tweet, Manifest, DateRange, ViewMode, CategoryFilter as CategoryFilterType, LanguageFilter, SortOption } from '@/lib/types';
+import { Tweet, Manifest, DateRange, ViewMode, CategoryFilter as CategoryFilterType, LanguageFilter, SortOption, RadarCategory } from '@/lib/types';
 
 export default function Dashboard() {
   const mainRef = useRef<HTMLElement | null>(null);
@@ -38,10 +39,13 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
+  // Radar category (top-level)
+  const [radarCategory, setRadarCategory] = useState<RadarCategory>('pain_radar');
+  
   // Filters
   const [dateRange, setDateRange] = useState<DateRange>(getDateRangePreset('7days'));
   const [viewMode, setViewMode] = useState<ViewMode>('card');
-  const [categories, setCategories] = useState<CategoryFilterType[]>(['all']);
+  const [categories, setCategories] = useState<CategoryFilterType[]>(['new']);
   const [showAiPickedOnly, setShowAiPickedOnly] = useState(true);
   const [selectedTweet, setSelectedTweet] = useState<Tweet | null>(null);
   const [languageFilter, setLanguageFilter] = useState<LanguageFilter>('all');
@@ -91,24 +95,67 @@ export default function Dashboard() {
     loadData();
   }, [manifest, dateRange]);
 
+  // Filter tweets by radar category first
+  const radarFilteredTweets = useMemo(() => {
+    const sourceTweets = displayedAllTweets.length > 0 ? displayedAllTweets : allTweets;
+    
+    switch (radarCategory) {
+      case 'pain_radar':
+        // Pain Radar: pain, reach, kol groups
+        return sourceTweets.filter(t => 
+          t.group === 'pain' || t.group === 'reach' || t.originalGroup === 'kol'
+        );
+      case 'filo_sentiment':
+        // Filo Sentiment: sentiment group only
+        return sourceTweets.filter(t => t.group === 'sentiment');
+      case 'user_insight':
+        // User Insight: insight group only
+        return sourceTweets.filter(t => t.group === 'insight');
+      default:
+        return sourceTweets;
+    }
+  }, [allTweets, displayedAllTweets, radarCategory]);
+  
   // Filter tweets
   const filteredTweets = useMemo(() => {
-    const sourceTweets = displayedAllTweets.length > 0 ? displayedAllTweets : allTweets;
-    let tweets = sourceTweets;
+    let tweets = radarFilteredTweets;
     
-    // Apply category filter (pass recentRunAts for 'new' filter)
-    tweets = filterByCategory(tweets, categories, recentRunAts);
-    
-    // Apply AI picked filter
-    if (showAiPickedOnly) {
-      tweets = filterAiPicked(tweets);
+    // Apply category filter based on radar category
+    if (radarCategory === 'pain_radar') {
+      // Standard category filter for pain radar
+      tweets = filterByCategory(tweets, categories, recentRunAts);
+      
+      // Apply AI picked filter only for pain radar
+      if (showAiPickedOnly) {
+        tweets = filterAiPicked(tweets);
+      }
+    } else if (radarCategory === 'filo_sentiment') {
+      // Sentiment filter
+      if (!categories.includes('all')) {
+        tweets = tweets.filter(t => {
+          if (categories.includes('positive') && t.sentimentLabel === 'positive') return true;
+          if (categories.includes('negative') && t.sentimentLabel === 'negative') return true;
+          if (categories.includes('neutral') && t.sentimentLabel === 'neutral') return true;
+          return false;
+        });
+      }
+    } else if (radarCategory === 'user_insight') {
+      // Insight filter
+      if (!categories.includes('all')) {
+        tweets = tweets.filter(t => {
+          if (categories.includes('feature_request') && t.insightType === 'feature_request') return true;
+          if (categories.includes('competitor_praise') && t.insightType === 'competitor_praise') return true;
+          if (categories.includes('ai_demand') && t.insightType === 'ai_demand') return true;
+          return false;
+        });
+      }
     }
 
     // Apply language filter
     tweets = filterByLanguage(tweets, languageFilter);
     
     return tweets;
-  }, [allTweets, displayedAllTweets, categories, showAiPickedOnly, languageFilter, recentRunAts]);
+  }, [radarFilteredTweets, radarCategory, categories, showAiPickedOnly, languageFilter, recentRunAts]);
 
   // Sort tweets
   const sortedTweets = useMemo(() => {
@@ -117,6 +164,13 @@ export default function Dashboard() {
 
   // Use recentRunAts for "New" badge - tweets from the last 4 runs show "New"
   // After the 5th run, older tweets lose the "New" badge
+
+  // Reset page and categories when radar category changes
+  useEffect(() => {
+    // pain_radar defaults to 'new', others default to 'all'
+    setCategories(radarCategory === 'pain_radar' ? ['new'] : ['all']);
+    setCurrentPage(1);
+  }, [radarCategory]);
 
   // Reset page when filters change
   useEffect(() => {
@@ -146,6 +200,18 @@ export default function Dashboard() {
     const sourceTweets = displayedAllTweets.length > 0 ? displayedAllTweets : allTweets;
     return calculateStats(sourceTweets, recentRunAts);
   }, [displayedAllTweets, allTweets, recentRunAts]);
+  
+  // Calculate radar category counts
+  const radarCounts = useMemo(() => {
+    const sourceTweets = displayedAllTweets.length > 0 ? displayedAllTweets : allTweets;
+    return {
+      pain_radar: sourceTweets.filter(t => 
+        t.group === 'pain' || t.group === 'reach' || t.originalGroup === 'kol'
+      ).length,
+      filo_sentiment: sourceTweets.filter(t => t.group === 'sentiment').length,
+      user_insight: sourceTweets.filter(t => t.group === 'insight').length
+    };
+  }, [displayedAllTweets, allTweets]);
 
   // Available dates for picker
   const availableDates = useMemo(() => {
@@ -207,6 +273,13 @@ export default function Dashboard() {
     <div className="min-h-screen bg-[#FAF9F7]">
       <Header lastUpdated={lastUpdated} />
       
+      {/* Radar Category Selector - Top Level Navigation */}
+      <RadarSelector 
+        selected={radarCategory}
+        onChange={setRadarCategory}
+        counts={radarCounts}
+      />
+      
       {/* Auth Status */}
       {manifest?.authStatus && !manifest.authStatus.valid && (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4">
@@ -214,8 +287,8 @@ export default function Dashboard() {
         </div>
       )}
       
-      {/* Stats Bar */}
-      {stats && (
+      {/* Stats Bar - only show for pain_radar */}
+      {stats && radarCategory === 'pain_radar' && (
         <StatsBar 
           stats={stats} 
           showAiPicked={showAiPickedOnly}
@@ -238,6 +311,8 @@ export default function Dashboard() {
               value={categories} 
               onChange={setCategories}
               stats={stats}
+              radarCategory={radarCategory}
+              radarFilteredTweets={radarFilteredTweets}
             />
             <SortSelector
               value={sortBy}

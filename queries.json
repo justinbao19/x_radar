@@ -1,4 +1,48 @@
 {
+  "sentiment": [
+    {
+      "name": "filo-mentions-en",
+      "query": "(FiloMail OR \"filo mail\" OR filomail OR @Filo_Mail) -from:Filo_Mail -filter:retweets lang:en",
+      "max": 50
+    },
+    {
+      "name": "filo-mentions-cn",
+      "query": "(FiloMail OR \"filo mail\" OR filomail OR @Filo_Mail) -from:Filo_Mail -filter:retweets lang:zh",
+      "max": 30
+    },
+    {
+      "name": "filo-mentions-jp",
+      "query": "(FiloMail OR \"filo mail\" OR filomail OR @Filo_Mail) -from:Filo_Mail -filter:retweets lang:ja",
+      "max": 30
+    }
+  ],
+  "insight": [
+    {
+      "name": "feature-wish-en",
+      "query": "(gmail OR inbox OR email) (\"wish\" OR \"hope\" OR \"want\" OR \"need\" OR \"would be great\" OR \"should have\") (feature OR function OR tool) -filter:retweets lang:en",
+      "max": 40
+    },
+    {
+      "name": "ai-email-demand-en",
+      "query": "(\"AI email\" OR \"email AI\" OR \"smart inbox\" OR \"AI inbox\") (need OR want OR \"looking for\" OR \"any recommendations\") -filter:retweets lang:en",
+      "max": 40
+    },
+    {
+      "name": "competitor-praise-en",
+      "query": "(Superhuman OR Spark OR Edison OR Shortwave OR \"Hey email\") (love OR amazing OR great OR \"game changer\" OR \"best email\") -filter:retweets lang:en",
+      "max": 40
+    },
+    {
+      "name": "email-pain-feature-cn",
+      "query": "(邮箱 OR 收件箱 OR gmail) (希望 OR 想要 OR 要是能 OR 功能) -filter:retweets lang:zh",
+      "max": 30
+    },
+    {
+      "name": "competitor-praise-cn",
+      "query": "(Superhuman OR Spark OR Edison OR Shortwave) (好用 OR 推荐 OR 神器 OR 太棒) -filter:retweets lang:zh",
+      "max": 30
+    }
+  ],
   "pain": [
     {
       "name": "gmail-spam-en",

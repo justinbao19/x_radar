@@ -1,3 +1,13 @@
+// ============ Top-Level Radar Category ============
+
+export type RadarCategory = 'pain_radar' | 'filo_sentiment' | 'user_insight';
+
+// ============ Sentiment & Insight Types ============
+
+export type SentimentLabel = 'positive' | 'negative' | 'neutral';
+
+export type InsightType = 'feature_request' | 'competitor_praise' | 'ai_demand' | 'general';
+
 // ============ Tweet Types ============
 
 export interface ReplyOption {
@@ -20,8 +30,8 @@ export interface TweetComments {
 
 export interface Tweet {
   rank: number;
-  group: 'pain' | 'reach';
-  originalGroup: 'pain' | 'reach' | 'kol';
+  group: 'pain' | 'reach' | 'sentiment' | 'insight';
+  originalGroup: 'pain' | 'reach' | 'kol' | 'sentiment' | 'insight';
   sourceQuery: string;
   url: string;
   author: string;
@@ -43,6 +53,10 @@ export interface Tweet {
   skipReason?: string;
   skipReasonZh?: string;
   fetchedAt?: string;  // 推文被抓取的时间（来自 RadarData.runAt）
+  // Sentiment group fields
+  sentimentLabel?: SentimentLabel;
+  // Insight group fields
+  insightType?: InsightType;
 }
 
 // ============ Data File Types ============
@@ -55,6 +69,23 @@ export interface SelectionStats {
   backfilled: number;
   aiPicked?: number;
   qualified?: number;
+  byGroup?: {
+    pain: number;
+    reach: number;
+    kol: number;
+    sentiment: number;
+    insight: number;
+  };
+  bySentiment?: {
+    positive: number;
+    negative: number;
+    neutral: number;
+  };
+  byInsightType?: {
+    feature_request: number;
+    competitor_praise: number;
+    ai_demand: number;
+  };
 }
 
 export interface CommentGenerationStats {
@@ -103,7 +134,17 @@ export interface Manifest {
 
 export type ViewMode = 'card' | 'list' | 'timeline';
 
-export type CategoryFilter = 'all' | 'pain' | 'reach' | 'kol' | 'new';
+// Pain Radar filters
+export type PainRadarFilter = 'all' | 'pain' | 'reach' | 'kol' | 'new';
+
+// Sentiment filters (Filo舆情)
+export type SentimentFilter = 'all' | 'positive' | 'negative' | 'neutral';
+
+// Insight filters (用户洞察)
+export type InsightFilter = 'all' | 'feature_request' | 'competitor_praise' | 'ai_demand';
+
+// Union type for all category filters
+export type CategoryFilter = PainRadarFilter | SentimentFilter | InsightFilter;
 
 export type SortOption = 'score' | 'date' | 'engagement';
 

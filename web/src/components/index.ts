@@ -1,4 +1,5 @@
 export { Header } from './Header';
+export { RadarSelector } from './RadarSelector';
 export { DatePicker } from './DatePicker';
 export { ViewToggle } from './ViewToggle';
 export { CategoryFilter } from './CategoryFilter';

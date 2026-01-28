@@ -286,7 +286,7 @@ export function calculateStats(tweets: Tweet[], recentRunAts: string[] = []): Tw
 
 // ============ Date Helpers ============
 
-export function getDateRangePreset(preset: 'today' | 'yesterday' | '3days' | '7days'): DateRange {
+export function getDateRangePreset(preset: 'today' | '3days' | '7days'): DateRange {
   const now = new Date();
   const end = new Date(now);
   end.setHours(23, 59, 59, 999);
@@ -295,10 +295,6 @@ export function getDateRangePreset(preset: 'today' | 'yesterday' | '3days' | '7d
   start.setHours(0, 0, 0, 0);
 
   switch (preset) {
-    case 'yesterday':
-      start.setDate(start.getDate() - 1);
-      end.setDate(end.getDate() - 1);
-      break;
     case '3days':
       start.setDate(start.getDate() - 2);
       break;

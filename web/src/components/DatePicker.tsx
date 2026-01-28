@@ -9,11 +9,10 @@ interface DatePickerProps {
   availableDates?: string[];
 }
 
-type PresetKey = 'today' | 'yesterday' | '3days' | '7days';
+type PresetKey = 'today' | '3days' | '7days';
 
 const presets: { key: PresetKey; label: string }[] = [
   { key: 'today', label: '今天' },
-  { key: 'yesterday', label: '昨天' },
   { key: '3days', label: '近 3 天' },
   { key: '7days', label: '近 7 天' },
 ];
@@ -30,10 +29,6 @@ function getPresetRange(key: PresetKey): DateRange {
   start.setHours(0, 0, 0, 0);
 
   switch (key) {
-    case 'yesterday':
-      start.setDate(start.getDate() - 1);
-      end.setDate(end.getDate() - 1);
-      break;
     case '3days':
       start.setDate(start.getDate() - 2);
       break;
