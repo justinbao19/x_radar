@@ -57,6 +57,18 @@ export function Pagination({
     return pages;
   };
 
+  const scrollToTop = () => {
+    const main = document.querySelector('main');
+    const top = main ? main.getBoundingClientRect().top + window.scrollY - 12 : 0;
+    window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
+  };
+
+  const handlePageChange = (page: number) => {
+    if (page === currentPage) return;
+    onPageChange(page);
+    scrollToTop();
+  };
+
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-5 py-4 bg-white border border-stone-200/80 rounded-2xl shadow-sm">
       {/* Info */}
@@ -68,7 +80,7 @@ export function Pagination({
       <div className="flex items-center gap-1">
         {/* Previous */}
         <button
-          onClick={() => onPageChange(currentPage - 1)}
+          onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
           className={`p-2 rounded-xl transition-all duration-200 ${
             currentPage === 1
@@ -88,7 +100,7 @@ export function Pagination({
           ) : (
             <button
               key={page}
-              onClick={() => onPageChange(page)}
+              onClick={() => handlePageChange(page)}
               className={`min-w-[40px] h-10 px-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 currentPage === page
                   ? 'bg-gradient-to-r from-stone-800 to-stone-900 text-white shadow-md shadow-stone-900/20'
@@ -102,7 +114,7 @@ export function Pagination({
         
         {/* Next */}
         <button
-          onClick={() => onPageChange(currentPage + 1)}
+          onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
           className={`p-2 rounded-xl transition-all duration-200 ${
             currentPage === totalPages

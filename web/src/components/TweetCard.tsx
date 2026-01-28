@@ -253,9 +253,12 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
                 <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${groupColor}`}>
                   {groupLabel}
                 </span>
-                <span className="text-xs text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-full border border-stone-200/50 flex items-center gap-1">
+                <span
+                  className="text-xs text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-full border border-stone-200/50 flex items-center gap-1"
+                  title={languageInfo.label}
+                  aria-label={languageInfo.label}
+                >
                   <span>{languageInfo.flag}</span>
-                  <span>{languageInfo.label}</span>
                 </span>
                 {/* 发布时间戳 */}
                 <span className="text-xs text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-full border border-stone-200/50 flex items-center gap-1">
@@ -292,9 +295,12 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
             <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${groupColor}`}>
               {groupLabel}
             </span>
-            <span className="text-xs text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-full border border-stone-200/50 flex items-center gap-1">
+            <span
+              className="text-xs text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-full border border-stone-200/50 flex items-center gap-1"
+              title={languageInfo.label}
+              aria-label={languageInfo.label}
+            >
               <span>{languageInfo.flag}</span>
-              <span>{languageInfo.label}</span>
             </span>
             <span className="text-xs text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-full border border-stone-200/50 flex items-center gap-1">
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
