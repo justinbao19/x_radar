@@ -120,49 +120,42 @@ export function StatsBar({ stats, showAiPicked, onToggleAiPicked, languageFilter
         </div>
         
         {/* Language & Toggle Row */}
-        <div className="flex items-center justify-between gap-3 sm:contents">
+        <div className="flex items-center justify-between gap-3 sm:flex-nowrap sm:justify-end sm:flex-1">
           {languageCount > 0 && (
-            <div ref={langRef} className="relative flex items-center bg-stone-50 px-3 py-2 rounded-2xl border border-stone-200/50 z-30">
+            <div ref={langRef} className="relative flex items-center bg-stone-50 px-3 py-2 rounded-2xl border border-stone-200/50 z-30 shrink-0">
               <button
                 type="button"
                 onClick={() => setLangOpen(prev => !prev)}
-                className="flex items-center gap-2 sm:gap-3"
+                className="flex items-center gap-2"
                 aria-haspopup="dialog"
                 aria-expanded={langOpen}
               >
-                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-500 rounded-xl flex items-center justify-center">
-                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 19l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
-                  </svg>
+                <div className="flex -space-x-2">
+                  {activeFlag ? (
+                    <span className="w-6 h-6 rounded-full bg-white border border-stone-200 flex items-center justify-center text-xs">
+                      {activeFlag}
+                    </span>
+                  ) : (
+                    <>
+                      {previewFlags.map(item => (
+                        <span
+                          key={item.code}
+                          className="w-6 h-6 rounded-full bg-white border border-stone-200 flex items-center justify-center text-xs"
+                        >
+                          {item.flag}
+                        </span>
+                      ))}
+                      {languageCount > previewFlags.length && (
+                        <span className="w-6 h-6 rounded-full bg-white border border-stone-200 flex items-center justify-center text-[10px] text-stone-500">
+                          +{languageCount - previewFlags.length}
+                        </span>
+                      )}
+                    </>
+                  )}
                 </div>
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="flex -space-x-2">
-                    {activeFlag ? (
-                      <span className="w-6 h-6 rounded-full bg-white border border-stone-200 flex items-center justify-center text-xs">
-                        {activeFlag}
-                      </span>
-                    ) : (
-                      <>
-                        {previewFlags.map(item => (
-                          <span
-                            key={item.code}
-                            className="w-6 h-6 rounded-full bg-white border border-stone-200 flex items-center justify-center text-xs"
-                          >
-                            {item.flag}
-                          </span>
-                        ))}
-                        {languageCount > previewFlags.length && (
-                          <span className="w-6 h-6 rounded-full bg-white border border-stone-200 flex items-center justify-center text-[10px] text-stone-500">
-                            +{languageCount - previewFlags.length}
-                          </span>
-                        )}
-                      </>
-                    )}
-                  </div>
-                  <span className="hidden sm:inline text-sm font-semibold text-stone-700 whitespace-nowrap">
-                    {labelText}
-                  </span>
-                </div>
+                <span className="hidden lg:inline text-sm font-semibold text-stone-700 whitespace-nowrap">
+                  {labelText}
+                </span>
                 <svg className={`w-4 h-4 text-stone-400 transition-transform ${langOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
@@ -221,7 +214,7 @@ export function StatsBar({ stats, showAiPicked, onToggleAiPicked, languageFilter
           )}
           
           {/* Toggle Switch */}
-          <div className="inline-flex items-center gap-2 bg-stone-100/80 px-3 py-2 rounded-2xl sm:ml-auto sm:gap-3">
+          <div className="inline-flex items-center gap-2 bg-stone-100/80 px-3 py-2 rounded-2xl shrink-0">
             <span className={`text-xs sm:text-sm font-medium transition-colors ${!showAiPicked ? 'text-stone-600' : 'text-stone-400'}`}>
               全部
             </span>
