@@ -219,13 +219,13 @@ export function StatsBar({ stats, showAiPicked, onToggleAiPicked, languageFilter
         )}
         
         {/* Toggle Switch */}
-        <div className="flex flex-wrap items-center justify-between sm:justify-start gap-2 bg-stone-100/80 px-3 py-2 rounded-2xl w-full sm:w-auto sm:ml-auto">
+        <div className="inline-flex w-fit items-center gap-2 bg-stone-100/80 px-3 py-2 rounded-2xl sm:ml-auto sm:gap-3">
           <span className={`text-xs sm:text-sm font-medium transition-colors ${!showAiPicked ? 'text-stone-600' : 'text-stone-400'}`}>
             全部
           </span>
           <button
             onClick={onToggleAiPicked}
-            className={`relative w-12 h-6 rounded-full transition-all duration-300 shrink-0 ${
+            className={`relative w-11 h-6 rounded-full transition-all duration-300 shrink-0 ${
               showAiPicked 
                 ? 'bg-gradient-to-r from-amber-400 to-orange-500 shadow-inner shadow-amber-600/20' 
                 : 'bg-stone-300'
