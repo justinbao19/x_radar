@@ -19,6 +19,9 @@ import {
   checkMinFiloFit,
   checkPainRelevance,
   checkReachRelevance,
+  checkInsightNoise,
+  checkInsightRequestSignal,
+  isAllowedInsightCompetitor,
   countFiloFitKeywords,
   isEmailActionOnly,
   checkPainEmotion,
@@ -36,14 +39,17 @@ const VIRAL_TEMPLATE_PENALTY = 0.15;    // 85% penalty for viral copypasta
 
 // Quality threshold config (replaces fixed quota)
 const QUALITY_CONFIG = {
-  aiPickTopN: 10,           // Number of AI-picked tweets for quick view
-  kolMinFiloFitScore: 20,   // KOL tweets need at least 4 keywords (20 = 4 * 5) - raised from 15
-  minFinalScore: 50,        // Minimum score to be included - raised from 30
-  noEmotionPenalty: 0.5     // Score penalty for pain tweets without emotion words
+  aiPickTopN: 10,             // Number of AI-picked tweets for quick view
+  kolMinFiloFitScore: 20,     // KOL tweets need at least 4 keywords (20 = 4 * 5) - raised from 15
+  minFinalScore: 50,          // Minimum score to be included - raised from 30
+  insightMinFinalScore: 20,   // Insight needs a minimal score to avoid noisy entries
+  insightMinFiloFitScore: 10, // Insight needs at least 2 keywords (10 = 2 * 5)
+  noEmotionPenalty: 0.5       // Score penalty for pain tweets without emotion words
 };
 
 // Freshness filter - only keep tweets from last N days
-const MAX_TWEET_AGE_DAYS = 7;
+// Strict 3-day window to ensure fresh, actionable content
+const MAX_TWEET_AGE_DAYS = 3;
 
 // FiloFit keywords for scoring (used for viralityScore calculation)
 const FILO_KEYWORDS = {
@@ -303,7 +309,11 @@ function selectTop10(rawData) {
     softReasons: {},
     lowSignalPenalized: 0,
     filoFitFiltered: 0,
-    relevanceFiltered: 0
+    relevanceFiltered: 0,
+    insightNoiseFiltered: 0,
+    insightWeakSignalFiltered: 0,
+    insightCompetitorFiltered: 0,
+    insightMinScoreFiltered: 0
   };
   
   // First pass: score all tweets (needed for soft tier decisions)
@@ -374,12 +384,14 @@ function selectTop10(rawData) {
       return true;
     }
     
-    // Insight group: use lower threshold (user discussions may not have email keywords)
+    // Insight group: use a modest threshold (avoid 1-keyword noise)
     if (t.group === 'insight') {
-      // Insight only needs minimal relevance
-      if (t.filoFitScore < 5) { // At least 1 keyword
+      if (t.filoFitScore < QUALITY_CONFIG.insightMinFiloFitScore) {
         filterStats.filoFitFiltered++;
-        log('DEBUG', `Insight FiloFit too low: ${t.url}`, { filoFitScore: t.filoFitScore });
+        log('DEBUG', `Insight FiloFit too low: ${t.url}`, { 
+          filoFitScore: t.filoFitScore,
+          required: QUALITY_CONFIG.insightMinFiloFitScore
+        });
         return false;
       }
       return true;
@@ -411,10 +423,33 @@ function selectTop10(rawData) {
       return true;
     }
     
-    // Insight group: skip standard relevance check, classify insight type
+    // Insight group: apply lightweight relevance/quality gates
     if (t.group === 'insight') {
       t.insightType = classifyInsightType(t.text, t.sourceQuery);
       t.relevanceKeywords = [];
+      
+      const noiseCheck = checkInsightNoise(t.text);
+      if (noiseCheck.isNoise || isEmailActionOnly(t.text) || isCustomerServiceNotice(t.text).isNotice) {
+        filterStats.insightNoiseFiltered++;
+        log('DEBUG', `Insight noise filtered: ${t.url}`, { 
+          reason: noiseCheck.category || 'email_action_or_support'
+        });
+        return false;
+      }
+      
+      if (t.insightType === 'competitor_praise' && !isAllowedInsightCompetitor(t.text)) {
+        filterStats.insightCompetitorFiltered++;
+        log('DEBUG', `Insight competitor not allowed: ${t.url}`, { sourceQuery: t.sourceQuery });
+        return false;
+      }
+      
+      const requestSignal = checkInsightRequestSignal(t.text);
+      if (t.insightType === 'general' && !requestSignal.hasSignal) {
+        filterStats.insightWeakSignalFiltered++;
+        log('DEBUG', `Insight weak signal filtered: ${t.url}`);
+        return false;
+      }
+      
       return true;
     }
     
@@ -586,15 +621,26 @@ function selectTop10(rawData) {
     }
     
     // Apply minimum final score threshold
-    // Skip for sentiment and insight groups (their value is in monitoring, not score)
-    if (t.group !== 'sentiment' && t.group !== 'insight') {
-      if (t.finalScore < QUALITY_CONFIG.minFinalScore) {
-        log('DEBUG', `Score below threshold: ${t.url}`, { 
+    if (t.group === 'sentiment') {
+      return true;
+    }
+    if (t.group === 'insight') {
+      if (t.finalScore < QUALITY_CONFIG.insightMinFinalScore) {
+        filterStats.insightMinScoreFiltered++;
+        log('DEBUG', `Insight score below threshold: ${t.url}`, { 
           finalScore: t.finalScore,
-          required: QUALITY_CONFIG.minFinalScore
+          required: QUALITY_CONFIG.insightMinFinalScore
         });
         return false;
       }
+      return true;
+    }
+    if (t.finalScore < QUALITY_CONFIG.minFinalScore) {
+      log('DEBUG', `Score below threshold: ${t.url}`, { 
+        finalScore: t.finalScore,
+        required: QUALITY_CONFIG.minFinalScore
+      });
+      return false;
     }
     
     return true;

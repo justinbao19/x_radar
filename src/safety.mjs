@@ -25,6 +25,40 @@ const PAIN_EMOTION_WORDS = [
   '烦死', '太多', '找不到', '难用', '崩溃', '问题', '噩梦', '糟糕', '垃圾'
 ];
 
+// ============ Insight Signals & Noise ============
+
+const INSIGHT_REQUEST_PATTERNS = [
+  // English - feature request / desire
+  /(\bwish\b|\bhope\b|\bwant\b|\bneed\b|\bshould have\b|\bwould be great\b)/i,
+  /(feature request|please add|add (a|an|the) feature|why can'?t|if only)/i,
+  // Japanese
+  /(欲しい|要望|機能|できれば)/,
+  // Chinese
+  /(希望|想要|要是能|功能|需求|期待|能不能|建议|最好|想要有)/
+];
+
+const INSIGHT_NOISE_PATTERNS = [
+  // Marketing / recruitment / solicitation
+  { pattern: /\b(subscribe|newsletter|sign up|signup|register|join)\b/i, name: 'marketing_signup' },
+  { pattern: /\b(email me|dm me|contact us|reach out)\b/i, name: 'marketing_contact' },
+  { pattern: /\b(hiring|recruiting|job|apply)\b/i, name: 'recruiting' },
+  // News / announcement / pricing
+  { pattern: /\b(announced|launch|released|pricing|plan|subscription|expanded to)\b/i, name: 'news_pricing' },
+  // Account / verification / grey-market
+  { pattern: /\b(telegram|sms fee|verification code)\b/i, name: 'telegram_codes' },
+  // Chinese marketing / support / grey-market
+  { pattern: /(订阅|报名|投稿|招募|招聘|私信|联系)/i, name: 'cn_marketing' },
+  { pattern: /(客服|工单|支持|请发邮件|发送邮件至)/i, name: 'cn_support' },
+  { pattern: /(验证码|短信费|接码|电报|纸飞机|老号|封号)/i, name: 'cn_telegram_codes' },
+  { pattern: /(发布|上线|价格|套餐|订阅|扩展|升级)/i, name: 'cn_news_pricing' }
+];
+
+const INSIGHT_COMPETITOR_WHITELIST = [
+  'superhuman', 'spark', 'edison', 'shortwave', 'hey', 'hey.com',
+  'front', 'missive', 'airmail', 'mailspring', 'newton', 'polymail',
+  'gmail', 'outlook', 'zoho mail', 'zoho', 'fastmail', 'protonmail'
+];
+
 // ============ Load Denylist ============
 
 let denylist = { hard: {}, soft: {}, low_signal: {} };
@@ -523,6 +557,47 @@ export function isViralTemplate(text) {
   }
   
   return { isViral: false };
+}
+
+/**
+ * Check if insight text has explicit request signal
+ * @param {string} text - Text to check
+ * @returns {{ hasSignal: boolean, pattern?: string }}
+ */
+export function checkInsightRequestSignal(text) {
+  if (!text) return { hasSignal: false };
+  for (const pattern of INSIGHT_REQUEST_PATTERNS) {
+    if (pattern.test(text)) {
+      return { hasSignal: true, pattern: pattern.toString() };
+    }
+  }
+  return { hasSignal: false };
+}
+
+/**
+ * Detect insight noise (marketing, support, news, grey-market)
+ * @param {string} text - Text to check
+ * @returns {{ isNoise: boolean, category?: string }}
+ */
+export function checkInsightNoise(text) {
+  if (!text) return { isNoise: false };
+  for (const { pattern, name } of INSIGHT_NOISE_PATTERNS) {
+    if (pattern.test(text)) {
+      return { isNoise: true, category: name };
+    }
+  }
+  return { isNoise: false };
+}
+
+/**
+ * Check if competitor mention is within allowed email-related list
+ * @param {string} text - Text to check
+ * @returns {boolean}
+ */
+export function isAllowedInsightCompetitor(text) {
+  if (!text) return false;
+  const lowerText = text.toLowerCase();
+  return INSIGHT_COMPETITOR_WHITELIST.some(name => lowerText.includes(name));
 }
 
 // ============ Exports ============

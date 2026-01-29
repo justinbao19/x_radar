@@ -19,23 +19,29 @@ const INFLUENCERS_FILE = 'influencers.json';
 // ============ Configuration ============
 
 // Sampling configuration (env vars)
-const MAX_SOURCES_PER_RUN = parseInt(process.env.MAX_SOURCES || '12', 10);
+const MAX_SOURCES_PER_RUN = parseInt(process.env.MAX_SOURCES || '24', 10);
 const SAMPLING_MODE = process.env.SAMPLING_MODE || 'random'; // 'random' or 'all'
 
-// Throttling configuration
-const PAGE_LOAD_WAIT_MIN = 4000;
-const PAGE_LOAD_WAIT_MAX = 8000;
-const BETWEEN_QUERIES_WAIT_MIN = 15000;
-const BETWEEN_QUERIES_WAIT_MAX = 30000;
-const SCROLL_WAIT_MIN = 2000;
-const SCROLL_WAIT_MAX = 4000;
+// Runtime limit guard (minutes) - stops scraping if exceeded
+const RUN_TIME_LIMIT_MIN = parseInt(process.env.RUN_TIME_LIMIT_MIN || '60', 10);
+
+// Throttling configuration (configurable via env vars for tuning)
+const PAGE_LOAD_WAIT_MIN = parseInt(process.env.PAGE_LOAD_WAIT_MIN || '4000', 10);
+const PAGE_LOAD_WAIT_MAX = parseInt(process.env.PAGE_LOAD_WAIT_MAX || '8000', 10);
+const BETWEEN_QUERIES_WAIT_MIN = parseInt(process.env.BETWEEN_QUERIES_WAIT_MIN || '15000', 10);
+const BETWEEN_QUERIES_WAIT_MAX = parseInt(process.env.BETWEEN_QUERIES_WAIT_MAX || '30000', 10);
+const SCROLL_WAIT_MIN = parseInt(process.env.SCROLL_WAIT_MIN || '2000', 10);
+const SCROLL_WAIT_MAX = parseInt(process.env.SCROLL_WAIT_MAX || '4000', 10);
 
 // Scroll configuration (increased depth for more content)
-const MAX_SCROLL_ROUNDS = 8;
-const MIN_SCROLL_ROUNDS = 5;
+const MAX_SCROLL_ROUNDS = parseInt(process.env.MAX_SCROLL_ROUNDS || '12', 10);
+const MIN_SCROLL_ROUNDS = parseInt(process.env.MIN_SCROLL_ROUNDS || '7', 10);
 const SCROLL_DISTANCE_MIN = 600;
 const SCROLL_DISTANCE_MAX = 1200;
 const SCROLL_BACK_CHANCE = 0.2; // 20% chance to scroll back (more human-like)
+const READ_PAUSE_CHANCE = 0.3; // 30% chance to pause for "reading" (human-like)
+const READ_PAUSE_MIN = 1000;   // 1s minimum reading pause
+const READ_PAUSE_MAX = 3000;   // 3s maximum reading pause
 
 // Retry configuration
 const MAX_RETRIES = 1;
@@ -265,13 +271,18 @@ async function scrollAndLoad(page, maxTweets) {
     // Polite wait between scrolls
     await sleep(randomBetween(SCROLL_WAIT_MIN, SCROLL_WAIT_MAX));
     
-    // Optional small upward scroll (15% chance)
+    // Optional small upward scroll (20% chance) - mimics re-reading
     if (Math.random() < SCROLL_BACK_CHANCE) {
       const scrollBackAmount = randomBetween(100, 200);
       await page.evaluate((amount) => {
         window.scrollBy(0, -amount);
       }, scrollBackAmount);
       await sleep(randomBetween(500, 1000));
+    }
+    
+    // Optional reading pause (30% chance) - mimics stopping to read a tweet
+    if (Math.random() < READ_PAUSE_CHANCE) {
+      await sleep(randomBetween(READ_PAUSE_MIN, READ_PAUSE_MAX));
     }
     
     // Check for new content
@@ -549,8 +560,11 @@ function buildSourceList() {
 }
 
 async function main() {
+  const runStartTime = Date.now();
+  const runTimeLimitMs = RUN_TIME_LIMIT_MIN * 60 * 1000;
+  
   log('INFO', '=== X Radar Scraper Starting ===');
-  log('INFO', `Config: MAX_SOURCES=${MAX_SOURCES_PER_RUN}, SAMPLING_MODE=${SAMPLING_MODE}`);
+  log('INFO', `Config: MAX_SOURCES=${MAX_SOURCES_PER_RUN}, SAMPLING_MODE=${SAMPLING_MODE}, TIME_LIMIT=${RUN_TIME_LIMIT_MIN}min`);
   
   // Clean old output directories (keep last 7 days)
   log('INFO', 'Checking for old data to clean up...');
@@ -626,8 +640,19 @@ async function main() {
   let failCount = 0;
   
   for (let i = 0; i < sources.length; i++) {
+    // Runtime guard: check if time limit exceeded
+    const elapsedMs = Date.now() - runStartTime;
+    const elapsedMin = (elapsedMs / 60000).toFixed(1);
+    if (elapsedMs >= runTimeLimitMs) {
+      log('WARN', `Runtime limit reached (${elapsedMin}min >= ${RUN_TIME_LIMIT_MIN}min), stopping scrape`, {
+        completedSources: i,
+        totalSources: sources.length
+      });
+      break;
+    }
+    
     const source = sources[i];
-    log('INFO', `--- Source ${i + 1}/${sources.length}: ${source.name} ---`);
+    log('INFO', `--- Source ${i + 1}/${sources.length}: ${source.name} (${elapsedMin}min elapsed) ---`);
     
     try {
       const result = await scrapeSourceWithRetry(page, source);
@@ -708,7 +733,8 @@ async function main() {
   // Print clear path summary
   logOutputPaths(runDate);
   
-  log('INFO', '=== Scrape Complete ===', stats);
+  const totalElapsedMin = ((Date.now() - runStartTime) / 60000).toFixed(1);
+  log('INFO', '=== Scrape Complete ===', { ...stats, runtimeMinutes: totalElapsedMin });
 }
 
 main().catch(err => {

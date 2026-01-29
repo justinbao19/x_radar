@@ -3,103 +3,103 @@
     {
       "name": "filo-mentions-en",
       "query": "(FiloMail OR \"filo mail\" OR filomail OR @Filo_Mail) -from:Filo_Mail -filter:retweets lang:en",
-      "max": 50
+      "max": 70
     },
     {
       "name": "filo-mentions-cn",
       "query": "(FiloMail OR \"filo mail\" OR filomail OR @Filo_Mail) -from:Filo_Mail -filter:retweets lang:zh",
-      "max": 30
+      "max": 50
     },
     {
       "name": "filo-mentions-jp",
       "query": "(FiloMail OR \"filo mail\" OR filomail OR @Filo_Mail) -from:Filo_Mail -filter:retweets lang:ja",
-      "max": 30
+      "max": 50
     }
   ],
   "insight": [
     {
       "name": "feature-wish-en",
-      "query": "(gmail OR inbox OR email) (\"wish\" OR \"hope\" OR \"want\" OR \"need\" OR \"would be great\" OR \"should have\") (feature OR function OR tool) -filter:retweets lang:en",
-      "max": 40
+      "query": "(gmail OR inbox OR email) (\"wish\" OR \"hope\" OR \"want\" OR \"need\" OR \"would be great\" OR \"should have\") (feature OR function OR tool) -subscribe -subscription -newsletter -\"sign up\" -signup -\"email me\" -\"dm me\" -\"contact us\" -\"contact support\" -support -recruiting -hiring -\"apply\" -job -filter:retweets lang:en",
+      "max": 60
     },
     {
       "name": "ai-email-demand-en",
-      "query": "(\"AI email\" OR \"email AI\" OR \"smart inbox\" OR \"AI inbox\") (need OR want OR \"looking for\" OR \"any recommendations\") -filter:retweets lang:en",
-      "max": 40
+      "query": "(\"AI email\" OR \"email AI\" OR \"smart inbox\" OR \"AI inbox\") (need OR want OR \"looking for\" OR \"any recommendations\") -subscribe -subscription -newsletter -\"sign up\" -signup -\"email me\" -\"dm me\" -\"contact us\" -\"contact support\" -support -recruiting -hiring -\"apply\" -job -filter:retweets lang:en",
+      "max": 60
     },
     {
       "name": "competitor-praise-en",
-      "query": "(Superhuman OR Spark OR Edison OR Shortwave OR \"Hey email\") (love OR amazing OR great OR \"game changer\" OR \"best email\") -filter:retweets lang:en",
-      "max": 40
+      "query": "(Superhuman OR Spark OR Edison OR Shortwave OR \"Hey email\") (love OR amazing OR great OR \"game changer\" OR \"best email\") -subscribe -subscription -newsletter -\"sign up\" -signup -\"email me\" -\"dm me\" -\"contact us\" -\"contact support\" -support -recruiting -hiring -\"apply\" -job -filter:retweets lang:en",
+      "max": 60
     },
     {
       "name": "email-pain-feature-cn",
-      "query": "(邮箱 OR 收件箱 OR gmail) (希望 OR 想要 OR 要是能 OR 功能) -filter:retweets lang:zh",
-      "max": 30
+      "query": "(邮箱 OR 收件箱 OR gmail) (希望 OR 想要 OR 要是能 OR 功能) -订阅 -报名 -投稿 -招聘 -私信 -联系 -客服 -支持 -邮箱地址 -邮件地址 -验证码 -电报 -Telegram -短信费 -邮箱接码 -filter:retweets lang:zh",
+      "max": 50
     },
     {
       "name": "competitor-praise-cn",
-      "query": "(Superhuman OR Spark OR Edison OR Shortwave) (好用 OR 推荐 OR 神器 OR 太棒) -filter:retweets lang:zh",
-      "max": 30
+      "query": "(Superhuman OR Spark OR Edison OR Shortwave) (好用 OR 推荐 OR 神器 OR 太棒) -订阅 -报名 -投稿 -招聘 -私信 -联系 -客服 -支持 -newsletter -subscribe -filter:retweets lang:zh",
+      "max": 50
     }
   ],
   "pain": [
     {
       "name": "gmail-spam-en",
       "query": "(gmail OR \"gmail app\" OR inbox) (spam OR \"too many\" OR \"can't find\" OR hate OR annoying OR broken OR bug OR issue OR problem OR flooding) -subscribe -\"sign up\" -\"join my\" -filter:retweets",
-      "max": 50
+      "max": 80
     },
     {
       "name": "gmail-spam-jp",
       "query": "(gmail OR 受信トレイ) (迷惑メール OR スパム OR 見つからない OR うざい OR 最悪 OR 困る OR 大変 OR ひどい OR バグ) -メルマガ登録 -購読 -フォロー -filter:retweets",
-      "max": 50
+      "max": 70
     },
     {
       "name": "gmail-spam-cn",
       "query": "(gmail OR 邮箱 OR 收件箱) (垃圾邮件 OR 太多 OR 找不到 OR 难用 OR 好烦 OR 崩溃 OR 问题 OR 烦死) -订阅 -关注我 -filter:retweets",
-      "max": 50
+      "max": 70
     },
     {
       "name": "inbox-overwhelm-en",
       "query": "(email OR inbox OR gmail) (overwhelmed OR drowning OR \"too many\" OR chaos OR mess OR \"out of control\" OR \"can't keep up\" OR nightmare OR hell) -subscribe -newsletter -\"sign up\" -\"join my\" -filter:retweets",
-      "max": 40
+      "max": 60
     },
     {
       "name": "inbox-overwhelm-jp",
       "query": "(受信トレイ OR メール OR gmail) (多すぎ OR 整理できない OR 見つからない OR うざい OR 最悪 OR 困る OR 大変 OR 地獄) -メルマガ登録 -購読 -フォロー -filter:retweets",
-      "max": 40
+      "max": 60
     },
     {
       "name": "email-search-pain",
       "query": "(email OR gmail OR inbox) (search OR find) (impossible OR terrible OR hate OR frustrating OR broken OR useless) -subscribe -newsletter -filter:retweets",
-      "max": 40
+      "max": 60
     }
   ],
   "reach": [
     {
       "name": "ai-email-en",
       "query": "(\"AI agent\" OR \"AI assistant\" OR automation) (email OR inbox OR productivity) -subscribe -newsletter -\"sign up\" -crypto -airdrop -filter:retweets",
-      "max": 60
+      "max": 80
     },
     {
       "name": "ai-email-jp",
       "query": "(AIエージェント OR AI秘書 OR 自動化) (メール OR 受信トレイ OR 生産性) -メルマガ登録 -購読 -filter:retweets",
-      "max": 50
+      "max": 70
     },
     {
       "name": "ai-inbox-intersection",
       "query": "(AI OR \"AI agent\" OR automation OR LLM) (email OR inbox OR gmail) (manage OR organize OR triage OR summarize) -subscribe -newsletter -filter:retweets",
-      "max": 60
+      "max": 80
     },
     {
       "name": "email-productivity-en",
       "query": "(productivity OR workflow) (email OR inbox) (tool OR app OR better OR improve) -subscribe -newsletter -\"sign up\" -filter:retweets",
-      "max": 40
+      "max": 60
     },
     {
       "name": "inbox-zero-struggle",
       "query": "\"inbox zero\" (struggle OR fail OR impossible OR trying OR attempt OR give up) -subscribe -filter:retweets",
-      "max": 40
+      "max": 60
     }
   ]
 }
