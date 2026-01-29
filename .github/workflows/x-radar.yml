@@ -146,29 +146,76 @@ jobs:
         if: steps.scraper.outcome == 'success'
         run: node scripts/sync-data.mjs
 
-      - name: Commit and push data
+      # Pull latest changes before committing to minimize conflicts
+      - name: Pull latest changes
         if: steps.scraper.outcome == 'success'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add web/public/data/
-          git diff --staged --quiet || git commit -m "chore: update radar data [skip ci]"
-          # Stash any other changes before pull --rebase, then push with retry
           git stash --include-untracked || true
+          git pull origin main --rebase || git pull origin main
+          git stash pop || true
+
+      - name: Re-sync data after pull
+        if: steps.scraper.outcome == 'success'
+        run: node scripts/sync-data.mjs
+
+      - name: Commit and push data
+        if: steps.scraper.outcome == 'success'
+        run: |
+          git add web/public/data/
+          
+          # Check if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          
+          git commit -m "chore: update radar data [skip ci]"
+          
+          # Push with retry and conflict resolution
           PUSH_SUCCESS=false
           for i in 1 2 3; do
-            if git pull --rebase origin main && git push; then
+            echo "=== Push attempt $i ==="
+            
+            if git push; then
               PUSH_SUCCESS=true
               break
             fi
-            echo "Push attempt $i failed, retrying..."
+            
+            echo "Push failed, pulling latest changes..."
+            
+            # Abort any pending rebase
+            git rebase --abort 2>/dev/null || true
+            
+            # Stash our commit, pull latest, then re-apply
+            git reset --soft HEAD~1
+            git stash
+            
+            if git pull origin main; then
+              git stash pop
+              
+              # Re-run sync to merge manifest.json properly
+              node scripts/sync-data.mjs
+              git add web/public/data/
+              
+              if ! git diff --staged --quiet; then
+                git commit -m "chore: update radar data [skip ci]"
+              fi
+            else
+              echo "Pull failed, trying harder..."
+              git stash pop || true
+            fi
+            
             sleep 2
           done
-          git stash pop || true
+          
           if [ "$PUSH_SUCCESS" = "false" ]; then
             echo "ERROR: Failed to push data after 3 attempts"
             exit 1
           fi
+          
+          echo "=== Push successful ==="
 
       # ===== Send Success Notification =====
       - name: Send success notification
