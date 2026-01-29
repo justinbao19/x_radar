@@ -38,12 +38,16 @@ const COMPETITOR_PENALTY = 0.25;        // 75% penalty for competitor promotions
 const VIRAL_TEMPLATE_PENALTY = 0.15;    // 85% penalty for viral copypasta
 
 // Quality threshold config (replaces fixed quota)
+// Note: Quality over quantity - better to have fewer high-quality entries than many noisy ones
 const QUALITY_CONFIG = {
   aiPickTopN: 10,             // Number of AI-picked tweets for quick view
   kolMinFiloFitScore: 20,     // KOL tweets need at least 4 keywords (20 = 4 * 5) - raised from 15
   minFinalScore: 50,          // Minimum score to be included - raised from 30
-  insightMinFinalScore: 20,   // Insight needs a minimal score to avoid noisy entries
+  // Insight: stricter threshold - quality over quantity
+  insightMinFinalScore: 40,   // Insight needs reasonable score (raised from 20)
   insightMinFiloFitScore: 10, // Insight needs at least 2 keywords (10 = 2 * 5)
+  // Sentiment: must actually mention Filo brand
+  sentimentMinFinalScore: 15, // Sentiment has natural low engagement but needs minimum quality
   noEmotionPenalty: 0.5       // Score penalty for pain tweets without emotion words
 };
 
@@ -97,6 +101,24 @@ function countKeywordMatches(text) {
 const PAIN_GROUP_BONUS = 3;
 
 // ============ Sentiment Classification (Filo舆情) ============
+
+// Filo brand keywords - tweet must contain at least one to be valid sentiment
+const FILO_BRAND_KEYWORDS = [
+  'filomail', 'filo mail', 'filo_mail', '@filo_mail',
+  'filoメール', 'filo邮件', 'filo郵件'
+];
+
+/**
+ * Check if tweet actually mentions Filo brand
+ * This prevents false positives from query matching noise
+ * @param {string} text - Tweet text
+ * @returns {boolean}
+ */
+function mentionsFilo(text) {
+  if (!text) return false;
+  const lowerText = text.toLowerCase();
+  return FILO_BRAND_KEYWORDS.some(kw => lowerText.includes(kw.toLowerCase()));
+}
 
 /**
  * Classify sentiment of a tweet about Filo
@@ -310,6 +332,10 @@ function selectTop10(rawData) {
     lowSignalPenalized: 0,
     filoFitFiltered: 0,
     relevanceFiltered: 0,
+    // Sentiment quality gates
+    sentimentNoBrandFiltered: 0,
+    sentimentMinScoreFiltered: 0,
+    // Insight quality gates
     insightNoiseFiltered: 0,
     insightWeakSignalFiltered: 0,
     insightCompetitorFiltered: 0,
@@ -377,10 +403,17 @@ function selectTop10(rawData) {
   });
   
   // ============ Minimum FiloFit Threshold ============
-  // Skip for sentiment group (brand mentions don't need keyword matching)
+  // Quality over quantity - even sentiment/insight must pass quality gates
   const filoFitQualified = filteredTweets.filter(t => {
-    // Sentiment group: skip FiloFit check entirely (brand mentions are inherently relevant)
+    // Sentiment group: must actually mention Filo brand (quality gate)
     if (t.group === 'sentiment') {
+      if (!mentionsFilo(t.text)) {
+        filterStats.sentimentNoBrandFiltered++;
+        log('DEBUG', `Sentiment no Filo mention: ${t.url}`, { 
+          text: t.text?.substring(0, 80) 
+        });
+        return false;
+      }
       return true;
     }
     
@@ -410,7 +443,7 @@ function selectTop10(rawData) {
     return true;
   });
   
-  log('INFO', `After FiloFit threshold (>=${MIN_FILO_FIT}): ${filoFitQualified.length} (filtered: ${filterStats.filoFitFiltered})`);
+  log('INFO', `After FiloFit threshold (>=${MIN_FILO_FIT}): ${filoFitQualified.length} (filtered: ${filterStats.filoFitFiltered}, sentimentNoBrand: ${filterStats.sentimentNoBrandFiltered})`);
   
   // ============ Group Relevance Check ============
   // Skip for sentiment and insight groups (they have their own relevance via query)
@@ -620,8 +653,16 @@ function selectTop10(rawData) {
       }
     }
     
-    // Apply minimum final score threshold
+    // Apply minimum final score threshold - quality over quantity for all groups
     if (t.group === 'sentiment') {
+      if (t.finalScore < QUALITY_CONFIG.sentimentMinFinalScore) {
+        filterStats.sentimentMinScoreFiltered = (filterStats.sentimentMinScoreFiltered || 0) + 1;
+        log('DEBUG', `Sentiment score below threshold: ${t.url}`, { 
+          finalScore: t.finalScore,
+          required: QUALITY_CONFIG.sentimentMinFinalScore
+        });
+        return false;
+      }
       return true;
     }
     if (t.group === 'insight') {
