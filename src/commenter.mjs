@@ -28,13 +28,18 @@ function shouldSkipTweet(tweet) {
   }
   
   // 2. Minimum FiloFit check
-  const filoFitCheck = checkMinFiloFit(tweet.filoFitScore || 0);
-  if (!filoFitCheck.pass) {
-    return {
-      skip: true,
-      reason: `Low relevance: ${filoFitCheck.reason}`,
-      reasonZh: `相关性过低，回复会显得像广告: ${filoFitCheck.reason}`
-    };
+  // Skip this check for sentiment and insight groups - they already passed their own
+  // quality gates in select.mjs with lower thresholds (insightMinFiloFitScore: 10)
+  const group = tweet.group;
+  if (group !== 'sentiment' && group !== 'insight') {
+    const filoFitCheck = checkMinFiloFit(tweet.filoFitScore || 0);
+    if (!filoFitCheck.pass) {
+      return {
+        skip: true,
+        reason: `Low relevance: ${filoFitCheck.reason}`,
+        reasonZh: `相关性过低，回复会显得像广告: ${filoFitCheck.reason}`
+      };
+    }
   }
   
   // 3. Check for low signal penalty (warn but don't skip)
