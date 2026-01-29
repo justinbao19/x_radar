@@ -7,6 +7,10 @@ on:
   workflow_dispatch:
     # Allow manual trigger
 
+concurrency:
+  group: x-radar-pipeline
+  cancel-in-progress: false
+
 env:
   NODE_ENV: production
 
