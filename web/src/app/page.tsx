@@ -235,10 +235,10 @@ export default function Dashboard() {
     return sortedTweets.slice(start, end);
   }, [sortedTweets, currentPage, itemsPerPage]);
 
-  // Calculate stats
+  // Calculate stats based on current radar category (not all tweets)
   const stats = useMemo(() => {
-    return calculateStats(sourceTweets, recentRunAts);
-  }, [sourceTweets, recentRunAts]);
+    return calculateStats(radarFilteredTweets, recentRunAts);
+  }, [radarFilteredTweets, recentRunAts]);
   
   // Calculate radar category counts (reuse pre-filtered data)
   const radarCounts = useMemo(() => {

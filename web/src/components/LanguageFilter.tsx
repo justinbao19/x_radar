@@ -55,6 +55,7 @@ export function LanguageFilter({ value, onChange, stats }: LanguageFilterProps) 
       });
   }, [stats]);
   const languageCount = languages.length;
+  const totalCount = languages.reduce((sum, item) => sum + item.count, 0);
   const previewFlags = languages.slice(0, 3);
   const activeLanguage = value && value !== 'all' ? value.toLowerCase() : null;
   const activeFlag = activeLanguage
@@ -134,7 +135,7 @@ export function LanguageFilter({ value, onChange, stats }: LanguageFilterProps) 
                   <span className="text-sm">🌐</span>
                   全部
                 </span>
-                <span className={value === 'all' ? 'text-stone-300' : 'text-stone-400'}>{languageCount}</span>
+                <span className={value === 'all' ? 'text-stone-300' : 'text-stone-400'}>{totalCount}</span>
               </button>
               {languages.map(item => (
                 <button
