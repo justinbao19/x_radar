@@ -314,7 +314,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF9F7]">
+    <div className="min-h-screen bg-[#FAF9F7] flex flex-col">
       <Header lastUpdated={lastUpdated} />
       
       {/* Radar Category Selector - Top Level Navigation */}
@@ -341,51 +341,52 @@ export default function Dashboard() {
       )}
 
       {/* Filters */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 space-y-3">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 relative z-30">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          {/* Filter Controls */}
           <DatePicker 
             value={dateRange} 
             onChange={setDateRange}
             availableDates={availableDates}
           />
-          <div className="flex flex-row flex-wrap items-center gap-2">
-            <CategoryFilter 
-              value={categories} 
-              onChange={setCategories}
-              stats={stats}
-              radarCategory={radarCategory}
-              radarFilteredTweets={radarFilteredTweets}
-              recentRunAts={recentRunAts}
-            />
-            <LanguageFilter
-              value={languageFilter}
-              onChange={setLanguageFilter}
-              stats={languageStats}
-            />
-            <SortSelector
-              value={sortBy}
-              onChange={setSortBy}
-            />
-            <ViewToggle 
-              value={viewMode} 
-              onChange={setViewMode} 
-            />
-          </div>
+          <CategoryFilter 
+            value={categories} 
+            onChange={setCategories}
+            stats={stats}
+            radarCategory={radarCategory}
+            radarFilteredTweets={radarFilteredTweets}
+            recentRunAts={recentRunAts}
+          />
+          <LanguageFilter
+            value={languageFilter}
+            onChange={setLanguageFilter}
+            stats={languageStats}
+          />
+          <SortSelector
+            value={sortBy}
+            onChange={setSortBy}
+          />
+          {/* Separator + View Toggle */}
+          <div className="hidden sm:block w-px h-5 bg-stone-200 mx-1" />
+          <ViewToggle 
+            value={viewMode} 
+            onChange={setViewMode} 
+          />
         </div>
       </div>
 
       {/* Content */}
       <main
         ref={mainRef}
-        className={`max-w-6xl mx-auto px-4 sm:px-6 pb-12 relative transition-opacity duration-200 ${mainOpacity}`}
+        className={`max-w-6xl mx-auto px-4 sm:px-6 pb-12 relative transition-opacity duration-200 flex-1 w-full ${mainOpacity}`}
         style={frozenHeight ? { minHeight: `${frozenHeight}px` } : undefined}
       >
         {isInitialLoading ? (
-          <div className="flex items-center justify-center py-20">
+          <div className="flex items-center justify-center min-h-[40vh]">
             <div className="animate-spin rounded-full h-10 w-10 border-4 border-amber-200 border-t-amber-500"></div>
           </div>
         ) : sortedTweets.length === 0 ? (
-          <div className="text-center py-20">
+          <div className="flex flex-col items-center justify-center min-h-[40vh]">
             <div className="text-5xl mb-4">🔍</div>
             <p className="text-stone-500 text-lg">没有找到符合条件的推文</p>
             <p className="text-stone-400 text-sm mt-2">尝试调整筛选条件</p>
@@ -478,8 +479,8 @@ export default function Dashboard() {
       )}
 
       {/* Footer */}
-      <footer className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
-        <div className="border-t border-stone-200/60 pt-8">
+      <footer className="max-w-6xl mx-auto px-4 sm:px-6 py-6 mt-auto w-full">
+        <div className="border-t border-stone-200/60 pt-6">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 text-sm text-stone-400">
             <div className="flex items-center gap-2">
               <svg className="w-5 h-5 text-amber-500" viewBox="0 0 24 24" fill="currentColor">

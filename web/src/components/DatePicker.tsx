@@ -9,7 +9,7 @@ interface DatePickerProps {
   availableDates?: string[];
 }
 
-type PresetKey = 'today' | '3days' | '7days';
+type PresetKey = 'today' | '3days' | '7days' | 'custom';
 
 const presets: { key: PresetKey; label: string }[] = [
   { key: 'today', label: '今天' },
@@ -65,6 +65,10 @@ function toDateStr(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
+function formatDateDisplay(d: Date): string {
+  return `${d.getMonth() + 1}/${d.getDate()}`;
+}
+
 function isSameDate(d1: Date, d2: Date): boolean {
   return d1.getFullYear() === d2.getFullYear() &&
     d1.getMonth() === d2.getMonth() &&
@@ -105,7 +109,8 @@ function getCalendarDays(year: number, month: number): (Date | null)[] {
 }
 
 export function DatePicker({ value, onChange, availableDates }: DatePickerProps) {
-  const [showCustom, setShowCustom] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
   const [rangeStart, setRangeStart] = useState<string | null>(null);
   const [hoverDate, setHoverDate] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -138,28 +143,29 @@ export function DatePicker({ value, onChange, availableDates }: DatePickerProps)
   const [viewYear, setViewYear] = useState(initialYear);
   const [viewMonth, setViewMonth] = useState(initialMonth);
 
-  // Reset view when opening
+  // Reset view when opening calendar
   useEffect(() => {
-    if (showCustom) {
+    if (showCalendar) {
       setViewYear(initialYear);
       setViewMonth(initialMonth);
     }
-  }, [showCustom, initialYear, initialMonth]);
+  }, [showCalendar, initialYear, initialMonth]);
 
   // Click outside to close
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setShowCustom(false);
+        setOpen(false);
+        setShowCalendar(false);
         setRangeStart(null);
         setHoverDate(null);
       }
     };
-    if (showCustom) {
+    if (open) {
       document.addEventListener('mousedown', handleClickOutside);
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showCustom]);
+  }, [open]);
 
   const calendarDays = useMemo(() => getCalendarDays(viewYear, viewMonth), [viewYear, viewMonth]);
 
@@ -186,7 +192,8 @@ export function DatePicker({ value, onChange, availableDates }: DatePickerProps)
 
   const handlePresetClick = (key: PresetKey) => {
     onChange(getPresetRange(key));
-    setShowCustom(false);
+    setOpen(false);
+    setShowCalendar(false);
     setRangeStart(null);
     setHoverDate(null);
   };
@@ -209,15 +216,14 @@ export function DatePicker({ value, onChange, availableDates }: DatePickerProps)
         start: finalStart,
         end: new Date(finalEnd.getTime() + 24 * 60 * 60 * 1000 - 1)
       });
-      setShowCustom(false);
+      setOpen(false);
+      setShowCalendar(false);
       setRangeStart(null);
       setHoverDate(null);
     }
   };
 
   const getDateState = (date: Date): 'start' | 'end' | 'in-range' | 'hover-range' | 'none' => {
-    const dateStr = toDateStr(date);
-    
     if (rangeStart) {
       const start = new Date(rangeStart + 'T00:00:00');
       if (isSameDate(date, start)) return 'start';
@@ -232,169 +238,229 @@ export function DatePicker({ value, onChange, availableDates }: DatePickerProps)
     return 'none';
   };
 
-  return (
-    <div ref={containerRef} className="relative z-30 w-full max-w-full flex flex-col items-start sm:w-auto sm:inline-flex sm:flex-row sm:items-center">
-      <div className="flex flex-wrap items-center gap-2 w-full max-w-full sm:flex-nowrap sm:overflow-x-auto">
-        {presets.map(preset => (
-          <button
-            key={preset.key}
-            onClick={() => handlePresetClick(preset.key)}
-            className={`inline-flex items-center px-3 h-8 rounded-lg text-sm font-medium whitespace-nowrap shrink-0 transition-colors ${
-              activePreset === preset.key
-                ? 'bg-stone-800 text-white'
-                : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
-            }`}
-          >
-            {preset.label}
-          </button>
-        ))}
-        <button
-          onClick={() => setShowCustom(!showCustom)}
-          className={`inline-flex items-center gap-1.5 px-3 h-8 rounded-lg text-sm font-medium whitespace-nowrap shrink-0 transition-colors ${
-            showCustom || (!activePreset && availableDates)
-              ? 'bg-stone-800 text-white'
-              : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
-          }`}
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          选择
-        </button>
-      </div>
+  // Get display label for button
+  const displayLabel = useMemo(() => {
+    if (activePreset) {
+      const preset = presets.find(p => p.key === activePreset);
+      return preset?.label || '近 7 天';
+    }
+    // Custom range
+    const start = new Date(value.start);
+    const end = new Date(value.end);
+    return `${formatDateDisplay(start)} - ${formatDateDisplay(end)}`;
+  }, [activePreset, value]);
 
-      {showCustom && availableDates && availableDates.length > 0 && (
+  return (
+    <div ref={containerRef} className="relative inline-flex items-center shrink-0">
+      {/* Trigger Button */}
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="inline-flex items-center gap-1.5 px-3 h-8 rounded-lg text-sm font-medium bg-stone-100 text-stone-600 hover:bg-stone-200 transition-colors whitespace-nowrap"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+      >
+        <svg className="w-4 h-4 text-stone-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <span className="text-stone-700">{displayLabel}</span>
+        <svg className={`w-3.5 h-3.5 text-stone-400 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {/* Dropdown Panel */}
+      {open && (
         <>
+          {/* Mobile backdrop */}
           <div 
-            className="fixed inset-0 bg-black/20 z-30 sm:hidden" 
+            className="fixed inset-0 bg-black/20 z-40 sm:hidden" 
             onClick={() => {
-              setShowCustom(false);
+              setOpen(false);
+              setShowCalendar(false);
               setRangeStart(null);
               setHoverDate(null);
             }}
           />
-          <div className="fixed inset-x-0 top-20 z-40 px-4 sm:px-0 sm:absolute sm:top-full sm:left-0 sm:inset-auto sm:mt-2">
-            <div className="w-[300px] max-w-[90vw] sm:w-[300px] mx-auto sm:mx-0 bg-white rounded-xl border border-stone-200 shadow-lg animate-fade-in overflow-hidden">
-              {/* Calendar Header */}
-              <div className="flex items-center justify-between px-3 py-2.5 bg-stone-50 border-b border-stone-100">
-                <button
-                  onClick={handlePrevMonth}
-                  disabled={!canGoPrev}
-                  className={`p-1 rounded-lg transition-colors ${
-                    canGoPrev 
-                      ? 'hover:bg-stone-200 text-stone-600' 
-                      : 'text-stone-300 cursor-not-allowed'
-                  }`}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                <div className="text-sm font-semibold text-stone-800">
-                  {viewYear}年 {MONTHS[viewMonth]}
-                </div>
-                <button
-                  onClick={handleNextMonth}
-                  disabled={!canGoNext}
-                  className={`p-1 rounded-lg transition-colors ${
-                    canGoNext 
-                      ? 'hover:bg-stone-200 text-stone-600' 
-                      : 'text-stone-300 cursor-not-allowed'
-                  }`}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Weekday Headers */}
-              <div className="grid grid-cols-7 px-2 pt-2">
-                {WEEKDAYS.map(day => (
-                  <div key={day} className="text-center text-xs font-medium text-stone-400 py-1.5">
-                    {day}
-                  </div>
-                ))}
-              </div>
-
-              {/* Calendar Grid */}
-              <div className="grid grid-cols-7 px-2 pb-2 gap-y-0.5">
-                {calendarDays.map((date, index) => {
-                  if (!date) {
-                    return <div key={`empty-${index}`} className="h-8" />;
-                  }
-                  
-                  const dateStr = toDateStr(date);
-                  const isAvailable = availableDateSet.has(dateStr);
-                  const state = getDateState(date);
-                  const isToday = isSameDate(date, new Date());
-                  
-                  return (
+          <div className="fixed left-4 right-4 top-1/3 z-50 w-auto max-w-[300px] mx-auto sm:absolute sm:left-0 sm:right-auto sm:top-full sm:mt-2 sm:w-auto sm:max-w-none sm:mx-0">
+            <div className="bg-white rounded-xl border border-stone-200 shadow-lg overflow-hidden animate-fade-in">
+              {!showCalendar ? (
+                /* Preset Options */
+                <div className="p-1.5">
+                  <div className="text-xs text-stone-400 px-2 py-1 sm:hidden">选择时间范围</div>
+                  {presets.map(preset => (
                     <button
-                      key={dateStr}
-                      onClick={() => handleDateClick(date)}
-                      onMouseEnter={() => rangeStart && isAvailable && setHoverDate(dateStr)}
-                      onMouseLeave={() => setHoverDate(null)}
-                      disabled={!isAvailable}
-                      className={`h-8 w-full rounded-lg text-sm font-medium transition-colors relative ${
-                        !isAvailable
-                          ? 'text-stone-300 cursor-not-allowed'
-                          : state === 'start'
-                            ? 'bg-stone-800 text-white'
-                            : state === 'hover-range'
-                              ? 'bg-stone-200 text-stone-800'
-                              : isToday
-                                ? 'bg-stone-100 text-stone-800 hover:bg-stone-200'
-                                : 'text-stone-700 hover:bg-stone-100'
+                      key={preset.key}
+                      onClick={() => handlePresetClick(preset.key)}
+                      className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                        activePreset === preset.key
+                          ? 'bg-stone-800 text-white'
+                          : 'text-stone-600 hover:bg-stone-100'
                       }`}
                     >
-                      {date.getDate()}
-                      {isToday && !state && (
-                        <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-stone-800" />
-                      )}
+                      {preset.label}
                     </button>
-                  );
-                })}
-              </div>
-
-              {/* Selection Status */}
-              <div className="px-3 py-2.5 bg-stone-50 border-t border-stone-100">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-stone-500">
-                    {!rangeStart ? '点击选择开始日期' : '点击选择结束日期'}
-                  </span>
-                  {rangeStart && (
+                  ))}
+                  {availableDates && availableDates.length > 0 && (
+                    <>
+                      <div className="h-px bg-stone-100 my-1" />
+                      <button
+                        onClick={() => setShowCalendar(true)}
+                        className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                          !activePreset
+                            ? 'bg-stone-800 text-white'
+                            : 'text-stone-600 hover:bg-stone-100'
+                        }`}
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        自定义
+                      </button>
+                    </>
+                  )}
+                </div>
+              ) : (
+                /* Calendar View */
+                <div className="w-[280px]">
+                  {/* Back button */}
+                  <div className="flex items-center gap-2 px-3 py-2 border-b border-stone-100">
                     <button
                       onClick={() => {
+                        setShowCalendar(false);
                         setRangeStart(null);
                         setHoverDate(null);
                       }}
-                      className="text-stone-600 hover:text-stone-800 font-medium"
+                      className="p-1 rounded-lg hover:bg-stone-100 text-stone-500"
                     >
-                      重置
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
                     </button>
-                  )}
-                </div>
-                {rangeStart && (
-                  <div className="mt-1.5 flex items-center gap-2 text-sm">
-                    <span className="px-2 py-0.5 bg-stone-800 text-white rounded text-xs font-medium">
-                      {new Date(rangeStart + 'T00:00:00').getMonth() + 1}/{new Date(rangeStart + 'T00:00:00').getDate()}
-                    </span>
-                    <span className="text-stone-400">→</span>
-                    <span className="px-2 py-0.5 bg-stone-200 text-stone-500 rounded text-xs">
-                      {hoverDate 
-                        ? `${new Date(hoverDate + 'T00:00:00').getMonth() + 1}/${new Date(hoverDate + 'T00:00:00').getDate()}`
-                        : '?'
-                      }
-                    </span>
+                    <span className="text-sm font-medium text-stone-700">选择日期范围</span>
                   </div>
-                )}
-              </div>
+
+                  {/* Calendar Header */}
+                  <div className="flex items-center justify-between px-3 py-2 bg-stone-50">
+                    <button
+                      onClick={handlePrevMonth}
+                      disabled={!canGoPrev}
+                      className={`p-1 rounded-lg transition-colors ${
+                        canGoPrev 
+                          ? 'hover:bg-stone-200 text-stone-600' 
+                          : 'text-stone-300 cursor-not-allowed'
+                      }`}
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </button>
+                    <div className="text-sm font-semibold text-stone-800">
+                      {viewYear}年 {MONTHS[viewMonth]}
+                    </div>
+                    <button
+                      onClick={handleNextMonth}
+                      disabled={!canGoNext}
+                      className={`p-1 rounded-lg transition-colors ${
+                        canGoNext 
+                          ? 'hover:bg-stone-200 text-stone-600' 
+                          : 'text-stone-300 cursor-not-allowed'
+                      }`}
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  {/* Weekday Headers */}
+                  <div className="grid grid-cols-7 px-2 pt-2">
+                    {WEEKDAYS.map(day => (
+                      <div key={day} className="text-center text-xs font-medium text-stone-400 py-1.5">
+                        {day}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Calendar Grid */}
+                  <div className="grid grid-cols-7 px-2 pb-2 gap-y-0.5">
+                    {calendarDays.map((date, index) => {
+                      if (!date) {
+                        return <div key={`empty-${index}`} className="h-8" />;
+                      }
+                      
+                      const dateStr = toDateStr(date);
+                      const isAvailable = availableDateSet.has(dateStr);
+                      const state = getDateState(date);
+                      const isToday = isSameDate(date, new Date());
+                      
+                      return (
+                        <button
+                          key={dateStr}
+                          onClick={() => handleDateClick(date)}
+                          onMouseEnter={() => rangeStart && isAvailable && setHoverDate(dateStr)}
+                          onMouseLeave={() => setHoverDate(null)}
+                          disabled={!isAvailable}
+                          className={`h-8 w-full rounded-lg text-sm font-medium transition-colors relative ${
+                            !isAvailable
+                              ? 'text-stone-300 cursor-not-allowed'
+                              : state === 'start'
+                                ? 'bg-stone-800 text-white'
+                                : state === 'hover-range'
+                                  ? 'bg-stone-200 text-stone-800'
+                                  : isToday
+                                    ? 'bg-stone-100 text-stone-800 hover:bg-stone-200'
+                                    : 'text-stone-700 hover:bg-stone-100'
+                          }`}
+                        >
+                          {date.getDate()}
+                          {isToday && !state && (
+                            <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-stone-800" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Selection Status */}
+                  <div className="px-3 py-2.5 bg-stone-50 border-t border-stone-100">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-stone-500">
+                        {!rangeStart ? '点击选择开始日期' : '点击选择结束日期'}
+                      </span>
+                      {rangeStart && (
+                        <button
+                          onClick={() => {
+                            setRangeStart(null);
+                            setHoverDate(null);
+                          }}
+                          className="text-stone-600 hover:text-stone-800 font-medium"
+                        >
+                          重置
+                        </button>
+                      )}
+                    </div>
+                    {rangeStart && (
+                      <div className="mt-1.5 flex items-center gap-2 text-sm">
+                        <span className="px-2 py-0.5 bg-stone-800 text-white rounded text-xs font-medium">
+                          {new Date(rangeStart + 'T00:00:00').getMonth() + 1}/{new Date(rangeStart + 'T00:00:00').getDate()}
+                        </span>
+                        <span className="text-stone-400">→</span>
+                        <span className="px-2 py-0.5 bg-stone-200 text-stone-500 rounded text-xs">
+                          {hoverDate 
+                            ? `${new Date(hoverDate + 'T00:00:00').getMonth() + 1}/${new Date(hoverDate + 'T00:00:00').getDate()}`
+                            : '?'
+                          }
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </>
       )}
-
     </div>
   );
 }

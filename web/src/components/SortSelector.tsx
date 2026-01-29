@@ -56,7 +56,7 @@ export function SortSelector({ value, onChange }: SortSelectorProps) {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative">
+    <div ref={containerRef} className="relative shrink-0">
       <button
         type="button"
         onClick={() => setOpen(!open)}

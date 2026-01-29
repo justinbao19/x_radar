@@ -82,7 +82,7 @@ export function LanguageFilter({ value, onChange, stats }: LanguageFilterProps) 
   }
 
   return (
-    <div ref={containerRef} className="relative inline-flex items-center">
+    <div ref={containerRef} className="relative inline-flex items-center shrink-0">
       <button
         type="button"
         onClick={() => setOpen(prev => !prev)}

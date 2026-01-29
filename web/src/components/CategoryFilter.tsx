@@ -129,7 +129,7 @@ export function CategoryFilter({ value, onChange, stats, radarCategory = 'pain_r
   }, [value, categories]);
 
   return (
-    <div ref={containerRef} className="relative inline-flex items-center">
+    <div ref={containerRef} className="relative inline-flex items-center shrink-0">
       <button
         type="button"
         onClick={() => setOpen(prev => !prev)}
