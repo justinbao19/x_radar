@@ -16,22 +16,6 @@ const RETRY_DELAY_BASE = 2000;
  * @returns {{ skip: boolean, reason?: string, reasonZh?: string }}
  */
 function shouldSkipTweet(tweet) {
-  // 0. Skip sentiment and insight tweets (monitoring only, no engagement needed)
-  if (tweet.group === 'sentiment') {
-    return {
-      skip: true,
-      reason: 'Sentiment monitoring tweet - no comment needed',
-      reasonZh: '舆情监测推文 - 仅用于监测，无需评论'
-    };
-  }
-  if (tweet.group === 'insight') {
-    return {
-      skip: true,
-      reason: 'User insight tweet - for analysis only',
-      reasonZh: '用户洞察推文 - 仅用于分析，无需评论'
-    };
-  }
-  
   // 1. Brand Safety check (second pass to catch any that slipped through)
   const safetyCheck = checkBrandSafety(tweet.text, tweet.filoFitScore || 0);
   

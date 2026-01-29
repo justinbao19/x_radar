@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { CategoryFilter as CategoryFilterType, RadarCategory, Tweet } from '@/lib/types';
-import { TweetStats } from '@/lib/data';
+import { isTweetNew, TweetStats } from '@/lib/data';
 
 interface CategoryFilterProps {
   value: CategoryFilterType[];
@@ -10,6 +10,7 @@ interface CategoryFilterProps {
   stats?: TweetStats;
   radarCategory?: RadarCategory;
   radarFilteredTweets?: Tweet[];
+  recentRunAts?: string[];
 }
 
 type FilterOption = { key: CategoryFilterType; label: string; color: string; activeColor: string };
@@ -26,6 +27,7 @@ const painRadarFilters: FilterOption[] = [
 // Sentiment filters (Filo舆情)
 const sentimentFilters: FilterOption[] = [
   { key: 'all', label: '全部', color: 'bg-stone-500', activeColor: 'bg-gradient-to-r from-stone-700 to-stone-800' },
+  { key: 'new', label: '新推文', color: 'bg-emerald-500', activeColor: 'bg-gradient-to-r from-emerald-500 to-teal-500' },
   { key: 'negative', label: '需关注', color: 'bg-red-500', activeColor: 'bg-gradient-to-r from-red-500 to-red-600' },
   { key: 'positive', label: '积极', color: 'bg-green-500', activeColor: 'bg-gradient-to-r from-green-500 to-green-600' },
   { key: 'neutral', label: '中性', color: 'bg-stone-400', activeColor: 'bg-gradient-to-r from-stone-500 to-stone-600' },
@@ -34,12 +36,13 @@ const sentimentFilters: FilterOption[] = [
 // Insight filters (用户洞察)
 const insightFilters: FilterOption[] = [
   { key: 'all', label: '全部', color: 'bg-stone-500', activeColor: 'bg-gradient-to-r from-stone-700 to-stone-800' },
+  { key: 'new', label: '新推文', color: 'bg-emerald-500', activeColor: 'bg-gradient-to-r from-emerald-500 to-teal-500' },
   { key: 'feature_request', label: '功能需求', color: 'bg-amber-500', activeColor: 'bg-gradient-to-r from-amber-500 to-amber-600' },
   { key: 'competitor_praise', label: '竞品好评', color: 'bg-indigo-500', activeColor: 'bg-gradient-to-r from-indigo-500 to-indigo-600' },
   { key: 'ai_demand', label: 'AI需求', color: 'bg-cyan-500', activeColor: 'bg-gradient-to-r from-cyan-500 to-cyan-600' },
 ];
 
-export function CategoryFilter({ value, onChange, stats, radarCategory = 'pain_radar', radarFilteredTweets = [] }: CategoryFilterProps) {
+export function CategoryFilter({ value, onChange, stats, radarCategory = 'pain_radar', radarFilteredTweets = [], recentRunAts = [] }: CategoryFilterProps) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -97,6 +100,7 @@ export function CategoryFilter({ value, onChange, stats, radarCategory = 'pain_r
     if (radarCategory === 'filo_sentiment') {
       switch (key) {
         case 'all': return radarFilteredTweets.length;
+        case 'new': return radarFilteredTweets.filter(t => isTweetNew(t, recentRunAts)).length;
         case 'positive': return radarFilteredTweets.filter(t => t.sentimentLabel === 'positive').length;
         case 'negative': return radarFilteredTweets.filter(t => t.sentimentLabel === 'negative').length;
         case 'neutral': return radarFilteredTweets.filter(t => t.sentimentLabel === 'neutral').length;
@@ -106,6 +110,7 @@ export function CategoryFilter({ value, onChange, stats, radarCategory = 'pain_r
     if (radarCategory === 'user_insight') {
       switch (key) {
         case 'all': return radarFilteredTweets.length;
+        case 'new': return radarFilteredTweets.filter(t => isTweetNew(t, recentRunAts)).length;
         case 'feature_request': return radarFilteredTweets.filter(t => t.insightType === 'feature_request').length;
         case 'competitor_praise': return radarFilteredTweets.filter(t => t.insightType === 'competitor_praise').length;
         case 'ai_demand': return radarFilteredTweets.filter(t => t.insightType === 'ai_demand').length;

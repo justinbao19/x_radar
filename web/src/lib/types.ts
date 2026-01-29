@@ -138,10 +138,10 @@ export type ViewMode = 'card' | 'list' | 'timeline';
 export type PainRadarFilter = 'all' | 'pain' | 'reach' | 'kol' | 'new';
 
 // Sentiment filters (Filo舆情)
-export type SentimentFilter = 'all' | 'positive' | 'negative' | 'neutral';
+export type SentimentFilter = 'all' | 'new' | 'positive' | 'negative' | 'neutral';
 
 // Insight filters (用户洞察)
-export type InsightFilter = 'all' | 'feature_request' | 'competitor_praise' | 'ai_demand';
+export type InsightFilter = 'all' | 'new' | 'feature_request' | 'competitor_praise' | 'ai_demand';
 
 // Union type for all category filters
 export type CategoryFilter = PainRadarFilter | SentimentFilter | InsightFilter;

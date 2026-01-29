@@ -12,7 +12,8 @@ import {
   AuthAlert,
   StatsBar,
   Pagination,
-  SortSelector
+  SortSelector,
+  LanguageFilter
 } from '@/components';
 import { 
   loadManifest, 
@@ -27,7 +28,7 @@ import {
   getUniqueDates,
   isTweetNew
 } from '@/lib/data';
-import { Tweet, Manifest, DateRange, ViewMode, CategoryFilter as CategoryFilterType, LanguageFilter, SortOption, RadarCategory, PainRadarFilter } from '@/lib/types';
+import { Tweet, Manifest, DateRange, ViewMode, CategoryFilter as CategoryFilterType, LanguageFilter as LanguageFilterType, SortOption, RadarCategory, PainRadarFilter } from '@/lib/types';
 
 export default function Dashboard() {
   const mainRef = useRef<HTMLElement | null>(null);
@@ -48,7 +49,7 @@ export default function Dashboard() {
   const [categories, setCategories] = useState<CategoryFilterType[]>(['new']);
   const [showAiPickedOnly, setShowAiPickedOnly] = useState(true);
   const [selectedTweet, setSelectedTweet] = useState<Tweet | null>(null);
-  const [languageFilter, setLanguageFilter] = useState<LanguageFilter>('all');
+  const [languageFilter, setLanguageFilter] = useState<LanguageFilterType>('all');
   const [sortBy, setSortBy] = useState<SortOption>('score');
   const [displayedAllTweets, setDisplayedAllTweets] = useState<Tweet[]>([]);
   const [isSwapping, setIsSwapping] = useState(false);
@@ -133,6 +134,7 @@ export default function Dashboard() {
       // Sentiment filter
       if (!categories.includes('all')) {
         tweets = tweets.filter(t => {
+          if (categories.includes('new') && isTweetNew(t, recentRunAts)) return true;
           if (categories.includes('positive') && t.sentimentLabel === 'positive') return true;
           if (categories.includes('negative') && t.sentimentLabel === 'negative') return true;
           if (categories.includes('neutral') && t.sentimentLabel === 'neutral') return true;
@@ -143,6 +145,7 @@ export default function Dashboard() {
       // Insight filter
       if (!categories.includes('all')) {
         tweets = tweets.filter(t => {
+          if (categories.includes('new') && isTweetNew(t, recentRunAts)) return true;
           if (categories.includes('feature_request') && t.insightType === 'feature_request') return true;
           if (categories.includes('competitor_praise') && t.insightType === 'competitor_praise') return true;
           if (categories.includes('ai_demand') && t.insightType === 'ai_demand') return true;
@@ -167,8 +170,8 @@ export default function Dashboard() {
 
   // Reset page and categories when radar category changes
   useEffect(() => {
-    // pain_radar defaults to 'new', others default to 'all'
-    setCategories(radarCategory === 'pain_radar' ? ['new'] : ['all']);
+    // all categories default to 'new'
+    setCategories(['new']);
     setCurrentPage(1);
   }, [radarCategory]);
 
@@ -212,6 +215,15 @@ export default function Dashboard() {
       user_insight: sourceTweets.filter(t => t.group === 'insight').length
     };
   }, [displayedAllTweets, allTweets]);
+
+  const languageStats = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const tweet of radarFilteredTweets) {
+      const lang = (tweet.detectedLanguage || 'unknown').toLowerCase();
+      counts[lang] = (counts[lang] || 0) + 1;
+    }
+    return counts;
+  }, [radarFilteredTweets]);
 
   // Available dates for picker
   const availableDates = useMemo(() => {
@@ -293,8 +305,6 @@ export default function Dashboard() {
           stats={stats} 
           showAiPicked={showAiPickedOnly}
           onToggleAiPicked={() => setShowAiPickedOnly(!showAiPickedOnly)}
-          languageFilter={languageFilter}
-          onLanguageChange={setLanguageFilter}
         />
       )}
 
@@ -313,6 +323,12 @@ export default function Dashboard() {
               stats={stats}
               radarCategory={radarCategory}
               radarFilteredTweets={radarFilteredTweets}
+              recentRunAts={recentRunAts}
+            />
+            <LanguageFilter
+              value={languageFilter}
+              onChange={setLanguageFilter}
+              stats={languageStats}
             />
             <SortSelector
               value={sortBy}
