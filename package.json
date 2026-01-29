@@ -15,7 +15,18 @@
     "update-manifest": "node scripts/update-manifest.mjs",
     "notify:auth-failed": "node src/notify.mjs",
     "notify:success": "node src/notify.mjs --success",
-    "notify:failure": "node src/notify.mjs --failure"
+    "notify:failure": "node src/notify.mjs --failure",
+    "test": "node test/run-tests.mjs",
+    "test:safety": "node --test test/safety.test.mjs",
+    "test:select": "node --test test/select.test.mjs",
+    "test:comment": "node --test test/commenter.test.mjs",
+    "test:sync": "node --test test/sync-data.test.mjs",
+    "test:data": "node --test test/data-loader.test.mjs",
+    "test:feedback": "node --test test/feedback.test.mjs",
+    "test:scrape": "node --test test/scrape.test.mjs",
+    "test:perf": "node --test test/performance.test.mjs",
+    "test:mock-server": "node test/mocks/mock-server.mjs",
+    "test:e2e": "bash test/e2e.sh"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.93.2",

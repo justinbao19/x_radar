@@ -5,39 +5,13 @@
 
 - **Total candidates:** 153
 - **After dedup:** 153
-- **Selected:** 32 (pain: 0, reach: 0)
+- **Selected:** 28 (pain: 0, reach: 0)
 
 ---
 
 ## Top Tweets
 
-### #1 [pain] @EffZee_
-
-**Score:** 573.5 (viral: 171.2, fit: 15)
-**Engagement:** 19 likes, 1 RTs, 7 replies
-**Posted:** 2026-01-23 15:26 UTC
-**Source:** email-search-pain
-
-> I hate that this has to be said I have a girlfriend, don’t dm asking me out, don’t email me asking me out. I’m not interested, even if I was single, I wouldn’t be interested. I am here to hopefully entertain, idc if you find me attractive.
-
-[View Tweet](https://x.com/EffZee_/status/2014721386585956858)
-
----
-
-### #2 [pain] @FourEyedBae
-
-**Score:** 521.3 (viral: 153.8, fit: 15)
-**Engagement:** 10 likes, 3 RTs, 5 replies
-**Posted:** 2026-01-23 09:15 UTC
-**Source:** email-search-pain
-
-> I hate that this has to be said I have a boyfriend, don’t dm asking me out, don’t email me asking me out. I’m not interested, even if I was single, I wouldn’t be interested. I am here to hopefully entertain, idc if you find me attractive.
-
-[View Tweet](https://x.com/FourEyedBae/status/2014627974952243668)
-
----
-
-### #3 [pain] @reolog_life
+### #1 [pain] @reolog_life
 
 **Score:** 429.1 (viral: 123, fit: 15)
 **Engagement:** 8 likes, 0 RTs, 0 replies
@@ -50,20 +24,7 @@
 
 ---
 
-### #4 [pain] @wisdomdyn
-
-**Score:** 383.8 (viral: 107.9, fit: 15)
-**Engagement:** 4 likes, 0 RTs, 2 replies
-**Posted:** 2026-01-23 16:28 UTC
-**Source:** email-search-pain
-
-> I hate that this has to be said I have a girlfriend, don’t dm asking me out, don’t email me asking me out. I’m not interested, even if I was single, I wouldn’t be interested. I am here to hopefully entertain, idc if you find me attractive.
-
-[View Tweet](https://x.com/wisdomdyn/status/2014737058443432052)
-
----
-
-### #5 [pain] @ZDNET
+### #2 [pain] @ZDNET
 
 **Score:** 346.3 (viral: 95.4, fit: 15)
 **Engagement:** 3 likes, 1 RTs, 0 replies
@@ -76,46 +37,59 @@
 
 ---
 
-### #6 [pain] @lambypies
+### #3 [pain] @chouchou_tx
 
-**Score:** 328.5 (viral: 84.5, fit: 20)
-**Engagement:** 3 likes, 0 RTs, 0 replies
-**Posted:** 2026-01-23 15:05 UTC
-**Source:** email-search-pain
+**Score:** 345 (viral: 100, fit: 10)
+**Engagement:** 3 likes, 0 RTs, 2 replies
+**Posted:** 2026-01-27 03:03 UTC
+**Source:** gmail-spam-cn
 
-> Is it the same code that doesn't find emails you know are in your (Modestly sized) inbox and can't find any files anywhere on any of your drives either? Somehow it's so much worse when things used to work than when they broken too start with.
+> 一个新的 ai 可撸项目 - ambient，之前填过候补邮箱，不过没啥用。现在可以去和 ai 聊天，和大多数 ai 项目类似。 - 访问： https:// app.ambient.xyz - 领取 amb 测试币：左边菜单栏点 drop - 点击 create drop request - 分别输入 1 / test ，然后等待发放测试币； - 经常去和 ai 聊天问问题； grok
 
-[View Tweet](https://x.com/lambypies/status/2014716233053024716)
-
----
-
-### #7 [pain] @OurTownReno
-
-**Score:** 313.5 (viral: 84.5, fit: 15)
-**Engagement:** 2 likes, 1 RTs, 0 replies
-**Posted:** 2026-01-23 18:31 UTC
-**Source:** email-search-pain
-
-> Another Year, Another Terrible Death Toll for the Unhoused Among Us... Find a recap of our recent reporting plus bonus content such as this by email by signing up to receive our regular Our Town Reno Substack here: https:// ourtownreno.substack.com
-
-[View Tweet](https://x.com/OurTownReno/status/2014767985345671513)
+[View Tweet](https://x.com/chouchou_tx/status/2015983970320843060)
 
 ---
 
-### #8 [pain] @Olawherz
+### #4 [pain] @ousay
 
-**Score:** 293.4 (viral: 77.8, fit: 15)
-**Engagement:** 0 likes, 1 RTs, 2 replies
-**Posted:** 2026-01-23 14:18 UTC
-**Source:** email-search-pain
+**Score:** 288.9 (viral: 81.3, fit: 10)
+**Engagement:** 2 likes, 0 RTs, 1 replies
+**Posted:** 2026-01-27 02:34 UTC
+**Source:** gmail-spam-jp
 
-> I hate that this has to be said I have a girlfriend, don’t dm asking me out, don’t email me asking me out. I’m not interested, even if I was single, I wouldn’t be interested. I am here to hopefully entertain, idc if you find me attractive.
+> > ちなみにGeminiでアカウント停止された場合はGoogleアプリまるごと全部（Gmail含む）アカウント停止される いや怖い怖い！何かの拍子でアカウント消されたら困るからGemini使うときはメインとは別のGoogleアカウント使った方がいいかしら……？
 
-[View Tweet](https://x.com/Olawherz/status/2014704328603275741)
+[View Tweet](https://x.com/ousay/status/2015976775407505884)
 
 ---
 
-### #9 [pain] @mono_tukamu
+### #5 [pain] @zMpJbLDfmcGMOgC
+
+**Score:** 288.9 (viral: 81.3, fit: 10)
+**Engagement:** 2 likes, 0 RTs, 1 replies
+**Posted:** 2026-01-27 08:13 UTC
+**Source:** inbox-overwhelm-jp
+
+> 午後もめちゃくちゃ頑張った。こんな最悪やらかされた日に定時退社にこぎつけた私は偉い。上司の謝罪メール無視してるけど、私は偉い。偉い、はず
+
+[View Tweet](https://x.com/zMpJbLDfmcGMOgC/status/2016062059407147127)
+
+---
+
+### #6 [pain] @asen_tjhia
+
+**Score:** 254.7 (viral: 69.9, fit: 10)
+**Engagement:** 2 likes, 0 RTs, 0 replies
+**Posted:** 2026-01-27 02:21 UTC
+**Source:** gmail-spam-cn
+
+> 许多人几个月甚至几年都在给那个邮箱地址发邮件，却始终没有收到回复。如果他们的支持系统运转正常，这次大规模迁移问题就不会像现在这样严重。事实是： 成千上万的人被困在迁移过程中 工单无人回复 没有预计完成时间 没有公开的技术解释，这些都表明问题不在于用户，而在于系统和管理。
+
+[View Tweet](https://x.com/asen_tjhia/status/2015973305908650029)
+
+---
+
+### #7 [pain] @mono_tukamu
 
 **Score:** 232.7 (viral: 130.1, fit: 20)
 **Engagement:** 8 likes, 0 RTs, 2 replies
@@ -128,7 +102,7 @@
 
 ---
 
-### #10 [pain] @MarvinUchenna_
+### #8 [pain] @MarvinUchenna_
 
 **Score:** 212.6 (viral: 121.7, fit: 15)
 **Engagement:** 4 likes, 3 RTs, 1 replies
@@ -141,16 +115,42 @@
 
 ---
 
-### #11 [pain] @Ryoichi__X10A
+### #9 [pain] @bloodmoonlits
 
-**Score:** 188.2 (viral: 95.4, fit: 25)
-**Engagement:** 2 likes, 2 RTs, 0 replies
-**Posted:** 2026-01-27 03:37 UTC
-**Source:** gmail-spam-jp
+**Score:** 188.1 (viral: 47.7, fit: 10)
+**Engagement:** 1 likes, 0 RTs, 0 replies
+**Posted:** 2026-01-27 05:14 UTC
+**Source:** inbox-overwhelm-en
 
-> 静岡イベントの連絡 迷惑メールフォルダに着弾してました(Gmail) 見つからない人はそちらもご確認を
+> getting a 6 paragraph email from a parent at 10pm after a day from hell…right so like what if i just quit
 
-[View Tweet](https://x.com/Ryoichi__X10A/status/2015992573052256650)
+[View Tweet](https://x.com/bloodmoonlits/status/2016016927915925958)
+
+---
+
+### #10 [pain] @amdital
+
+**Score:** 188.1 (viral: 47.7, fit: 10)
+**Engagement:** 1 likes, 0 RTs, 0 replies
+**Posted:** 2026-01-27 05:04 UTC
+**Source:** inbox-overwhelm-en
+
+> Less chaos. More clarity. Better performance. That’s AmDital. Get in Touch with Us Call: +91 8087953989 Email: hello@amdital.com http:// amdital.com #CalmWork #TeamPerformance #WorkWithoutStress #SmartSystems #FutureOfWork #AmDital
+
+[View Tweet](https://x.com/amdital/status/2016014524974039449)
+
+---
+
+### #11 [pain] @chipi_chipi_314
+
+**Score:** 188.1 (viral: 47.7, fit: 10)
+**Engagement:** 1 likes, 0 RTs, 0 replies
+**Posted:** 2026-01-27 08:20 UTC
+**Source:** inbox-overwhelm-jp
+
+> 本当にありえない。ここだけでは足りないのでインスタのDMにも問い合わせにもメール送る。 ありえない以外の言葉が出てこない。最悪すぎた。無駄にした1時間半とカートに入ったポムポムプリン返してくれや
+
+[View Tweet](https://x.com/chipi_chipi_314/status/2016063780514672806)
 
 ---
 
@@ -167,7 +167,33 @@
 
 ---
 
-### #13 [pain] @Poccory_25
+### #13 [reach] @yutakashino
+
+**Score:** 171.8 (viral: 156.8, fit: 10)
+**Engagement:** 15 likes, 3 RTs, 0 replies
+**Posted:** 2026-01-27 02:10 UTC
+**Source:** ai-email-jp
+
+> （´-`）.｡oO( Claude Code, Codexなどのコーディングエージェントによってシニアエンジニアがコーディングに復帰してきて，とりあえず自らの開発環境を整備するためにターミナル周りの便利ツールのリリースが増えてる．AIによるソフトウェアの生産性の向上がようやく始まった感じ… )
+
+[View Tweet](https://x.com/yutakashino/status/2015970698418614658)
+
+---
+
+### #14 [pain] @RileyRalmuto
+
+**Score:** 164.4 (viral: 39.8, fit: 10)
+**Engagement:** 0 likes, 0 RTs, 1 replies
+**Posted:** 2026-01-27 01:43 UTC
+**Source:** inbox-overwhelm-en
+
+> where the hell is it? i dont even see a dev email for it
+
+[View Tweet](https://x.com/RileyRalmuto/status/2015963952576942413)
+
+---
+
+### #15 [pain] @Poccory_25
 
 **Score:** 164.3 (viral: 84.5, fit: 20)
 **Engagement:** 3 likes, 0 RTs, 0 replies
@@ -180,7 +206,7 @@
 
 ---
 
-### #14 [pain] @gmail
+### #16 [pain] @gmail
 
 **Score:** 159.5 (viral: 81.3, fit: 20)
 **Engagement:** 2 likes, 0 RTs, 1 replies
@@ -193,7 +219,7 @@
 
 ---
 
-### #15 [pain] @saipantou
+### #17 [pain] @saipantou
 
 **Score:** 149.9 (viral: 69.9, fit: 25)
 **Engagement:** 1 likes, 1 RTs, 0 replies
@@ -206,7 +232,7 @@
 
 ---
 
-### #16 [reach] @Shpigford
+### #18 [reach] @Shpigford
 
 **Score:** 139.6 (viral: 114.6, fit: 20)
 **Engagement:** 5 likes, 0 RTs, 2 replies
@@ -219,7 +245,7 @@
 
 ---
 
-### #17 [reach] @note_ai_mousigo
+### #19 [reach] @note_ai_mousigo
 
 **Score:** 117.9 (viral: 92.9, fit: 20)
 **Engagement:** 3 likes, 0 RTs, 1 replies
@@ -232,7 +258,7 @@
 
 ---
 
-### #18 [pain] @SommyWritesWeb3
+### #20 [pain] @SommyWritesWeb3
 
 **Score:** 109.1 (viral: 47.7, fit: 20)
 **Engagement:** 0 likes, 1 RTs, 0 replies
@@ -245,7 +271,7 @@
 
 ---
 
-### #19 [pain] @befujigoe
+### #21 [pain] @befujigoe
 
 **Score:** 97.2 (viral: 39.8, fit: 20)
 **Engagement:** 0 likes, 0 RTs, 1 replies
@@ -258,46 +284,7 @@
 
 ---
 
-### #20 [pain] @iKaustubhChavan
-
-**Score:** 80.8 (viral: 114.6, fit: 15)
-**Engagement:** 5 likes, 0 RTs, 2 replies
-**Posted:** 2026-01-22 20:36 UTC
-**Source:** email-search-pain
-
-> I hate working with low IQ clients The typa guys who ask “Why should we do email marketing?” 1. It’s a predictable marketing channel Find me one other channel that can generate 50% of your store revenue and has a fixed cost? 2. You have high net margin Every order you get
-
-[View Tweet](https://x.com/iKaustubhChavan/status/2014437134539882524)
-
----
-
-### #21 [reach] @grok
-
-**Score:** 74.8 (viral: 39.8, fit: 30)
-**Engagement:** 0 likes, 0 RTs, 1 replies
-**Posted:** 2026-01-26 19:44 UTC
-**Source:** ai-inbox-intersection
-
-> Based on ClawdBot's features as a local AI agent, here are 5 top tasks to automate for an easier life: 1. Email handling: Draft, send, and summarize messages offline. 2. Calendar management: Schedule events and set reminders automatically. 3. Document summaries: Quickly condense
-
-[View Tweet](https://x.com/grok/status/2015873430596305082)
-
----
-
-### #22 [pain] @BurtReddington
-
-**Score:** 67.7 (viral: 205.7, fit: 15)
-**Engagement:** 54 likes, 1 RTs, 2 replies
-**Posted:** 2026-01-23 13:04 UTC
-**Source:** email-search-pain
-
-> Google has also made it IMPOSSIBLE to search for any email regardless of how exact you type the wording
-
-[View Tweet](https://x.com/BurtReddington/status/2014685792593993794)
-
----
-
-### #23 [pain] @rabinIntl
+### #22 [pain] @rabinIntl
 
 **Score:** 65.1 (viral: 191.9, fit: 20)
 **Engagement:** 28 likes, 13 RTs, 0 replies
@@ -310,59 +297,7 @@
 
 ---
 
-### #24 [pain] @jshmuel
-
-**Score:** 62.7 (viral: 84.5, fit: 15)
-**Engagement:** 3 likes, 0 RTs, 0 replies
-**Posted:** 2026-01-22 21:59 UTC
-**Source:** email-search-pain
-
-> Just got told at the pharmacy that my insurer is no longer covering a drug I’m on. No email, no phone call — I find out at the pharmacy after I already filled a prescription. This is why people hate insurance companies.
-
-[View Tweet](https://x.com/jshmuel/status/2014457999176167677)
-
----
-
-### #25 [pain] @olusojee
-
-**Score:** 60 (viral: 0, fit: 15)
-**Engagement:** 0 likes, 0 RTs, 0 replies
-**Posted:** 2026-01-23 13:51 UTC
-**Source:** email-search-pain
-
-> I hate that this has to be said I have a boyfriend, don’t dm asking me out, don’t email me asking me out. I’m not interested, even if I was single, I wouldn’t be interested. I am here to hopefully entertain, idc if you find me attractive.
-
-[View Tweet](https://x.com/olusojee/status/2014697414708334874)
-
----
-
-### #26 [pain] @JohnnyH45278894
-
-**Score:** 60 (viral: 0, fit: 15)
-**Engagement:** 0 likes, 0 RTs, 0 replies
-**Posted:** 2026-01-23 13:20 UTC
-**Source:** email-search-pain
-
-> ' ' I have 3 email accounts at Yahoo. Is there a way to find out if you have been kicked out/off? I do enjoy commenting on the news articles that Yahoo posts. Liberals hate my factual comments also on Yahoo. ?????????
-
-[View Tweet](https://x.com/JohnnyH45278894/status/2014689700666056852)
-
----
-
-### #27 [pain] @darkcitynews
-
-**Score:** 60 (viral: 0, fit: 15)
-**Engagement:** 0 likes, 0 RTs, 0 replies
-**Posted:** 2026-01-23 04:43 UTC
-**Source:** email-search-pain
-
-> And up-to-down. Email search field is on the bottom of my phone now and I hate it
-
-[View Tweet](https://x.com/darkcitynews/status/2014559624482193816)
-
----
-
-### #28 [pain] @kenta_business
+### #23 [pain] @kenta_business
 
 **Score:** 60 (viral: 0, fit: 15)
 **Engagement:** 0 likes, 0 RTs, 0 replies
@@ -375,7 +310,7 @@
 
 ---
 
-### #29 [pain] @vUEpAw3kwj73104
+### #24 [pain] @vUEpAw3kwj73104
 
 **Score:** 60 (viral: 0, fit: 15)
 **Engagement:** 0 likes, 0 RTs, 0 replies
@@ -388,20 +323,33 @@
 
 ---
 
-### #30 [reach] @MatthewZ73671
+### #25 [pain] @KylePMoran
 
-**Score:** 59.8 (viral: 39.8, fit: 15)
-**Engagement:** 0 likes, 0 RTs, 1 replies
-**Posted:** 2026-01-24 23:22 UTC
-**Source:** email-productivity-en
+**Score:** 57.8 (viral: 81.3, fit: 10)
+**Engagement:** 2 likes, 0 RTs, 1 replies
+**Posted:** 2026-01-27 01:48 UTC
+**Source:** inbox-overwhelm-en
 
-> The key is figuring out how to get a clip of the video at the right time in order to make the transition smooth for a longer video. It's still choppy, but it's much better. Workflow is clunky though. Copy image, email to myself, download to phone, put in Grok, generate,
+> Dude the state of Microsoft is so abysmal. I have Outlook myself because I've hated Google for years but it's barely usable at times, especially lately. Idk how you mess up email. Outlook was literally more stable in 2009 lol
 
-[View Tweet](https://x.com/MatthewZ73671/status/2015203507700105513)
+[View Tweet](https://x.com/KylePMoran/status/2015965225313288554)
 
 ---
 
-### #31 [pain] @RufusTFireflyJr
+### #26 [pain] @Ryoichi__X10A
+
+**Score:** 56.5 (viral: 95.4, fit: 25)
+**Engagement:** 2 likes, 2 RTs, 0 replies
+**Posted:** 2026-01-27 03:37 UTC
+**Source:** gmail-spam-jp
+
+> 静岡イベントの連絡 迷惑メールフォルダに着弾してました(Gmail) 見つからない人はそちらもご確認を
+
+[View Tweet](https://x.com/Ryoichi__X10A/status/2015992573052256650)
+
+---
+
+### #27 [pain] @RufusTFireflyJr
 
 **Score:** 53.9 (viral: 69.9, fit: 15)
 **Engagement:** 2 likes, 0 RTs, 0 replies
@@ -414,16 +362,16 @@
 
 ---
 
-### #32 [pain] @WSJFreeEx
+### #28 [pain] @blondevoyagebna
 
-**Score:** 52.9 (viral: 156.2, fit: 15)
-**Engagement:** 14 likes, 3 RTs, 1 replies
-**Posted:** 2026-01-23 17:30 UTC
-**Source:** email-search-pain
+**Score:** 50.9 (viral: 69.9, fit: 10)
+**Engagement:** 2 likes, 0 RTs, 0 replies
+**Posted:** 2026-01-27 04:59 UTC
+**Source:** inbox-overwhelm-en
 
-> Landing a job often requires tolerating mild social discomfort. Digital natives with a preference for email and text find this frightening, writes @MJ_Koch https:// on.wsj.com/4qG6PqG
+> Frosty in forest hills here. Going on 48 hours with no power and no truck in sight. What’s it going to take @NESpower this is wild- especially after the “we’re ready” email on Friday. Hell, your phone system wasn’t even prepared…
 
-[View Tweet](https://x.com/WSJFreeEx/status/2014752661195661596)
+[View Tweet](https://x.com/blondevoyagebna/status/2016013175179600201)
 
 ---
 

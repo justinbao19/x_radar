@@ -1,0 +1,163 @@
+{
+  "runDate": "2026-01-29",
+  "runAt": "2026-01-29T10:00:00.000Z",
+  "sources": [
+    {
+      "name": "inbox-overload",
+      "group": "pain",
+      "query": "inbox overload",
+      "tweets": [
+        {
+          "url": "https://x.com/user1/status/001",
+          "author": "@emailsufferer",
+          "text": "My inbox is a nightmare. 500 unread emails and I hate this overwhelming mess. I need help with email organization.",
+          "datetime": "2026-01-28T12:00:00.000Z",
+          "likes": 150,
+          "retweets": 30,
+          "replies": 25
+        },
+        {
+          "url": "https://x.com/user2/status/002",
+          "author": "@productivepete",
+          "text": "Email overload is killing my productivity. Drowning in newsletters and spam. Looking for AI solutions to triage my inbox.",
+          "datetime": "2026-01-28T14:00:00.000Z",
+          "likes": 200,
+          "retweets": 50,
+          "replies": 40
+        },
+        {
+          "url": "https://x.com/user3/status/003",
+          "author": "@oldpost",
+          "text": "Old email complaint from 2 weeks ago about inbox issues",
+          "datetime": "2026-01-10T12:00:00.000Z",
+          "likes": 100,
+          "retweets": 20,
+          "replies": 15
+        }
+      ]
+    },
+    {
+      "name": "ai-productivity",
+      "group": "reach",
+      "query": "AI productivity email",
+      "tweets": [
+        {
+          "url": "https://x.com/user4/status/004",
+          "author": "@aiuser",
+          "text": "AI agents are changing how we handle email automation and workflow. The future of productivity is here with summarize features.",
+          "datetime": "2026-01-29T08:00:00.000Z",
+          "likes": 500,
+          "retweets": 100,
+          "replies": 80
+        },
+        {
+          "url": "https://x.com/user5/status/005",
+          "author": "@techwriter",
+          "text": "Just tested an AI email assistant that can triage and organize my inbox automatically. Game changer for productivity!",
+          "datetime": "2026-01-28T16:00:00.000Z",
+          "likes": 300,
+          "retweets": 60,
+          "replies": 45
+        }
+      ]
+    },
+    {
+      "name": "kol-sama",
+      "group": "kol",
+      "query": "from:sama email OR inbox",
+      "tweets": [
+        {
+          "url": "https://x.com/sama/status/006",
+          "author": "@sama",
+          "text": "Email AI agents are going to transform how we work. Inbox management needs serious automation and productivity tools.",
+          "datetime": "2026-01-29T06:00:00.000Z",
+          "likes": 15000,
+          "retweets": 3000,
+          "replies": 500
+        }
+      ]
+    },
+    {
+      "name": "filo-mentions",
+      "group": "sentiment",
+      "query": "filomail OR filo mail",
+      "tweets": [
+        {
+          "url": "https://x.com/user7/status/007",
+          "author": "@happyuser",
+          "text": "Love using filomail! Best email client I've tried. Amazing productivity features and AI summarization.",
+          "datetime": "2026-01-28T18:00:00.000Z",
+          "likes": 80,
+          "retweets": 15,
+          "replies": 10
+        },
+        {
+          "url": "https://x.com/user8/status/008",
+          "author": "@unhappyuser",
+          "text": "Filo mail has a bug that's frustrating me. The notification feature is broken.",
+          "datetime": "2026-01-28T20:00:00.000Z",
+          "likes": 25,
+          "retweets": 5,
+          "replies": 8
+        }
+      ]
+    },
+    {
+      "name": "competitor-interest",
+      "group": "insight",
+      "query": "superhuman email OR spark email",
+      "tweets": [
+        {
+          "url": "https://x.com/user9/status/009",
+          "author": "@emailseeker",
+          "text": "I wish superhuman had better AI features for email automation and inbox organization. Need more productivity tools.",
+          "datetime": "2026-01-28T22:00:00.000Z",
+          "likes": 120,
+          "retweets": 25,
+          "replies": 30
+        }
+      ]
+    },
+    {
+      "name": "unsafe-content",
+      "group": "pain",
+      "query": "email problems",
+      "tweets": [
+        {
+          "url": "https://x.com/baduser/status/010",
+          "author": "@political",
+          "text": "Vote for my candidate! Check your inbox for the election newsletter about politics.",
+          "datetime": "2026-01-28T10:00:00.000Z",
+          "likes": 50,
+          "retweets": 10,
+          "replies": 5
+        },
+        {
+          "url": "https://x.com/lowsignal/status/011",
+          "author": "@lowsignal",
+          "text": "Email me at contact@example.com for more info about this unrelated topic.",
+          "datetime": "2026-01-28T11:00:00.000Z",
+          "likes": 20,
+          "retweets": 3,
+          "replies": 2
+        }
+      ]
+    },
+    {
+      "name": "duplicate-test",
+      "group": "pain",
+      "query": "email duplicate",
+      "tweets": [
+        {
+          "url": "https://x.com/user1/status/001",
+          "author": "@emailsufferer",
+          "text": "My inbox is a nightmare. 500 unread emails and I hate this overwhelming mess. I need help with email organization.",
+          "datetime": "2026-01-28T12:00:00.000Z",
+          "likes": 150,
+          "retweets": 30,
+          "replies": 25
+        }
+      ]
+    }
+  ]
+}
