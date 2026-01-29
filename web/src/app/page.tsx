@@ -43,20 +43,67 @@ export default function Dashboard() {
   // Radar category (top-level)
   const [radarCategory, setRadarCategory] = useState<RadarCategory>('pain_radar');
   
-  // Filters
+  // Global filters (shared across all radars)
   const [dateRange, setDateRange] = useState<DateRange>(getDateRangePreset('7days'));
   const [viewMode, setViewMode] = useState<ViewMode>('card');
-  const [categories, setCategories] = useState<CategoryFilterType[]>(['new']);
-  const [showAiPickedOnly, setShowAiPickedOnly] = useState(true);
   const [selectedTweet, setSelectedTweet] = useState<Tweet | null>(null);
-  const [languageFilter, setLanguageFilter] = useState<LanguageFilterType>('all');
-  const [sortBy, setSortBy] = useState<SortOption>('score');
   const [displayedAllTweets, setDisplayedAllTweets] = useState<Tweet[]>([]);
   const [isSwapping, setIsSwapping] = useState(false);
   const [pendingPageReset, setPendingPageReset] = useState(false);
   
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
+  // Per-radar state (preserved when switching between radars)
+  const [radarStates, setRadarStates] = useState<Record<RadarCategory, {
+    categories: CategoryFilterType[];
+    languageFilter: LanguageFilterType;
+    sortBy: SortOption;
+    currentPage: number;
+    showAiPickedOnly: boolean;
+  }>>({
+    pain_radar: { categories: ['new'], languageFilter: 'all', sortBy: 'score', currentPage: 1, showAiPickedOnly: true },
+    filo_sentiment: { categories: ['new'], languageFilter: 'all', sortBy: 'score', currentPage: 1, showAiPickedOnly: true },
+    user_insight: { categories: ['new'], languageFilter: 'all', sortBy: 'score', currentPage: 1, showAiPickedOnly: true },
+  });
+  
+  // Get current radar's state
+  const currentState = radarStates[radarCategory];
+  const categories = currentState.categories;
+  const languageFilter = currentState.languageFilter;
+  const sortBy = currentState.sortBy;
+  const currentPage = currentState.currentPage;
+  const showAiPickedOnly = currentState.showAiPickedOnly;
+  
+  // Setters that update current radar's state
+  const setCategories = (newCategories: CategoryFilterType[]) => {
+    setRadarStates(prev => ({
+      ...prev,
+      [radarCategory]: { ...prev[radarCategory], categories: newCategories, currentPage: 1 }
+    }));
+  };
+  const setLanguageFilter = (newFilter: LanguageFilterType) => {
+    setRadarStates(prev => ({
+      ...prev,
+      [radarCategory]: { ...prev[radarCategory], languageFilter: newFilter, currentPage: 1 }
+    }));
+  };
+  const setSortBy = (newSort: SortOption) => {
+    setRadarStates(prev => ({
+      ...prev,
+      [radarCategory]: { ...prev[radarCategory], sortBy: newSort, currentPage: 1 }
+    }));
+  };
+  const setCurrentPage = (newPage: number) => {
+    setRadarStates(prev => ({
+      ...prev,
+      [radarCategory]: { ...prev[radarCategory], currentPage: newPage }
+    }));
+  };
+  const setShowAiPickedOnly = (newValue: boolean) => {
+    setRadarStates(prev => ({
+      ...prev,
+      [radarCategory]: { ...prev[radarCategory], showAiPickedOnly: newValue, currentPage: 1 }
+    }));
+  };
+  
   const itemsPerPage = 10;
 
   // Load manifest on mount
@@ -96,26 +143,26 @@ export default function Dashboard() {
     loadData();
   }, [manifest, dateRange]);
 
-  // Filter tweets by radar category first
+  // Get source tweets
+  const sourceTweets = useMemo(() => {
+    return displayedAllTweets.length > 0 ? displayedAllTweets : allTweets;
+  }, [allTweets, displayedAllTweets]);
+
+  // Pre-filter tweets for all radar categories (for instant switching)
+  const allRadarFilteredTweets = useMemo(() => {
+    return {
+      pain_radar: sourceTweets.filter(t => 
+        t.group === 'pain' || t.group === 'reach' || t.originalGroup === 'kol'
+      ),
+      filo_sentiment: sourceTweets.filter(t => t.group === 'sentiment'),
+      user_insight: sourceTweets.filter(t => t.group === 'insight')
+    };
+  }, [sourceTweets]);
+
+  // Filter tweets by radar category first (now just a lookup)
   const radarFilteredTweets = useMemo(() => {
-    const sourceTweets = displayedAllTweets.length > 0 ? displayedAllTweets : allTweets;
-    
-    switch (radarCategory) {
-      case 'pain_radar':
-        // Pain Radar: pain, reach, kol groups
-        return sourceTweets.filter(t => 
-          t.group === 'pain' || t.group === 'reach' || t.originalGroup === 'kol'
-        );
-      case 'filo_sentiment':
-        // Filo Sentiment: sentiment group only
-        return sourceTweets.filter(t => t.group === 'sentiment');
-      case 'user_insight':
-        // User Insight: insight group only
-        return sourceTweets.filter(t => t.group === 'insight');
-      default:
-        return sourceTweets;
-    }
-  }, [allTweets, displayedAllTweets, radarCategory]);
+    return allRadarFilteredTweets[radarCategory] || sourceTweets;
+  }, [allRadarFilteredTweets, radarCategory, sourceTweets]);
   
   // Filter tweets
   const filteredTweets = useMemo(() => {
@@ -168,17 +215,7 @@ export default function Dashboard() {
   // Use recentRunAts for "New" badge - tweets from the last 4 runs show "New"
   // After the 5th run, older tweets lose the "New" badge
 
-  // Reset page and categories when radar category changes
-  useEffect(() => {
-    // all categories default to 'new'
-    setCategories(['new']);
-    setCurrentPage(1);
-  }, [radarCategory]);
-
-  // Reset page when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [categories, showAiPickedOnly, languageFilter, sortBy]);
+  // Note: Page resets are now handled in the setter functions (setCategories, setSortBy, etc.)
 
   useEffect(() => {
     setPendingPageReset(true);
@@ -200,21 +237,17 @@ export default function Dashboard() {
 
   // Calculate stats
   const stats = useMemo(() => {
-    const sourceTweets = displayedAllTweets.length > 0 ? displayedAllTweets : allTweets;
     return calculateStats(sourceTweets, recentRunAts);
-  }, [displayedAllTweets, allTweets, recentRunAts]);
+  }, [sourceTweets, recentRunAts]);
   
-  // Calculate radar category counts
+  // Calculate radar category counts (reuse pre-filtered data)
   const radarCounts = useMemo(() => {
-    const sourceTweets = displayedAllTweets.length > 0 ? displayedAllTweets : allTweets;
     return {
-      pain_radar: sourceTweets.filter(t => 
-        t.group === 'pain' || t.group === 'reach' || t.originalGroup === 'kol'
-      ).length,
-      filo_sentiment: sourceTweets.filter(t => t.group === 'sentiment').length,
-      user_insight: sourceTweets.filter(t => t.group === 'insight').length
+      pain_radar: allRadarFilteredTweets.pain_radar.length,
+      filo_sentiment: allRadarFilteredTweets.filo_sentiment.length,
+      user_insight: allRadarFilteredTweets.user_insight.length
     };
-  }, [displayedAllTweets, allTweets]);
+  }, [allRadarFilteredTweets]);
 
   const languageStats = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -232,7 +265,6 @@ export default function Dashboard() {
 
   // Last updated time
   const lastUpdated = manifest?.lastUpdated;
-  const sourceTweets = displayedAllTweets.length > 0 ? displayedAllTweets : allTweets;
   const isInitialLoading = loading && sourceTweets.length === 0;
   const showRefreshOverlay = loading && sourceTweets.length > 0;
   const mainOpacity = showRefreshOverlay || isSwapping ? 'opacity-70' : 'opacity-100';

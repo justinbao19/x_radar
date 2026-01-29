@@ -92,13 +92,24 @@
       "skiff mail", "tutanota", "fastmail", "mailbox.org"
     ]
   },
+  "feedback": {
+    "urls": [],
+    "applied": []
+  },
+  "learned": {
+    "keywords": [],
+    "patterns": [],
+    "history": []
+  },
   "_meta": {
-    "version": "1.0.0",
-    "description": "Three-tier denylist for brand safety filtering",
+    "version": "1.2.0",
+    "description": "Three-tier denylist for brand safety filtering + user feedback + LLM learning",
     "tiers": {
       "hard": "Immediate discard - never include in results",
       "soft": "Discard unless FiloFitScore >= 3",
-      "low_signal": "Heavy penalty (finalScore *= 0.2) but may include if highly relevant"
+      "low_signal": "Heavy penalty (finalScore *= 0.2) but may include if highly relevant",
+      "feedback": "URLs marked as incorrect by user - immediate discard",
+      "learned": "Keywords extracted by LLM from downvoted tweets - immediate discard"
     },
     "languages": ["en", "zh", "ja"]
   }

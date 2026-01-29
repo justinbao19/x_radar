@@ -54,6 +54,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+  /* Always show vertical scrollbar to prevent width shift when content changes */
+  overflow-y: scroll;
+}
+
 html,
 body {
   max-width: 100%;
@@ -113,6 +118,20 @@ body {
 
 .animate-fade-in {
   animation: fade-in 0.2s ease-out;
+}
+
+/* Fast fade for radar tab switching */
+@keyframes fade-in-fast {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in-fast {
+  animation: fade-in-fast 0.15s ease-out;
 }
 
 .animate-slide-up {

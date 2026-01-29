@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Tweet, ReplyOption } from '@/lib/types';
 import { formatNumber, formatDateTime, formatRelativeTime } from '@/lib/data';
+import { VoteButtons } from './VoteButtons';
 
 interface TweetCardProps {
   tweet: Tweet;
@@ -442,6 +443,17 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
             </svg>
             <span className="font-medium">{formatNumber(tweet.replies)}</span>
           </div>
+          
+          {/* Vote Buttons - Rating the tweet quality */}
+          <div className="hidden sm:flex items-center ml-2 pl-3 border-l border-stone-200">
+            <VoteButtons 
+              tweetUrl={tweet.url}
+              tweetText={tweet.text}
+              tweetGroup={tweet.group}
+              sourceQuery={tweet.sourceQuery}
+            />
+          </div>
+          
           <a 
             href={tweet.url} 
             target="_blank" 

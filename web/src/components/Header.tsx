@@ -9,7 +9,7 @@ interface HeaderProps {
 export function Header({ lastUpdated }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 bg-[#FAF9F7]/90 backdrop-blur-xl border-b border-stone-200/80">
-      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center shadow-lg shadow-black/20">
             <svg className="w-5 h-5 fill-white" viewBox="0 0 24 24">

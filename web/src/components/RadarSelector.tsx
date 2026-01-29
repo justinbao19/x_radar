@@ -39,7 +39,7 @@ const RADAR_OPTIONS: { id: RadarCategory; label: string; labelEn: string; icon: 
 export function RadarSelector({ selected, onChange, counts }: RadarSelectorProps) {
   return (
     <div className="w-full bg-gradient-to-r from-stone-900 via-stone-800 to-stone-900 border-b border-stone-700">
-      <div className="max-w-6xl mx-auto px-4">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <nav className="flex" role="tablist">
           {RADAR_OPTIONS.map((option) => {
             const isActive = selected === option.id;

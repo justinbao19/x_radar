@@ -14,6 +14,43 @@ if (existsSync(INFLUENCERS_FILE)) {
     log('WARN', 'Failed to load influencers.json for KOL verification', { error: e.message });
   }
 }
+
+// ============ Load URL Denylist from User Feedback ============
+const DENYLIST_FILE = 'denylist.json';
+let FEEDBACK_URL_DENYLIST = new Set();
+let LEARNED_KEYWORDS = [];
+
+if (existsSync(DENYLIST_FILE)) {
+  try {
+    const denylist = JSON.parse(readFileSync(DENYLIST_FILE, 'utf-8'));
+    // Load URL denylist
+    if (denylist.feedback?.urls?.length > 0) {
+      FEEDBACK_URL_DENYLIST = new Set(denylist.feedback.urls);
+      log('INFO', `Loaded ${FEEDBACK_URL_DENYLIST.size} URLs from feedback denylist`);
+    }
+    // Load learned keywords from LLM analysis
+    if (denylist.learned?.keywords?.length > 0) {
+      LEARNED_KEYWORDS = denylist.learned.keywords;
+      log('INFO', `Loaded ${LEARNED_KEYWORDS.length} learned keywords from LLM analysis`);
+    }
+  } catch (e) {
+    log('WARN', 'Failed to load feedback denylist', { error: e.message });
+  }
+}
+
+/**
+ * Check if text contains any learned keywords
+ */
+function containsLearnedKeyword(text) {
+  if (!text || LEARNED_KEYWORDS.length === 0) return { match: false };
+  const lowerText = text.toLowerCase();
+  for (const keyword of LEARNED_KEYWORDS) {
+    if (lowerText.includes(keyword)) {
+      return { match: true, keyword };
+    }
+  }
+  return { match: false };
+}
 import { 
   checkBrandSafety,
   checkMinFiloFit,
@@ -322,9 +359,42 @@ function selectTop10(rawData) {
   const tooOldFiltered = uniqueTweets.length - freshTweets.length;
   log('INFO', `Freshness filter (${MAX_TWEET_AGE_DAYS} days): ${freshTweets.length} kept, ${tooOldFiltered} filtered`);
   
+  // ============ User Feedback URL Denylist ============
+  let feedbackUrlFiltered = 0;
+  const feedbackCleanTweets = freshTweets.filter(t => {
+    if (FEEDBACK_URL_DENYLIST.has(t.url)) {
+      feedbackUrlFiltered++;
+      log('DEBUG', `Feedback denylist filtered: ${t.url}`);
+      return false;
+    }
+    return true;
+  });
+  
+  if (feedbackUrlFiltered > 0) {
+    log('INFO', `Feedback URL denylist: ${feedbackCleanTweets.length} kept, ${feedbackUrlFiltered} filtered`);
+  }
+  
+  // ============ Learned Keywords Filter (from LLM analysis) ============
+  let learnedKeywordFiltered = 0;
+  const learnedCleanTweets = feedbackCleanTweets.filter(t => {
+    const check = containsLearnedKeyword(t.text);
+    if (check.match) {
+      learnedKeywordFiltered++;
+      log('DEBUG', `Learned keyword filtered: ${t.url}`, { keyword: check.keyword });
+      return false;
+    }
+    return true;
+  });
+  
+  if (learnedKeywordFiltered > 0) {
+    log('INFO', `Learned keywords filter: ${learnedCleanTweets.length} kept, ${learnedKeywordFiltered} filtered`);
+  }
+  
   // ============ Three-Tier Brand Safety Gate ============
   const filterStats = {
     tooOldFiltered,
+    feedbackUrlFiltered,
+    learnedKeywordFiltered,
     hardFiltered: 0,
     hardReasons: {},
     softFiltered: 0,
@@ -344,7 +414,7 @@ function selectTop10(rawData) {
   
   // First pass: score all tweets (needed for soft tier decisions)
   // Pass group for pain bonus calculation
-  const scoredTweets = freshTweets.map(t => ({
+  const scoredTweets = learnedCleanTweets.map(t => ({
     ...t,
     ...scoreTweet(t, t.group)
   }));

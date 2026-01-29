@@ -10,3 +10,4 @@ export { StatsBar } from './StatsBar';
 export { Pagination } from './Pagination';
 export { SortSelector } from './SortSelector';
 export { LanguageFilter } from './LanguageFilter';
+export { VoteButtons } from './VoteButtons';
