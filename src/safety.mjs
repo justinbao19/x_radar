@@ -13,17 +13,36 @@ const SOFT_THRESHOLD = 3; // FiloFitScore needed to keep soft-flagged content
 const LOW_SIGNAL_PENALTY = 0.2; // Score multiplier for low_signal matches
 
 // ============ Pain Emotion Words ============
-// Words that indicate actual pain/frustration with email, not just mentioning email
-const PAIN_EMOTION_WORDS = [
-  // English
-  'hate', 'annoying', 'terrible', 'broken', 'bug', 'issue', 'problem',
-  'overwhelming', 'drowning', 'chaos', 'mess', 'frustrating', 'worst',
-  'nightmare', 'hell', 'awful', 'useless', 'sucks', 'horrible', 'disaster',
-  // Japanese
-  'うざい', '最悪', '困る', '大変', 'ひどい', '地獄', 'バグ', '問題',
-  // Chinese
-  '烦死', '太多', '找不到', '难用', '崩溃', '问题', '噩梦', '糟糕', '垃圾'
+// Two tiers: STRONG emotions get full bonus, WEAK signals get partial bonus
+// This prevents customer service replies (which often use "issue", "problem") from getting high scores
+
+// STRONG: Real emotional expressions of frustration/pain
+const STRONG_PAIN_WORDS = [
+  // English - clear emotional expression
+  'hate', 'annoying', 'terrible', 'awful', 'horrible', 'worst', 'sucks',
+  'nightmare', 'hell', 'useless', 'frustrating', 'frustration', 'frustrated',
+  'overwhelming', 'drowning', 'chaos', 'mess', 'disaster', 'ridiculous',
+  'can\'t stand', 'sick of', 'fed up', 'driving me crazy',
+  // Japanese - clear emotional expression
+  'うざい', '最悪', '地獄', 'ひどい', 'イライラ', 'ムカつく', '嫌い',
+  '耐えられない', '限界', 'ストレス',
+  // Chinese - clear emotional expression
+  '烦死', '受不了', '崩溃', '噩梦', '糟糕', '垃圾', '太烦', '无语', '吐了'
 ];
+
+// WEAK: Neutral problem descriptions - might be user OR customer service
+// These get lower bonus and are invalidated if CS reply is detected
+const WEAK_PAIN_WORDS = [
+  // English - neutral problem words
+  'issue', 'issues', 'problem', 'problems', 'bug', 'bugs', 'broken',
+  // Japanese - neutral problem words
+  '困る', '大変', 'バグ', '問題',
+  // Chinese - neutral problem words  
+  '问题', '找不到', '难用', '太多'
+];
+
+// Combined for backward compatibility (checkPainEmotion uses this)
+const PAIN_EMOTION_WORDS = [...STRONG_PAIN_WORDS, ...WEAK_PAIN_WORDS];
 
 // ============ Insight Signals & Noise ============
 
@@ -406,13 +425,19 @@ export function isEmailActionOnly(text) {
  * @returns {{ hasPainEmotion: boolean, words: string[] }}
  */
 export function checkPainEmotion(text) {
-  if (!text) return { hasPainEmotion: false, words: [] };
+  if (!text) return { hasPainEmotion: false, hasStrongEmotion: false, words: [], strongWords: [], weakWords: [] };
   const lowerText = text.toLowerCase();
   
-  const matched = PAIN_EMOTION_WORDS.filter(w => lowerText.includes(w.toLowerCase()));
+  const strongMatched = STRONG_PAIN_WORDS.filter(w => lowerText.includes(w.toLowerCase()));
+  const weakMatched = WEAK_PAIN_WORDS.filter(w => lowerText.includes(w.toLowerCase()));
+  const allMatched = [...strongMatched, ...weakMatched];
+  
   return {
-    hasPainEmotion: matched.length > 0,
-    words: matched
+    hasPainEmotion: allMatched.length > 0,
+    hasStrongEmotion: strongMatched.length > 0,  // True only if STRONG emotion words found
+    words: allMatched,
+    strongWords: strongMatched,
+    weakWords: weakMatched
   };
 }
 
@@ -428,6 +453,25 @@ export function isCustomerServiceNotice(text) {
   if (!text) return { isNotice: false };
   
   const customerServicePatterns = [
+    // ============ Customer Service REPLY patterns (new) ============
+    // These detect when a company/support account is replying to users
+    { pattern: /^(hi|hello|hey),?\s+(sorry|apologies|thank you)/i, name: 'cs_reply_greeting' },
+    { pattern: /sorry\s+for\s+(the|any)\s+(inconvenience|trouble|delay)/i, name: 'cs_sorry_inconvenience' },
+    { pattern: /thank\s+you\s+for\s+(reaching\s+out|contacting|raising|your\s+(patience|feedback|query))/i, name: 'cs_thank_reaching' },
+    { pattern: /dear\s+(customer|user|valued|sir|madam)/i, name: 'cs_dear_customer' },
+    { pattern: /good\s+(day|morning|afternoon|evening)\s+\w+\.\s+thank/i, name: 'cs_good_day_name' },
+    { pattern: /we\s+(would\s+)?(like\s+to|appreciate|apologize|understand)/i, name: 'cs_we_would' },
+    { pattern: /in\s+order\s+for\s+us\s+to\s+(assist|help|resolve|investigate)/i, name: 'cs_in_order_to_assist' },
+    { pattern: /please\s+(share|provide|send)\s+(your|the|more|additional)\s+(details|information|email)/i, name: 'cs_please_provide' },
+    { pattern: /our\s+team\s+(has|have|will|is)/i, name: 'cs_our_team' },
+    { pattern: /we\s+have\s+(shared|sent|forwarded)\s+(a\s+)?(response|reply|email)/i, name: 'cs_we_have_sent' },
+    { pattern: /kindly\s+(share|provide|check|verify|confirm)/i, name: 'cs_kindly_share' },
+    { pattern: /for\s+(further|more)\s+(assistance|help|support)/i, name: 'cs_further_assistance' },
+    { pattern: /(dm|message)\s+(us|me)\s+(the|your|with)/i, name: 'cs_dm_us' },
+    { pattern: /we('re|\s+are)\s+(here\s+to|happy\s+to)\s+(help|assist)/i, name: 'cs_here_to_help' },
+    { pattern: /looking\s+forward\s+to\s+(hearing|assisting|helping)/i, name: 'cs_looking_forward' },
+    
+    // ============ Service notification patterns (existing) ============
     // English patterns - service provider asking user to check email
     { pattern: /please\s+(check|see|verify)\s+(your\s+)?(inbox|spam|email|junk)/i, name: 'please_check_inbox' },
     { pattern: /sent\s+to\s+(your\s+)?(registered\s+)?(email|inbox)/i, name: 'sent_to_email' },
@@ -598,6 +642,53 @@ export function isAllowedInsightCompetitor(text) {
   if (!text) return false;
   const lowerText = text.toLowerCase();
   return INSIGHT_COMPETITOR_WHITELIST.some(name => lowerText.includes(name));
+}
+
+// ============ Promotional Content / Soft Article Detection ============
+// Detect tweets that are actually advertisements or promotional content disguised as user posts
+
+const PROMO_PATTERNS = [
+  // Direct product/service promotion
+  { pattern: /Less chaos.*More clarity.*Better performance/i, name: 'ad_tagline', severity: 'hard' },
+  { pattern: /That'?s \w+\.\s*(Get in|Contact|Call|Email)/i, name: 'ad_cta', severity: 'hard' },
+  { pattern: /\b(Get in Touch|Contact Us|Call Us|Email Us)\b.*(\+\d|@)/i, name: 'contact_cta', severity: 'hard' },
+  
+  // Crypto/Web3 promotional content (撸毛, airdrop, mint)
+  { pattern: /可撸项目|撸.*项目|airdrop|空投|领取.*币|mint.*nft/i, name: 'crypto_promo', severity: 'hard' },
+  { pattern: /测试币|测试网|领取.*奖励|claim.*reward/i, name: 'crypto_reward', severity: 'medium' },
+  { pattern: /web3.*project|crypto.*opportunity/i, name: 'web3_promo', severity: 'medium' },
+  
+  // Marketing CTA patterns
+  { pattern: /\b(try|check out|download|get)\s+(our|the|this)\s+(app|tool|product|service)\b/i, name: 'product_cta', severity: 'medium' },
+  { pattern: /\b(introducing|announcing|launching|just launched)\b.*\b(new|our)\b/i, name: 'launch_announce', severity: 'medium' },
+  { pattern: /\bsign up\s+(now|today|free)\b/i, name: 'signup_cta', severity: 'medium' },
+  
+  // Self-promotion / company speak
+  { pattern: /\b(we|our)\s+(offer|provide|help|make|build|deliver)\b.*\b(solution|service|product|tool)\b/i, name: 'company_speak', severity: 'medium' },
+  { pattern: /\b(boost|improve|enhance|transform)\s+your\s+(productivity|workflow|inbox|email)\b/i, name: 'benefit_claim', severity: 'soft' },
+  
+  // Affiliate / referral
+  { pattern: /\b(affiliate|referral|promo code|discount code|use code)\b/i, name: 'affiliate', severity: 'medium' },
+  
+  // News site headlines (not user pain)
+  { pattern: /\bThis (little-known|secret|hidden)\s+\w+\s+trick\b/i, name: 'clickbait_headline', severity: 'soft' }
+];
+
+/**
+ * Detect promotional content / soft articles
+ * @param {string} text - Text to check
+ * @returns {{ isPromo: boolean, pattern?: string, severity?: 'hard' | 'medium' | 'soft' }}
+ */
+export function isPromotionalContent(text) {
+  if (!text) return { isPromo: false };
+  
+  for (const { pattern, name, severity } of PROMO_PATTERNS) {
+    if (pattern.test(text)) {
+      return { isPromo: true, pattern: name, severity };
+    }
+  }
+  
+  return { isPromo: false };
 }
 
 // ============ Exports ============

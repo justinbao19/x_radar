@@ -65,6 +65,7 @@ import {
   isCustomerServiceNotice,
   isCompetitorPromotion,
   isViralTemplate,
+  isPromotionalContent,
   MIN_FILO_FIT,
   LOW_SIGNAL_PENALTY,
   PAIN_KEYWORDS
@@ -124,7 +125,8 @@ const QUALITY_CONFIG = {
   // NEW: Scoring weights - relevance over virality
   filoFitMultiplier: 20,      // Each keyword match = 20 points (was 5)
   viralityMultiplier: 20,     // Reduced from 100 to 20 - virality is just a tiebreaker
-  painEmotionBonus: 30,       // Bonus for tweets with real pain/frustration words
+  strongEmotionBonus: 30,     // STRONG emotion words (hate, terrible, nightmare) - full bonus
+  weakEmotionBonus: 10,       // WEAK signal words (issue, problem) - partial bonus, invalidated by CS reply
   requestSignalBonus: 25      // Bonus for tweets with feature request signals
 };
 
@@ -318,6 +320,10 @@ const MAX_PER_KOL = 1;
  * 
  * A tweet with 10 likes but perfect relevance should beat a tweet
  * with 10,000 likes but weak relevance.
+ * 
+ * IMPORTANT: Emotion words are split into STRONG and WEAK:
+ * - STRONG (hate, terrible, nightmare): Full bonus, real user frustration
+ * - WEAK (issue, problem): Partial bonus, often used by customer service
  */
 function scoreTweet(tweet, group = null) {
   // Raw engagement score (for reference only)
@@ -339,13 +345,26 @@ function scoreTweet(tweet, group = null) {
   const textBonus = (tweet.text && tweet.text.length > 50) ? 10 : 
                     (tweet.text && tweet.text.length > 20) ? 5 : 0;
   
-  // NEW: Pain emotion bonus - real complaints are valuable
-  const emotionCheck = checkPainEmotion(tweet.text);
-  const painEmotionBonus = emotionCheck.hasPainEmotion ? QUALITY_CONFIG.painEmotionBonus : 0;
+  // Check if this is a customer service reply (invalidates weak emotion bonus)
+  const csCheck = isCustomerServiceNotice(tweet.text);
+  const isCSReply = csCheck.isNotice;
   
-  // NEW: Request signal bonus - feature requests are valuable
+  // Pain emotion bonus - tiered based on emotion strength
+  const emotionCheck = checkPainEmotion(tweet.text);
+  let painEmotionBonus = 0;
+  if (emotionCheck.hasStrongEmotion) {
+    // STRONG emotion: full bonus regardless of CS status (real frustration)
+    painEmotionBonus = QUALITY_CONFIG.strongEmotionBonus;
+  } else if (emotionCheck.hasPainEmotion && !isCSReply) {
+    // WEAK signal: partial bonus, but NOT if it's a customer service reply
+    painEmotionBonus = QUALITY_CONFIG.weakEmotionBonus;
+  }
+  // If it's a CS reply with only weak words (issue, problem), no bonus
+  
+  // Request signal bonus - feature requests are valuable
   const requestCheck = hasRequestSignal(tweet.text);
-  const requestSignalBonus = requestCheck.hasSignal ? QUALITY_CONFIG.requestSignalBonus : 0;
+  // CS replies don't get request bonus either
+  const requestSignalBonus = (requestCheck.hasSignal && !isCSReply) ? QUALITY_CONFIG.requestSignalBonus : 0;
   
   // Calculate final score
   // Order of importance: filoFitScore > painEmotionBonus/requestSignalBonus > viralityScore
@@ -365,8 +384,11 @@ function scoreTweet(tweet, group = null) {
     requestSignalBonus,
     painBonus,
     finalScore: Math.round(finalScore * 10) / 10,
+    isCSReply,  // Flag for debugging
     // Debug info
     _emotionWords: emotionCheck.words || [],
+    _strongEmotionWords: emotionCheck.strongWords || [],
+    _weakEmotionWords: emotionCheck.weakWords || [],
     _requestPatterns: requestCheck.patterns || []
   };
 }
@@ -752,11 +774,58 @@ function selectTop10(rawData) {
   
   log('INFO', `Viral templates penalized: ${filterStats.viralTemplateFiltered}`);
   
+  // ============ Promotional Content / Soft Article Detection ============
+  // Filter out advertisements, crypto promotions, product plugs disguised as user content
+  filterStats.promoFiltered = 0;
+  filterStats.promoPenalized = 0;
+  
+  const PROMO_HARD_PENALTY = 0;      // Hard promo = filter out completely
+  const PROMO_MEDIUM_PENALTY = 0.2;  // Medium promo = 80% penalty
+  const PROMO_SOFT_PENALTY = 0.5;    // Soft promo = 50% penalty
+  
+  const nonPromoTweets = nonViralTweets.filter(tweet => {
+    const promoCheck = isPromotionalContent(tweet.text);
+    if (promoCheck.isPromo) {
+      if (promoCheck.severity === 'hard') {
+        // Hard promo (direct ads, crypto撸毛) = filter out
+        filterStats.promoFiltered++;
+        log('DEBUG', `Promotional content filtered: ${tweet.url}`, {
+          pattern: promoCheck.pattern,
+          text: tweet.text?.substring(0, 80)
+        });
+        return false;
+      } else if (promoCheck.severity === 'medium') {
+        // Medium promo = heavy penalty
+        tweet.finalScore = Math.round(tweet.finalScore * PROMO_MEDIUM_PENALTY * 10) / 10;
+        tweet.promoPenalty = true;
+        tweet.promoPattern = promoCheck.pattern;
+        filterStats.promoPenalized++;
+        log('DEBUG', `Promotional content penalized (medium): ${tweet.url}`, {
+          pattern: promoCheck.pattern,
+          newScore: tweet.finalScore
+        });
+      } else {
+        // Soft promo = moderate penalty
+        tweet.finalScore = Math.round(tweet.finalScore * PROMO_SOFT_PENALTY * 10) / 10;
+        tweet.promoPenalty = true;
+        tweet.promoPattern = promoCheck.pattern;
+        filterStats.promoPenalized++;
+        log('DEBUG', `Promotional content penalized (soft): ${tweet.url}`, {
+          pattern: promoCheck.pattern,
+          newScore: tweet.finalScore
+        });
+      }
+    }
+    return true;
+  });
+  
+  log('INFO', `Promotional content: ${filterStats.promoFiltered} filtered, ${filterStats.promoPenalized} penalized`);
+  
   // ============ KOL Author Verification ============
   // Verify that KOL tweets are actually from the expected KOL accounts
   filterStats.kolAuthorMismatch = 0;
   
-  const kolVerifiedTweets = contextQualifiedTweets.filter(t => {
+  const kolVerifiedTweets = nonPromoTweets.filter(t => {
     if (t.originalGroup === 'kol') {
       const authorHandle = t.author?.replace('@', '').toLowerCase();
       if (!KOL_HANDLES.has(authorHandle)) {
@@ -901,7 +970,12 @@ function selectTop10(rawData) {
     viralTemplatePenalty: t.viralTemplatePenalty || false,
     relevanceKeywords: t.relevanceKeywords || [],
     painEmotionWords: t._emotionWords || t.painEmotionWords || [],
-    requestPatterns: t._requestPatterns || [],      // NEW: matched request patterns
+    strongEmotionWords: t._strongEmotionWords || [],  // NEW: strong emotion words
+    weakEmotionWords: t._weakEmotionWords || [],      // NEW: weak signal words
+    requestPatterns: t._requestPatterns || [],        // NEW: matched request patterns
+    isCSReply: t.isCSReply || false,                  // NEW: is customer service reply
+    promoPenalty: t.promoPenalty || false,            // NEW: promotional content penalty
+    promoPattern: t.promoPattern || null,             // NEW: detected promo pattern
     // Sentiment label (for sentiment group)
     ...(t.sentimentLabel && { sentimentLabel: t.sentimentLabel }),
     // Insight type (for insight group)
