@@ -82,7 +82,8 @@
       "comments": null,
       "commentError": null,
       "commentSkipped": false,
-      "detectedLanguage": null
+      "detectedLanguage": "other",
+      "translationZh": "两周前关于收件箱问题的老邮件投诉"
     },
     {
       "rank": 2,
@@ -136,7 +137,8 @@
       "comments": null,
       "commentError": null,
       "commentSkipped": false,
-      "detectedLanguage": null
+      "detectedLanguage": "en",
+      "translationZh": "邮件多到要命，效率全被拖垮了。各种推送邮件和垃圾邮件把我淹没了。正在找AI工具来帮忙整理收件箱。"
     },
     {
       "rank": 3,
@@ -194,7 +196,8 @@
       "comments": null,
       "commentError": null,
       "commentSkipped": false,
-      "detectedLanguage": null
+      "detectedLanguage": "en",
+      "translationZh": "我的收件箱简直是灾难现场。500封未读邮件，这种铺天盖地的混乱让我崩溃。急需邮件整理方面的救援。"
     },
     {
       "rank": 4,
@@ -244,8 +247,9 @@
       "comments": null,
       "commentError": null,
       "commentSkipped": false,
-      "detectedLanguage": null,
-      "sentimentLabel": "negative"
+      "detectedLanguage": "other",
+      "sentimentLabel": "negative",
+      "translationZh": "Filo邮箱有个bug烦死我了，通知功能坏了。"
     },
     {
       "rank": 5,
@@ -286,10 +290,21 @@
       "comments": null,
       "commentError": null,
       "commentSkipped": false,
-      "detectedLanguage": null,
-      "sentimentLabel": "positive"
+      "detectedLanguage": "en",
+      "sentimentLabel": "positive",
+      "translationZh": "超爱用 filomail！用过最好的邮件客户端了。生产力功能超棒，AI 总结也很赞。"
     }
   ],
   "runDate": "2026-01-29",
-  "runAt": "2026-01-29T10:00:00.000Z"
+  "runAt": "2026-01-29T10:00:00.000Z",
+  "translationStats": {
+    "total": 5,
+    "translated": 5,
+    "skipped": 0,
+    "failed": 0,
+    "byLanguage": {
+      "other": 2,
+      "en": 3
+    }
+  }
 }
