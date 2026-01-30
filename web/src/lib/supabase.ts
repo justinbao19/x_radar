@@ -195,3 +195,122 @@ export async function getVoteStats(): Promise<{ upvotes: number; downvotes: numb
 export function isSupabaseConfigured(): boolean {
   return supabase !== null;
 }
+
+// ============ Comment Cache Types ============
+
+export interface CachedComment {
+  id?: string;
+  tweet_url: string;
+  tweet_text?: string;
+  language?: string;
+  comments: object;  // TweetComments object
+  created_at?: string;
+  expires_at?: string;
+}
+
+// ============ Comment Cache Functions ============
+
+/**
+ * Get cached comments for a tweet
+ * Returns null if not found or expired
+ */
+export async function getCachedComments(tweetUrl: string): Promise<object | null> {
+  if (!supabase) {
+    return null;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('tweet_comments')
+      .select('comments, expires_at')
+      .eq('tweet_url', tweetUrl)
+      .single();
+
+    if (error || !data) {
+      return null;
+    }
+
+    // Check if expired
+    if (data.expires_at && new Date(data.expires_at) < new Date()) {
+      // Expired, delete and return null
+      await supabase.from('tweet_comments').delete().eq('tweet_url', tweetUrl);
+      return null;
+    }
+
+    return data.comments;
+  } catch (err) {
+    console.error('Failed to fetch cached comments:', err);
+    return null;
+  }
+}
+
+/**
+ * Save comments to cache
+ * Sets expiration to 7 days from now
+ */
+export async function saveCachedComments(
+  tweetUrl: string,
+  tweetText: string,
+  language: string,
+  comments: object
+): Promise<{ success: boolean; error?: string }> {
+  if (!supabase) {
+    return { success: false, error: 'Supabase not configured' };
+  }
+
+  try {
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7); // 7 days from now
+
+    const { error } = await supabase
+      .from('tweet_comments')
+      .upsert({
+        tweet_url: tweetUrl,
+        tweet_text: tweetText,
+        language: language,
+        comments: comments,
+        created_at: new Date().toISOString(),
+        expires_at: expiresAt.toISOString()
+      }, {
+        onConflict: 'tweet_url'
+      });
+
+    if (error) {
+      console.error('Failed to save cached comments:', error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  } catch (err) {
+    console.error('Failed to save cached comments:', err);
+    return { success: false, error: 'Network error' };
+  }
+}
+
+/**
+ * Clean up expired comment cache entries
+ * Returns the number of deleted entries
+ */
+export async function cleanupExpiredComments(): Promise<number> {
+  if (!supabase) {
+    return 0;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('tweet_comments')
+      .delete()
+      .lt('expires_at', new Date().toISOString())
+      .select('id');
+
+    if (error) {
+      console.error('Failed to cleanup expired comments:', error);
+      return 0;
+    }
+
+    return data?.length || 0;
+  } catch (err) {
+    console.error('Failed to cleanup expired comments:', err);
+    return 0;
+  }
+}

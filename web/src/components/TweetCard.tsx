@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Tweet, ReplyOption } from '@/lib/types';
+import { Tweet, ReplyOption, TweetComments } from '@/lib/types';
 import { formatNumber, formatDateTime, formatRelativeTime } from '@/lib/data';
 import { VoteButtons } from './VoteButtons';
 
@@ -12,6 +12,9 @@ interface TweetCardProps {
   collapsible?: boolean;
   isNew?: boolean;
 }
+
+// Comment generation states
+type CommentState = 'idle' | 'loading' | 'success' | 'error';
 
 function ReplyOptionCard({ 
   option, 
@@ -152,6 +155,11 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
   const [activeTab, setActiveTab] = useState<number>(0);
   const [copied, setCopied] = useState(false);
   const [commentsExpanded, setCommentsExpanded] = useState(false);
+  
+  // On-demand comment generation states
+  const [commentState, setCommentState] = useState<CommentState>('idle');
+  const [generatedComments, setGeneratedComments] = useState<TweetComments | null>(null);
+  const [commentError, setCommentError] = useState<string | null>(null);
 
   const languageMap: Record<string, { flag: string; label: string }> = {
     en: { flag: '🇺🇸', label: '英语' },
@@ -171,8 +179,45 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
     setCommentsExpanded(!collapsible && showComments);
   }, [collapsible, showComments]);
   
-  // Check if tweet has comments to show
-  const hasComments = tweet.comments?.options?.length || tweet.commentSkipped || tweet.commentError;
+  // Use generated comments if available, otherwise use from data
+  const displayComments = generatedComments || tweet.comments;
+  
+  // Check if tweet has comments to show (either pre-generated or on-demand generated)
+  const hasComments = displayComments?.options?.length || tweet.commentSkipped || tweet.commentError || commentState !== 'idle';
+  
+  // Generate comments on demand
+  const handleGenerateComment = async () => {
+    if (commentState === 'loading') return;
+    
+    setCommentState('loading');
+    setCommentError(null);
+    
+    try {
+      const response = await fetch('/api/generate-comment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tweetUrl: tweet.url,
+          tweetText: tweet.text,
+          language: tweet.detectedLanguage || 'other'
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to generate comments');
+      }
+      
+      setGeneratedComments(data.comments);
+      setCommentState('success');
+      setCommentsExpanded(true);
+    } catch (err) {
+      console.error('Comment generation error:', err);
+      setCommentError(err instanceof Error ? err.message : 'Unknown error');
+      setCommentState('error');
+    }
+  };
 
   const groupLabels: Record<string, string> = {
     pain: '痛点',
@@ -233,10 +278,10 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Sort options and find recommended
+  // Sort options and find recommended (use displayComments instead of tweet.comments)
   const angleOrder = ['witty', 'practical', 'subtle_product'];
-  const sortedOptions = tweet.comments?.options 
-    ? [...tweet.comments.options].sort((a, b) => 
+  const sortedOptions = displayComments?.options 
+    ? [...displayComments.options].sort((a, b) => 
         angleOrder.indexOf(a.angle) - angleOrder.indexOf(b.angle)
       )
     : [];
@@ -408,8 +453,8 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
           </p>
         </div>
 
-        {/* Translation */}
-        {tweet.comments?.tweetTranslationZh && tweet.detectedLanguage !== 'zh' && (
+        {/* Translation - from pipeline translationZh field or legacy comments.tweetTranslationZh */}
+        {(tweet.translationZh || tweet.comments?.tweetTranslationZh) && tweet.detectedLanguage !== 'zh' && (
           <div className="mt-3 bg-gradient-to-r from-sky-50 to-cyan-50 rounded-xl p-4 border-l-4 border-sky-400">
             <div className="flex items-center gap-1.5 text-sky-600 text-xs font-semibold mb-2">
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -418,7 +463,7 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
               中文翻译
             </div>
             <p className="text-sky-900 text-sm leading-relaxed">
-              {tweet.comments.tweetTranslationZh}
+              {tweet.translationZh || tweet.comments?.tweetTranslationZh}
             </p>
           </div>
         )}
@@ -469,10 +514,21 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
       </div>
 
       {/* Comments Section */}
-      {(showComments || collapsible) && hasComments && (
+      {(showComments || collapsible) && (
         <div className="bg-gradient-to-b from-stone-50 to-stone-100/50 border-t border-stone-200/80">
-          {/* Collapsible Toggle */}
-          {collapsible && (
+          {/* Generate Button or Collapsible Toggle */}
+          {commentState === 'idle' && !displayComments?.options?.length && !tweet.commentSkipped ? (
+            // Show generate button when no comments exist
+            <button
+              onClick={handleGenerateComment}
+              className="w-full px-6 py-3.5 flex items-center justify-center gap-2 text-sm font-medium text-amber-600 hover:bg-amber-50/50 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              生成回复建议
+            </button>
+          ) : collapsible && hasComments ? (
             <button
               onClick={() => setCommentsExpanded(!commentsExpanded)}
               className="w-full px-6 py-3.5 flex items-center justify-between text-sm font-medium text-stone-600 hover:bg-stone-100/80 transition-colors"
@@ -492,10 +548,33 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
+          ) : null}
+          
+          {/* Loading State */}
+          {commentState === 'loading' && (
+            <div className="px-6 py-8 flex flex-col items-center justify-center gap-3">
+              <div className="w-8 h-8 border-3 border-amber-200 border-t-amber-500 rounded-full animate-spin"></div>
+              <p className="text-sm text-stone-500">AI 正在生成回复建议...</p>
+            </div>
+          )}
+          
+          {/* Error State */}
+          {commentState === 'error' && (
+            <div className="p-6 pt-4">
+              <div className="bg-red-50 border border-red-200/80 rounded-xl p-4 text-red-800 text-sm">
+                <strong>生成失败：</strong> {commentError || '未知错误'}
+                <button 
+                  onClick={handleGenerateComment}
+                  className="ml-2 text-red-600 hover:text-red-800 underline"
+                >
+                  重试
+                </button>
+              </div>
+            </div>
           )}
           
           {/* Comments Content */}
-          {(collapsible ? commentsExpanded : showComments) && (
+          {((collapsible ? commentsExpanded : showComments) || commentState === 'success') && hasComments && commentState !== 'loading' && commentState !== 'error' && (
             <div className="p-6 pt-4">
               {tweet.commentSkipped ? (
                 <div className="bg-amber-50 border border-amber-200/80 rounded-xl p-4 text-amber-800 text-sm">
@@ -504,14 +583,15 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
                     <p className="mt-1 opacity-80">{tweet.skipReasonZh}</p>
                   )}
                 </div>
-              ) : tweet.commentError ? (
-                <div className="bg-red-50 border border-red-200/80 rounded-xl p-4 text-red-800 text-sm">
-                  <strong>生成失败：</strong> {tweet.commentError}
-                </div>
-              ) : tweet.comments?.options?.length ? (
+              ) : displayComments?.options?.length ? (
                 <>
                   <div className="flex items-center gap-2 mb-4">
                     <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">回复建议</span>
+                    {generatedComments && (
+                      <span className="text-xs text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                        实时生成
+                      </span>
+                    )}
                     <div className="flex-1 h-px bg-gradient-to-r from-stone-200 to-transparent"></div>
                   </div>
                   

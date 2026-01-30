@@ -43,14 +43,17 @@ export interface Tweet {
   viralityScore: number;
   filoFitScore: number;
   textBonus: number;
-  painEmotionBonus?: number;     // NEW: bonus for pain/frustration words
-  requestSignalBonus?: number;   // NEW: bonus for feature request signals
+  painEmotionBonus?: number;     // bonus for pain/frustration words
+  requestSignalBonus?: number;   // bonus for feature request signals
   finalScore: number;
   detectedLanguage: string;
   lowSignalWarning?: string;
   aiPicked?: boolean;
-  painEmotionWords?: string[];   // NEW: detected pain emotion words
-  requestPatterns?: string[];    // NEW: matched request patterns
+  painEmotionWords?: string[];   // detected pain emotion words
+  requestPatterns?: string[];    // matched request patterns
+  // Translation (generated in pipeline)
+  translationZh?: string;        // Chinese translation for non-Chinese tweets
+  // Comments (generated on-demand via API)
   comments: TweetComments | null;
   commentError: string | null;
   commentSkipped: boolean;

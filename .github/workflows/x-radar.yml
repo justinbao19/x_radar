@@ -101,14 +101,14 @@ jobs:
         run: npm run format
         continue-on-error: false
 
-      - name: Run comment generator
+      - name: Run translator
         if: steps.scraper.outcome == 'success'
-        run: npm run comment
+        run: npm run translate
         env:
           LLM_API_URL: ${{ secrets.LLM_API_URL }}
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_MODEL: ${{ secrets.LLM_MODEL || 'claude-sonnet-4-20250514' }}
-        continue-on-error: true  # Don't fail entire job if comments fail
+        continue-on-error: true  # Don't fail entire job if translation fails
 
       # ===== Output Summary =====
       - name: Show output summary
@@ -133,15 +133,32 @@ jobs:
             echo "top10.json not found"
           fi
           echo ""
-          echo "=== top10_with_comments.json stats ==="
-          COMMENTS_FILE=$(find out -name "top10_with_comments.json" -type f 2>/dev/null | head -1)
-          if [ -n "$COMMENTS_FILE" ]; then
-            node -e "const d=require('./$COMMENTS_FILE'); console.log('With comments:', d.commentGenerationStats?.succeeded || 0, '/', d.commentGenerationStats?.total || 0)"
+          echo "=== Translation stats ==="
+          if [ -n "$TOP10_FILE" ]; then
+            node -e "const d=require('./$TOP10_FILE'); const s=d.translationStats||{}; console.log('Translated:', s.translated || 0, '/ Skipped (zh):', s.skipped || 0, '/ Failed:', s.failed || 0)"
           else
-            echo "top10_with_comments.json not found"
+            echo "No translation stats available"
           fi
 
       # ===== Sync Data to Web =====
+      # ===== Cleanup Expired Cache =====
+      - name: Cleanup expired comment cache
+        if: steps.scraper.outcome == 'success'
+        run: |
+          if [ -n "$NEXT_PUBLIC_SUPABASE_URL" ] && [ -n "$SUPABASE_SERVICE_KEY" ]; then
+            curl -s -X POST "$NEXT_PUBLIC_SUPABASE_URL/rest/v1/rpc/cleanup_expired_comments" \
+              -H "apikey: $SUPABASE_SERVICE_KEY" \
+              -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+              -H "Content-Type: application/json" \
+              -d '{}' || echo "Cache cleanup skipped (function may not exist)"
+          else
+            echo "Supabase not configured, skipping cache cleanup"
+          fi
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        continue-on-error: true
+
       - name: Sync data to web
         if: steps.scraper.outcome == 'success'
         run: node scripts/sync-data.mjs
