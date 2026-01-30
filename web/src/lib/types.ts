@@ -43,10 +43,14 @@ export interface Tweet {
   viralityScore: number;
   filoFitScore: number;
   textBonus: number;
+  painEmotionBonus?: number;     // NEW: bonus for pain/frustration words
+  requestSignalBonus?: number;   // NEW: bonus for feature request signals
   finalScore: number;
   detectedLanguage: string;
   lowSignalWarning?: string;
   aiPicked?: boolean;
+  painEmotionWords?: string[];   // NEW: detected pain emotion words
+  requestPatterns?: string[];    // NEW: matched request patterns
   comments: TweetComments | null;
   commentError: string | null;
   commentSkipped: boolean;
@@ -154,6 +158,12 @@ export interface DateRange {
   start: Date;
   end: Date;
 }
+
+// 基于爬取次数的时间筛选
+export type RunCountPreset = 'today' | '3days' | '7days';
+
+// 每天爬取次数（用于计算文件数量）
+export const RUNS_PER_DAY = 4;
 
 export interface FilterState {
   dateRange: DateRange;

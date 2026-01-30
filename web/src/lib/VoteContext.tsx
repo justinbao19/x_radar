@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
-import { submitVote, removeVote, getAllVotes, getVoteStats, isSupabaseConfigured } from './supabase';
+import { submitVote, submitDownvoteFeedback, removeVote, getAllVotes, getVoteStats, isSupabaseConfigured } from './supabase';
 
 // ============ Types ============
 
@@ -11,9 +11,17 @@ interface TweetMeta {
   sourceQuery?: string;
 }
 
+interface PendingDownvote {
+  url: string;
+  meta?: TweetMeta;
+}
+
 interface VoteContextValue {
   // Vote state
   votes: Map<string, 'up' | 'down'>;
+  
+  // Hidden tweets (downvoted tweets that should be hidden from view)
+  hiddenUrls: Set<string>;
   
   // Statistics
   stats: { upvotes: number; downvotes: number; total: number };
@@ -22,11 +30,23 @@ interface VoteContextValue {
   isLoading: boolean;
   isConfigured: boolean;
   
+  // Feedback modal state
+  feedbackModal: {
+    isOpen: boolean;
+    tweetUrl: string | null;
+    tweetText?: string;
+  };
+  
   // Actions
   vote: (url: string, type: 'up' | 'down', meta?: TweetMeta) => Promise<void>;
   unvote: (url: string) => Promise<void>;
   getVote: (url: string) => 'up' | 'down' | null;
   refreshStats: () => Promise<void>;
+  
+  // Downvote with feedback
+  initiateDownvote: (url: string, meta?: TweetMeta) => void;
+  confirmDownvote: (feedback: string | null) => Promise<void>;
+  cancelDownvote: () => void;
 }
 
 // ============ Context ============
@@ -41,9 +61,20 @@ interface VoteProviderProps {
 
 export function VoteProvider({ children }: VoteProviderProps) {
   const [votes, setVotes] = useState<Map<string, 'up' | 'down'>>(new Map());
+  const [hiddenUrls, setHiddenUrls] = useState<Set<string>>(new Set());
   const [stats, setStats] = useState({ upvotes: 0, downvotes: 0, total: 0 });
   const [isLoading, setIsLoading] = useState(true);
   const isConfigured = isSupabaseConfigured();
+  
+  // Feedback modal state
+  const [feedbackModal, setFeedbackModal] = useState<{
+    isOpen: boolean;
+    tweetUrl: string | null;
+    tweetText?: string;
+  }>({ isOpen: false, tweetUrl: null });
+  
+  // Pending downvote (waiting for feedback)
+  const [pendingDownvote, setPendingDownvote] = useState<PendingDownvote | null>(null);
 
   // Load initial votes on mount
   useEffect(() => {
@@ -60,6 +91,15 @@ export function VoteProvider({ children }: VoteProviderProps) {
         ]);
         setVotes(votesData);
         setStats(statsData);
+        
+        // Initialize hidden URLs from downvotes
+        const hidden = new Set<string>();
+        votesData.forEach((voteType, url) => {
+          if (voteType === 'down') {
+            hidden.add(url);
+          }
+        });
+        setHiddenUrls(hidden);
       } catch (err) {
         console.error('Failed to load votes:', err);
       } finally {
@@ -184,15 +224,62 @@ export function VoteProvider({ children }: VoteProviderProps) {
     setStats(newStats);
   }, [isConfigured]);
 
+  // Initiate downvote - opens feedback modal
+  const initiateDownvote = useCallback((url: string, meta?: TweetMeta) => {
+    setPendingDownvote({ url, meta });
+    setFeedbackModal({
+      isOpen: true,
+      tweetUrl: url,
+      tweetText: meta?.text
+    });
+  }, []);
+
+  // Confirm downvote with optional feedback
+  const confirmDownvote = useCallback(async (feedback: string | null) => {
+    if (!pendingDownvote) return;
+    
+    const { url, meta } = pendingDownvote;
+    
+    // Hide the tweet immediately (optimistic update)
+    setHiddenUrls(prev => {
+      const newSet = new Set(prev);
+      newSet.add(url);
+      return newSet;
+    });
+    
+    // Close modal
+    setFeedbackModal({ isOpen: false, tweetUrl: null });
+    setPendingDownvote(null);
+    
+    // Submit the vote
+    await vote(url, 'down', meta);
+    
+    // Submit feedback if provided
+    if (feedback) {
+      await submitDownvoteFeedback(url, feedback);
+    }
+  }, [pendingDownvote, vote]);
+
+  // Cancel downvote - closes modal without action
+  const cancelDownvote = useCallback(() => {
+    setFeedbackModal({ isOpen: false, tweetUrl: null });
+    setPendingDownvote(null);
+  }, []);
+
   const value: VoteContextValue = {
     votes,
+    hiddenUrls,
     stats,
     isLoading,
     isConfigured,
+    feedbackModal,
     vote,
     unvote,
     getVote,
-    refreshStats
+    refreshStats,
+    initiateDownvote,
+    confirmDownvote,
+    cancelDownvote
   };
 
   return (
@@ -215,23 +302,28 @@ export function useVotes(): VoteContextValue {
 // ============ Convenience Hook for Single Tweet ============
 
 export function useTweetVote(tweetUrl: string) {
-  const { getVote, vote, unvote, isConfigured, isLoading } = useVotes();
+  const { getVote, vote, unvote, initiateDownvote, isConfigured, isLoading, hiddenUrls } = useVotes();
   
   const currentVote = getVote(tweetUrl);
+  const isHidden = hiddenUrls.has(tweetUrl);
   
   const handleVote = useCallback(async (type: 'up' | 'down', meta?: TweetMeta) => {
-    if (currentVote === type) {
-      // Toggle off if clicking the same vote type
+    if (type === 'down') {
+      // For downvote, show feedback modal first
+      initiateDownvote(tweetUrl, meta);
+    } else if (currentVote === type) {
+      // Toggle off if clicking the same vote type (upvote only)
       await unvote(tweetUrl);
     } else {
       await vote(tweetUrl, type, meta);
     }
-  }, [tweetUrl, currentVote, vote, unvote]);
+  }, [tweetUrl, currentVote, vote, unvote, initiateDownvote]);
 
   return {
     currentVote,
     handleVote,
     isConfigured,
-    isLoading
+    isLoading,
+    isHidden
   };
 }

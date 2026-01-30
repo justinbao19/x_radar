@@ -109,25 +109,37 @@ async function analyzeWithLLM(downvotes) {
 
   log('INFO', `Analyzing ${downvotes.length} downvoted tweets with LLM...`);
 
-  // Prepare tweet samples for analysis
+  // Prepare tweet samples for analysis (include user feedback reason)
   const samples = downvotes.map((v, i) => {
-    return `[${i + 1}] 分类: ${v.tweet_group || '未知'}, 来源: ${v.source_query || '未知'}
+    const feedbackLine = v.feedback ? `用户反馈原因: ${v.feedback}` : '';
+    return `[${i + 1}] 分类: ${v.tweet_group || '未知'}, 来源: ${v.source_query || '未知'}${feedbackLine ? '\n' + feedbackLine : ''}
 内容: ${v.tweet_text || '(无内容)'}`;
   }).join('\n\n');
 
   const systemPrompt = `你是一个推文质量分析专家。用户会给你一组被标记为"收录错误"的推文。
 你的任务是分析这些推文的共同特征，找出它们为什么不应该被收录的规律。
 
+**重要：部分推文包含"用户反馈原因"，这是用户明确告诉我们为什么这条推文不应该被收录。
+请重点参考这些反馈原因来理解误收录的模式。常见的反馈原因包括：
+- irrelevant: 与业务无关
+- spam: 垃圾/广告内容  
+- duplicate: 重复内容
+- low_quality: 质量太低
+- wrong_category: 分类错误
+- other: 其他原因（会有自定义描述）**
+
 请输出 JSON 格式的分析结果，包含：
 1. keywords: 应该加入黑名单的关键词（数组，小写，每个词2-4个字）
 2. patterns: 应该过滤的模式描述（数组，用自然语言描述）
 3. categories: 这些错误推文属于哪些类别（如：营销、招聘、客服、无关话题等）
 4. summary: 一句话总结这些推文被误收录的原因
+5. prompt_suggestions: 基于用户反馈，给出优化推文筛选提示词的建议（数组，具体可操作的建议）
 
 注意：
 - 只提取有明确共同特征的模式，不要过度泛化
 - 关键词应该是具体的、可操作的
-- 如果样本太少或没有明显规律，可以返回空数组`;
+- 如果样本太少或没有明显规律，可以返回空数组
+- prompt_suggestions 应该基于用户反馈原因，给出具体的提示词优化建议`;
 
   const userPrompt = `以下是被用户标记为"收录错误"的推文，请分析它们的共同特征：
 
@@ -219,14 +231,15 @@ function applyLearnedPatterns(denylist, analysis) {
     }
   }
 
-  // Record analysis history
+  // Record analysis history (include prompt suggestions from user feedback)
   denylist.learned.history.push({
     analyzedAt: new Date().toISOString(),
     sampleCount: analysis.sampleCount || 0,
     summary: analysis.summary || '',
     categories: analysis.categories || [],
     keywordsExtracted: analysis.keywords || [],
-    patternsExtracted: analysis.patterns || []
+    patternsExtracted: analysis.patterns || [],
+    promptSuggestions: analysis.prompt_suggestions || []
   });
 
   // Keep only last 20 history entries
@@ -358,12 +371,21 @@ async function main() {
       analysis.sampleCount = tweetsWithText.length;
       const { keywordsAdded, patternsAdded } = applyLearnedPatterns(denylist, analysis);
       
-      if (keywordsAdded > 0 || patternsAdded > 0) {
+      if (keywordsAdded > 0 || patternsAdded > 0 || analysis.prompt_suggestions?.length > 0) {
         log('INFO', 'LLM learning applied', { 
           summary: analysis.summary,
           categories: analysis.categories,
-          newKeywords: keywordsAdded
+          newKeywords: keywordsAdded,
+          promptSuggestions: analysis.prompt_suggestions?.length || 0
         });
+        
+        // Log prompt suggestions for review
+        if (analysis.prompt_suggestions?.length > 0) {
+          log('INFO', 'Prompt optimization suggestions based on user feedback:');
+          analysis.prompt_suggestions.forEach((suggestion, i) => {
+            log('INFO', `  ${i + 1}. ${suggestion}`);
+          });
+        }
       }
     }
   }

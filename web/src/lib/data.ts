@@ -306,6 +306,54 @@ export function getDateRangePreset(preset: 'today' | '3days' | '7days'): DateRan
   return { start, end };
 }
 
+// ============ Run Count Based Loading ============
+
+import { RunCountPreset, RUNS_PER_DAY } from './types';
+
+/**
+ * 根据时间预设获取要加载的文件数量
+ * 今天 = 最近4次爬取
+ * 近3天 = 最近12次爬取
+ * 近7天 = 最近28次爬取
+ */
+export function getRunCountForPreset(preset: RunCountPreset): number {
+  switch (preset) {
+    case 'today':
+      return RUNS_PER_DAY;        // 4次
+    case '3days':
+      return RUNS_PER_DAY * 3;    // 12次
+    case '7days':
+      return RUNS_PER_DAY * 7;    // 28次
+    default:
+      return RUNS_PER_DAY * 7;
+  }
+}
+
+/**
+ * 根据爬取次数加载数据（而不是日期范围）
+ * 文件按时间倒序排列，取最近N个
+ */
+export async function loadDataByRunCount(
+  manifest: Manifest,
+  preset: RunCountPreset
+): Promise<RadarData[]> {
+  const runCount = getRunCountForPreset(preset);
+  
+  // 按时间戳倒序排列文件（最新的在前）
+  const sortedFiles = [...manifest.files].sort((a, b) => 
+    new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+  );
+  
+  // 取最近 N 个文件
+  const filesToLoad = sortedFiles.slice(0, runCount);
+  
+  const results = await Promise.all(
+    filesToLoad.map(file => loadDataFile(file.filename))
+  );
+
+  return results.filter((data): data is RadarData => data !== null);
+}
+
 export function formatDate(date: Date | string): string {
   const d = typeof date === 'string' ? new Date(date) : date;
   return d.toLocaleDateString('zh-CN', {

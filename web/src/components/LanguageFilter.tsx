@@ -56,7 +56,6 @@ export function LanguageFilter({ value, onChange, stats }: LanguageFilterProps) 
   }, [stats]);
   const languageCount = languages.length;
   const totalCount = languages.reduce((sum, item) => sum + item.count, 0);
-  const previewFlags = languages.slice(0, 3);
   const activeLanguage = value && value !== 'all' ? value.toLowerCase() : null;
   const activeFlag = activeLanguage
     ? languages.find(item => item.key === activeLanguage)?.flag || '🌐'
@@ -91,15 +90,10 @@ export function LanguageFilter({ value, onChange, stats }: LanguageFilterProps) 
         aria-expanded={open}
       >
         <span className="text-stone-500">语言</span>
-        <div className="flex items-center gap-1">
-          {activeFlag ? (
-            <span className="text-sm">{activeFlag}</span>
-          ) : (
-            previewFlags.map(item => (
-              <span key={item.code} className="text-sm">{item.flag}</span>
-            ))
-          )}
-        </div>
+        {/* 只有选中单一语言时才显示国旗，选择"全部"时不显示 */}
+        {activeFlag && (
+          <span className="text-sm">{activeFlag}</span>
+        )}
         <span className="text-stone-700 max-w-[100px] truncate">{selectedLabel}</span>
         <svg className={`w-3.5 h-3.5 text-stone-400 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />

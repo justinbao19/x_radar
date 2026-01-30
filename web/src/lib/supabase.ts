@@ -74,6 +74,38 @@ export async function submitVote(vote: VoteInput): Promise<{ success: boolean; e
 }
 
 /**
+ * Submit feedback for a downvote
+ */
+export async function submitDownvoteFeedback(
+  tweetUrl: string, 
+  feedback: string
+): Promise<{ success: boolean; error?: string }> {
+  if (!supabase) {
+    return { success: false, error: 'Supabase not configured' };
+  }
+
+  try {
+    const { error } = await supabase
+      .from('votes')
+      .update({ 
+        feedback,
+        feedback_at: new Date().toISOString()
+      })
+      .eq('tweet_url', tweetUrl);
+
+    if (error) {
+      console.error('Feedback submission error:', error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  } catch (err) {
+    console.error('Feedback submission exception:', err);
+    return { success: false, error: 'Network error' };
+  }
+}
+
+/**
  * Remove a vote (for undo functionality)
  */
 export async function removeVote(tweetUrl: string): Promise<{ success: boolean; error?: string }> {

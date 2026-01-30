@@ -13,22 +13,22 @@ import {
   StatsBar,
   Pagination,
   SortSelector,
-  LanguageFilter
+  LanguageFilter,
+  FeedbackModal
 } from '@/components';
 import { 
   loadManifest, 
-  loadDataByDateRange, 
+  loadDataByRunCount, 
   mergeRadarDataWithMeta, 
   sortTweets,
   filterByCategory,
   filterByLanguage,
   filterAiPicked,
   calculateStats,
-  getDateRangePreset,
-  getUniqueDates,
   isTweetNew
 } from '@/lib/data';
-import { Tweet, Manifest, DateRange, ViewMode, CategoryFilter as CategoryFilterType, LanguageFilter as LanguageFilterType, SortOption, RadarCategory, PainRadarFilter } from '@/lib/types';
+import { useVotes } from '@/lib/VoteContext';
+import { Tweet, Manifest, RunCountPreset, ViewMode, CategoryFilter as CategoryFilterType, LanguageFilter as LanguageFilterType, SortOption, RadarCategory, PainRadarFilter } from '@/lib/types';
 
 export default function Dashboard() {
   const mainRef = useRef<HTMLElement | null>(null);
@@ -40,11 +40,15 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
+  // Vote context for filtering downvoted tweets
+  const { hiddenUrls, feedbackModal, confirmDownvote, cancelDownvote } = useVotes();
+  
   // Radar category (top-level)
   const [radarCategory, setRadarCategory] = useState<RadarCategory>('pain_radar');
   
   // Global filters (shared across all radars)
-  const [dateRange, setDateRange] = useState<DateRange>(getDateRangePreset('7days'));
+  // 基于爬取次数而非日期：今天=最近4次, 近3天=最近12次, 近7天=最近28次
+  const [timePreset, setTimePreset] = useState<RunCountPreset>('today');
   const [viewMode, setViewMode] = useState<ViewMode>('card');
   const [selectedTweet, setSelectedTweet] = useState<Tweet | null>(null);
   const [displayedAllTweets, setDisplayedAllTweets] = useState<Tweet[]>([]);
@@ -123,14 +127,14 @@ export default function Dashboard() {
     init();
   }, []);
 
-  // Load data when manifest or date range changes
+  // Load data when manifest or time preset changes
   useEffect(() => {
     if (!manifest) return;
     
     async function loadData() {
       setLoading(true);
       try {
-        const dataList = await loadDataByDateRange(manifest!, dateRange);
+        const dataList = await loadDataByRunCount(manifest!, timePreset);
         const { tweets, recentRunAts: runs } = mergeRadarDataWithMeta(dataList);
         setAllTweets(sortTweets(tweets, 'score'));
         setRecentRunAts(runs);
@@ -141,12 +145,14 @@ export default function Dashboard() {
       }
     }
     loadData();
-  }, [manifest, dateRange]);
+  }, [manifest, timePreset]);
 
-  // Get source tweets
+  // Get source tweets (filter out downvoted/hidden tweets)
   const sourceTweets = useMemo(() => {
-    return displayedAllTweets.length > 0 ? displayedAllTweets : allTweets;
-  }, [allTweets, displayedAllTweets]);
+    const base = displayedAllTweets.length > 0 ? displayedAllTweets : allTweets;
+    // Filter out hidden (downvoted) tweets
+    return base.filter(tweet => !hiddenUrls.has(tweet.url));
+  }, [allTweets, displayedAllTweets, hiddenUrls]);
 
   // Pre-filter tweets for all radar categories (for instant switching)
   const allRadarFilteredTweets = useMemo(() => {
@@ -219,7 +225,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     setPendingPageReset(true);
-  }, [dateRange]);
+  }, [timePreset]);
 
   useEffect(() => {
     if (loading || !pendingPageReset) return;
@@ -257,11 +263,6 @@ export default function Dashboard() {
     }
     return counts;
   }, [radarFilteredTweets]);
-
-  // Available dates for picker
-  const availableDates = useMemo(() => {
-    return manifest ? getUniqueDates(manifest) : [];
-  }, [manifest]);
 
   // Last updated time
   const lastUpdated = manifest?.lastUpdated;
@@ -343,11 +344,9 @@ export default function Dashboard() {
       {/* Filters */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 relative z-30">
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          {/* Filter Controls */}
           <DatePicker 
-            value={dateRange} 
-            onChange={setDateRange}
-            availableDates={availableDates}
+            value={timePreset} 
+            onChange={setTimePreset}
           />
           <CategoryFilter 
             value={categories} 
@@ -366,7 +365,6 @@ export default function Dashboard() {
             value={sortBy}
             onChange={setSortBy}
           />
-          {/* Separator + View Toggle */}
           <div className="hidden sm:block w-px h-5 bg-stone-200 mx-1" />
           <ViewToggle 
             value={viewMode} 
@@ -477,6 +475,14 @@ export default function Dashboard() {
           </div>
         </div>
       )}
+
+      {/* Feedback Modal for downvote */}
+      <FeedbackModal
+        isOpen={feedbackModal.isOpen}
+        onClose={cancelDownvote}
+        onSubmit={confirmDownvote}
+        tweetText={feedbackModal.tweetText}
+      />
 
       {/* Footer */}
       <footer className="max-w-6xl mx-auto px-4 sm:px-6 py-6 mt-auto w-full">

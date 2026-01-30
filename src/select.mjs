@@ -66,8 +66,41 @@ import {
   isCompetitorPromotion,
   isViralTemplate,
   MIN_FILO_FIT,
-  LOW_SIGNAL_PENALTY
+  LOW_SIGNAL_PENALTY,
+  PAIN_KEYWORDS
 } from './safety.mjs';
+
+// ============ Request Signal Detection ============
+// Words that indicate feature requests or unmet needs
+const REQUEST_SIGNAL_PATTERNS = [
+  // English - feature request / desire / unmet need
+  /\b(wish|hope|want|need|should have|would be great|would love|please add)\b/i,
+  /\b(why doesn'?t|why can'?t|why isn'?t|if only|looking for)\b/i,
+  /\b(feature request|needs to have|any app|any tool|recommend|suggestion)\b/i,
+  // Japanese
+  /(欲しい|したい|あったらいい|要望|機能|できれば|探している)/,
+  // Chinese
+  /(希望|想要|要是能|功能|需求|期待|能不能|建议|最好|求推荐|有没有)/
+];
+
+/**
+ * Check if text contains request/desire signals
+ */
+function hasRequestSignal(text) {
+  if (!text) return { hasSignal: false, patterns: [] };
+  const matchedPatterns = [];
+  
+  for (const pattern of REQUEST_SIGNAL_PATTERNS) {
+    if (pattern.test(text)) {
+      matchedPatterns.push(pattern.source);
+    }
+  }
+  
+  return { 
+    hasSignal: matchedPatterns.length > 0, 
+    patterns: matchedPatterns 
+  };
+}
 
 // Penalty multipliers for new filters
 const CUSTOMER_SERVICE_PENALTY = 0.3;  // 70% penalty for customer service notices
@@ -75,17 +108,24 @@ const COMPETITOR_PENALTY = 0.25;        // 75% penalty for competitor promotions
 const VIRAL_TEMPLATE_PENALTY = 0.15;    // 85% penalty for viral copypasta
 
 // Quality threshold config (replaces fixed quota)
-// Note: Quality over quantity - better to have fewer high-quality entries than many noisy ones
+// Core principle: Relevance > Pain Signal > Virality
+// High engagement tweets are NOT more valuable - they're already old news
+// What matters: does this tweet express real pain points or feature requests about email?
 const QUALITY_CONFIG = {
-  aiPickTopN: 10,             // Number of AI-picked tweets for quick view
-  kolMinFiloFitScore: 20,     // KOL tweets need at least 4 keywords (20 = 4 * 5) - raised from 15
-  minFinalScore: 50,          // Minimum score to be included - raised from 30
+  aiPickTopN: 20,             // Increased to 20 - let more relevant tweets through
+  kolMinFiloFitScore: 40,     // KOL tweets need at least 2 keywords (40 = 2 * 20) - adjusted for new weight
+  minFinalScore: 50,          // Minimum score to be included
   // Insight: stricter threshold - quality over quantity
-  insightMinFinalScore: 40,   // Insight needs reasonable score (raised from 20)
-  insightMinFiloFitScore: 10, // Insight needs at least 2 keywords (10 = 2 * 5)
+  insightMinFinalScore: 40,   // Insight needs reasonable score
+  insightMinFiloFitScore: 20, // Insight needs at least 1 keyword (20 = 1 * 20)
   // Sentiment: must actually mention Filo brand
   sentimentMinFinalScore: 15, // Sentiment has natural low engagement but needs minimum quality
-  noEmotionPenalty: 0.5       // Score penalty for pain tweets without emotion words
+  noEmotionPenalty: 0.5,      // Score penalty for pain tweets without emotion words
+  // NEW: Scoring weights - relevance over virality
+  filoFitMultiplier: 20,      // Each keyword match = 20 points (was 5)
+  viralityMultiplier: 20,     // Reduced from 100 to 20 - virality is just a tiebreaker
+  painEmotionBonus: 30,       // Bonus for tweets with real pain/frustration words
+  requestSignalBonus: 25      // Bonus for tweets with feature request signals
 };
 
 // Freshness filter - only keep tweets from last N days
@@ -270,23 +310,46 @@ const MAX_PER_KOL = 1;
 
 /**
  * Calculate scores for a tweet
- * Uses logarithmic compression for viralityScore to reduce KOL dominance
+ * NEW SCORING PHILOSOPHY:
+ * - Relevance is KING: keyword matches are the primary score driver
+ * - Pain signals matter: real complaints/frustrations get bonus
+ * - Request signals matter: feature requests/unmet needs get bonus
+ * - Virality is just a tiebreaker: high engagement ≠ high value for us
+ * 
+ * A tweet with 10 likes but perfect relevance should beat a tweet
+ * with 10,000 likes but weak relevance.
  */
 function scoreTweet(tweet, group = null) {
-  // Raw engagement score
+  // Raw engagement score (for reference only)
   const rawEngagement = (tweet.likes || 0) * 2 + 
                         (tweet.retweets || 0) * 2 + 
                         (tweet.replies || 0) * 1.5;
   
-  // Apply logarithmic compression to reduce KOL advantage
-  // log10(1 + 14938) * 100 ≈ 417, log10(1 + 31) * 100 ≈ 149
-  const viralityScore = Math.log10(1 + rawEngagement) * 100;
+  // Virality score - REDUCED weight, just a tiebreaker
+  // log10(1 + 10000) * 20 ≈ 80, log10(1 + 10) * 20 ≈ 21
+  // Compare to old: log10(1 + 10000) * 100 ≈ 400
+  const viralityScore = Math.log10(1 + rawEngagement) * QUALITY_CONFIG.viralityMultiplier;
   
+  // Keyword match score - PRIMARY scoring factor
   const keywordMatchCount = countKeywordMatches(tweet.text);
-  const filoFitScore = keywordMatchCount * 5;
-  const textBonus = (tweet.text && tweet.text.length > 20) ? 5 : 0;
+  // Each keyword = 20 points (was 5)
+  const filoFitScore = keywordMatchCount * QUALITY_CONFIG.filoFitMultiplier;
   
-  let finalScore = viralityScore + filoFitScore + textBonus;
+  // Text quality bonus (minor)
+  const textBonus = (tweet.text && tweet.text.length > 50) ? 10 : 
+                    (tweet.text && tweet.text.length > 20) ? 5 : 0;
+  
+  // NEW: Pain emotion bonus - real complaints are valuable
+  const emotionCheck = checkPainEmotion(tweet.text);
+  const painEmotionBonus = emotionCheck.hasPainEmotion ? QUALITY_CONFIG.painEmotionBonus : 0;
+  
+  // NEW: Request signal bonus - feature requests are valuable
+  const requestCheck = hasRequestSignal(tweet.text);
+  const requestSignalBonus = requestCheck.hasSignal ? QUALITY_CONFIG.requestSignalBonus : 0;
+  
+  // Calculate final score
+  // Order of importance: filoFitScore > painEmotionBonus/requestSignalBonus > viralityScore
+  let finalScore = filoFitScore + painEmotionBonus + requestSignalBonus + viralityScore + textBonus;
   
   // Apply pain group bonus (pain tweets are more valuable)
   const painBonus = (group === 'pain') ? PAIN_GROUP_BONUS : 1;
@@ -298,8 +361,13 @@ function scoreTweet(tweet, group = null) {
     filoFitScore,
     filoFitKeywordCount: keywordMatchCount,
     textBonus,
+    painEmotionBonus,
+    requestSignalBonus,
     painBonus,
-    finalScore: Math.round(finalScore * 10) / 10
+    finalScore: Math.round(finalScore * 10) / 10,
+    // Debug info
+    _emotionWords: emotionCheck.words || [],
+    _requestPatterns: requestCheck.patterns || []
   };
 }
 
@@ -814,12 +882,14 @@ function selectTop10(rawData) {
     likes: t.likes,
     retweets: t.retweets,
     replies: t.replies,
-    // Scoring details
+    // Scoring details (NEW: relevance-first scoring)
     rawEngagement: t.rawEngagement,
     viralityScore: t.viralityScore,
     filoFitScore: t.filoFitScore,
     filoFitKeywordCount: t.filoFitKeywordCount,
     textBonus: t.textBonus,
+    painEmotionBonus: t.painEmotionBonus || 0,      // NEW: bonus for pain emotion words
+    requestSignalBonus: t.requestSignalBonus || 0,  // NEW: bonus for request signals
     painBonus: t.painBonus,
     finalScore: t.finalScore,
     // Safety metadata
@@ -830,7 +900,8 @@ function selectTop10(rawData) {
     competitorPenalty: t.competitorPenalty || false,
     viralTemplatePenalty: t.viralTemplatePenalty || false,
     relevanceKeywords: t.relevanceKeywords || [],
-    painEmotionWords: t.painEmotionWords || [],
+    painEmotionWords: t._emotionWords || t.painEmotionWords || [],
+    requestPatterns: t._requestPatterns || [],      // NEW: matched request patterns
     // Sentiment label (for sentiment group)
     ...(t.sentimentLabel && { sentimentLabel: t.sentimentLabel }),
     // Insight type (for insight group)
