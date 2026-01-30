@@ -1,0 +1,70 @@
+name: Daily Notification
+
+on:
+  schedule:
+    # 工作日 10:30 北京时间 = UTC 02:30，周一到周五
+    - cron: '30 2 * * 1-5'
+  workflow_dispatch:
+    # Allow manual trigger for testing
+
+env:
+  NODE_ENV: production
+
+jobs:
+  send-notification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Pull latest data
+        run: git pull origin main
+
+      - name: Check for data file
+        id: check_data
+        run: |
+          if [ -f "web/public/data/manifest.json" ]; then
+            echo "has_data=true" >> $GITHUB_OUTPUT
+            # Get latest data file
+            LATEST=$(node -e "const m=require('./web/public/data/manifest.json'); console.log(m.files?.[0] || '')")
+            echo "latest_file=$LATEST" >> $GITHUB_OUTPUT
+          else
+            echo "has_data=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Prepare notification data
+        if: steps.check_data.outputs.has_data == 'true'
+        run: |
+          # Copy latest web data to out/latest for notify script
+          mkdir -p out/latest
+          
+          # Find and copy latest data file
+          LATEST_FILE="${{ steps.check_data.outputs.latest_file }}"
+          if [ -n "$LATEST_FILE" ] && [ -f "web/public/data/$LATEST_FILE" ]; then
+            cp "web/public/data/$LATEST_FILE" out/latest/top10.json
+            echo "Copied $LATEST_FILE to out/latest/top10.json"
+          fi
+
+      - name: Send daily notification
+        if: steps.check_data.outputs.has_data == 'true'
+        run: npm run notify:success
+        env:
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+          DASHBOARD_URL: ${{ secrets.DASHBOARD_URL }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+      - name: Skip notification (no data)
+        if: steps.check_data.outputs.has_data != 'true'
+        run: echo "No data available, skipping notification"

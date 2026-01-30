@@ -15,7 +15,19 @@ import 'dotenv/config';
 
 const AUTH_STATUS_FILE = 'out/auth-status.json';
 const COMMENTS_FILE = 'out/latest/top10_with_comments.json';
+const TOP10_FILE = 'out/latest/top10.json';
 const DASHBOARD_URL = process.env.DASHBOARD_URL || 'https://x-radar.vercel.app';
+
+/**
+ * Check if today is Monday (Beijing timezone)
+ */
+function isMondayBeijing() {
+  const now = new Date();
+  const beijingOffset = 8 * 60; // UTC+8 in minutes
+  const localOffset = now.getTimezoneOffset();
+  const beijingTime = new Date(now.getTime() + (beijingOffset + localOffset) * 60 * 1000);
+  return beijingTime.getDay() === 1;
+}
 
 // Telegram Bot API
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -371,7 +383,7 @@ async function sendTelegramMessage(text, inlineKeyboard = null) {
  * Send success notification via Telegram
  */
 async function sendTelegramSuccess(stats) {
-  const { byGroup = {}, bySentiment = {}, byInsightType = {}, negativeTweets = [] } = stats;
+  const { byGroup = {}, bySentiment = {}, byInsightType = {}, negativeTweets = [], topTopicsWithCount = [], topTweets = [] } = stats;
   const hasNegative = stats.hasNegativeSentiment;
 
   const runTime = new Date().toLocaleString('zh-CN', { 
@@ -383,9 +395,30 @@ async function sendTelegramSuccess(stats) {
   });
 
   // Build message with MarkdownV2 format
-  const title = hasNegative ? '⚠️ *X Radar 有新舆情*' : '✅ *X Radar 扫描完成*';
+  const aggregatedSuffix = stats.isAggregated ? ' \\(含周末数据\\)' : '';
+  const title = hasNegative ? `⚠️ *X Radar 有新舆情*${aggregatedSuffix}` : `✅ *X Radar 扫描完成*${aggregatedSuffix}`;
   
   let message = `${title}\n\n`;
+  
+  // 热门话题区（新增）
+  if (topTopicsWithCount && topTopicsWithCount.length > 0) {
+    const topicText = topTopicsWithCount
+      .map(({ topic, count }) => `${escapeMarkdownV2(topic)}\\(${count}\\)`)
+      .join(' · ');
+    message += `🔥 *热门话题:* ${topicText}\n\n`;
+  }
+  
+  // 最高分推文预览（新增）
+  if (topTweets && topTweets.length > 0) {
+    message += `⭐ *精选推文*\n`;
+    for (const tweet of topTweets) {
+      const groupLabel = { pain: '痛点', reach: '传播', sentiment: '舆情', insight: '洞察' }[tweet.group] || tweet.group;
+      // 优先显示翻译
+      const displayText = tweet.translationZh || tweet.text;
+      message += `\\[${groupLabel}\\] ${escapeMarkdownV2(tweet.author)}: "${escapeMarkdownV2(displayText)}\\.\\.\\." \\(${Math.round(tweet.score)}分\\)\n`;
+    }
+    message += `\n`;
+  }
   
   // 痛点雷达区
   const painTotal = (byGroup.pain || 0) + (byGroup.reach || 0) + (byGroup.kol || 0);
@@ -424,8 +457,9 @@ async function sendTelegramSuccess(stats) {
   }
   
   // 底部统计
+  const aggregatedLabel = stats.isAggregated ? ` \\(${stats.aggregatedDays}天\\)` : '';
   message += `━━━━━━━━━━━━━━━\n`;
-  message += `📊 精选推文: *${stats.totalTweets}* 条 \\| 🕐 ${escapeMarkdownV2(runTime)}`;
+  message += `📊 精选推文: *${stats.totalTweets}* 条${aggregatedLabel} \\| 🕐 ${escapeMarkdownV2(runTime)}`;
 
   // Inline keyboard with button
   const keyboard = [[
@@ -619,9 +653,43 @@ async function sendFailureWebhook(failureInfo) {
  * Build Feishu card elements for the three-module layout
  */
 function buildFeishuCardElements(stats, runTime) {
-  const { byGroup = {}, bySentiment = {}, byInsightType = {}, negativeTweets = [] } = stats;
+  const { byGroup = {}, bySentiment = {}, byInsightType = {}, negativeTweets = [], topTopicsWithCount = [], topTweets = [] } = stats;
   
   const elements = [];
+  
+  // ===== 热门话题区（新增）=====
+  if (topTopicsWithCount.length > 0) {
+    const topicText = topTopicsWithCount
+      .map(({ topic, count }) => `${topic} (${count})`)
+      .join(' · ');
+    elements.push({
+      tag: 'div',
+      text: { tag: 'lark_md', content: `**🔥 热门话题:** ${topicText}` }
+    });
+    elements.push({ tag: 'hr' });
+  }
+  
+  // ===== 最高分推文预览（新增）=====
+  if (topTweets.length > 0) {
+    elements.push({
+      tag: 'div',
+      text: { tag: 'lark_md', content: '**⭐ 精选推文**' }
+    });
+    
+    for (const tweet of topTweets) {
+      const groupLabel = { pain: '痛点', reach: '传播', sentiment: '舆情', insight: '洞察' }[tweet.group] || tweet.group;
+      // 优先显示翻译，否则显示原文
+      const displayText = tweet.translationZh || tweet.text;
+      elements.push({
+        tag: 'note',
+        elements: [{ 
+          tag: 'plain_text', 
+          content: `[${groupLabel}] ${tweet.author}: "${displayText}..." (${Math.round(tweet.score)}分)`
+        }]
+      });
+    }
+    elements.push({ tag: 'hr' });
+  }
   
   // ===== 痛点雷达区 =====
   const painTotal = (byGroup.pain || 0) + (byGroup.reach || 0) + (byGroup.kol || 0);
@@ -710,10 +778,11 @@ function buildFeishuCardElements(stats, runTime) {
   elements.push({ tag: 'hr' });
   
   // ===== 底部统计 =====
+  const aggregatedLabel = stats.isAggregated ? ` (含${stats.aggregatedDays}天数据)` : '';
   elements.push({
     tag: 'div',
     fields: [
-      { is_short: true, text: { tag: 'lark_md', content: `**精选推文:** ${stats.totalTweets} 条` } },
+      { is_short: true, text: { tag: 'lark_md', content: `**精选推文:** ${stats.totalTweets} 条${aggregatedLabel}` } },
       { is_short: true, text: { tag: 'lark_md', content: `**更新时间:** ${runTime}` } }
     ]
   });
@@ -760,7 +829,8 @@ async function sendSuccessWebhook(stats) {
   if (isFeishu) {
     // 根据是否有负面舆情决定标题和颜色
     const hasNegative = stats.hasNegativeSentiment;
-    const headerTitle = hasNegative ? '⚠️ X Radar 有新舆情' : '✅ X Radar 扫描完成';
+    const aggregatedSuffix = stats.isAggregated ? ' (含周末数据)' : '';
+    const headerTitle = hasNegative ? `⚠️ X Radar 有新舆情${aggregatedSuffix}` : `✅ X Radar 扫描完成${aggregatedSuffix}`;
     const headerTemplate = hasNegative ? 'orange' : 'green';
     
     payload = {
@@ -775,67 +845,119 @@ async function sendSuccessWebhook(stats) {
     };
   } else if (isSlack) {
     // Slack: 保持兼容，增加新统计
-    const { byGroup = {}, bySentiment = {} } = stats;
+    const { byGroup = {}, bySentiment = {}, topTopicsWithCount = [], topTweets = [] } = stats;
     const hasNegative = stats.hasNegativeSentiment;
+    const aggregatedSuffix = stats.isAggregated ? ' (含周末数据)' : '';
+    
+    const blocks = [
+      {
+        type: 'header',
+        text: { type: 'plain_text', text: hasNegative ? `⚠️ X Radar 有新舆情${aggregatedSuffix}` : `✅ X Radar 扫描完成${aggregatedSuffix}` }
+      }
+    ];
+    
+    // 热门话题
+    if (topTopicsWithCount.length > 0) {
+      const topicText = topTopicsWithCount.map(({ topic, count }) => `${topic}(${count})`).join(' · ');
+      blocks.push({
+        type: 'section',
+        text: { type: 'mrkdwn', text: `*🔥 热门话题:* ${topicText}` }
+      });
+    }
+    
+    // 最高分推文
+    if (topTweets.length > 0) {
+      const tweetPreview = topTweets.map(t => {
+        const groupLabel = { pain: '痛点', reach: '传播', sentiment: '舆情', insight: '洞察' }[t.group] || t.group;
+        const displayText = t.translationZh || t.text;
+        return `[${groupLabel}] ${t.author}: "${displayText}..." (${Math.round(t.score)}分)`;
+      }).join('\n');
+      blocks.push({
+        type: 'section',
+        text: { type: 'mrkdwn', text: `*⭐ 精选推文*\n${tweetPreview}` }
+      });
+    }
+    
+    blocks.push(
+      {
+        type: 'section',
+        text: { type: 'mrkdwn', text: `*🎯 痛点雷达:* 痛点 ${byGroup.pain || 0} | 传播 ${byGroup.reach || 0} | KOL ${byGroup.kol || 0}` }
+      },
+      {
+        type: 'section',
+        text: { type: 'mrkdwn', text: `*📢 Filo舆情:* 积极 ${bySentiment.positive || 0} | 中性 ${bySentiment.neutral || 0} | 需关注 ${bySentiment.negative || 0}` }
+      },
+      {
+        type: 'section',
+        fields: [
+          { type: 'mrkdwn', text: `*精选推文:* ${stats.totalTweets} 条` },
+          { type: 'mrkdwn', text: `*更新时间:* ${runTime}` }
+        ]
+      },
+      {
+        type: 'actions',
+        elements: [
+          {
+            type: 'button',
+            text: { type: 'plain_text', text: '📊 查看详情' },
+            url: DASHBOARD_URL
+          }
+        ]
+      }
+    );
     
     payload = {
-      text: hasNegative ? '⚠️ X Radar 有新舆情' : '✅ X Radar 扫描完成',
-      blocks: [
-        {
-          type: 'header',
-          text: { type: 'plain_text', text: hasNegative ? '⚠️ X Radar 有新舆情' : '✅ X Radar 扫描完成' }
-        },
-        {
-          type: 'section',
-          text: { type: 'mrkdwn', text: `*🎯 痛点雷达:* 痛点 ${byGroup.pain || 0} | 传播 ${byGroup.reach || 0} | KOL ${byGroup.kol || 0}` }
-        },
-        {
-          type: 'section',
-          text: { type: 'mrkdwn', text: `*📢 Filo舆情:* 积极 ${bySentiment.positive || 0} | 中性 ${bySentiment.neutral || 0} | 需关注 ${bySentiment.negative || 0}` }
-        },
-        {
-          type: 'section',
-          fields: [
-            { type: 'mrkdwn', text: `*精选推文:* ${stats.totalTweets} 条` },
-            { type: 'mrkdwn', text: `*更新时间:* ${runTime}` }
-          ]
-        },
-        {
-          type: 'actions',
-          elements: [
-            {
-              type: 'button',
-              text: { type: 'plain_text', text: '📊 查看详情' },
-              url: DASHBOARD_URL
-            }
-          ]
-        }
-      ]
+      text: hasNegative ? `⚠️ X Radar 有新舆情${aggregatedSuffix}` : `✅ X Radar 扫描完成${aggregatedSuffix}`,
+      blocks
     };
   } else if (isDiscord) {
     // Discord: 保持兼容，增加新统计
-    const { byGroup = {}, bySentiment = {} } = stats;
+    const { byGroup = {}, bySentiment = {}, topTopicsWithCount = [], topTweets = [] } = stats;
     const hasNegative = stats.hasNegativeSentiment;
+    const aggregatedSuffix = stats.isAggregated ? ' (含周末数据)' : '';
+    
+    const fields = [];
+    
+    // 热门话题
+    if (topTopicsWithCount.length > 0) {
+      const topicText = topTopicsWithCount.map(({ topic, count }) => `${topic}(${count})`).join(' · ');
+      fields.push({ name: '🔥 热门话题', value: topicText, inline: false });
+    }
+    
+    // 最高分推文
+    if (topTweets.length > 0) {
+      const tweetPreview = topTweets.map(t => {
+        const groupLabel = { pain: '痛点', reach: '传播', sentiment: '舆情', insight: '洞察' }[t.group] || t.group;
+        const displayText = t.translationZh || t.text;
+        return `[${groupLabel}] ${t.author}: "${displayText}..." (${Math.round(t.score)}分)`;
+      }).join('\n');
+      fields.push({ name: '⭐ 精选推文', value: tweetPreview, inline: false });
+    }
+    
+    fields.push(
+      { name: '🎯 痛点雷达', value: `痛点 ${byGroup.pain || 0} | 传播 ${byGroup.reach || 0} | KOL ${byGroup.kol || 0}`, inline: false },
+      { name: '📢 Filo舆情', value: `积极 ${bySentiment.positive || 0} | 中性 ${bySentiment.neutral || 0} | 需关注 ${bySentiment.negative || 0}`, inline: false },
+      { name: '精选推文', value: `${stats.totalTweets} 条`, inline: true },
+      { name: '更新时间', value: runTime, inline: true }
+    );
     
     payload = {
-      content: hasNegative ? '⚠️ X Radar 有新舆情' : '✅ X Radar 扫描完成',
+      content: hasNegative ? `⚠️ X Radar 有新舆情${aggregatedSuffix}` : `✅ X Radar 扫描完成${aggregatedSuffix}`,
       embeds: [{
-        title: hasNegative ? '⚠️ X Radar 有新舆情' : '✅ X Radar 扫描完成',
+        title: hasNegative ? `⚠️ X Radar 有新舆情${aggregatedSuffix}` : `✅ X Radar 扫描完成${aggregatedSuffix}`,
         color: hasNegative ? 16744192 : 5763719, // Orange or Green
-        fields: [
-          { name: '🎯 痛点雷达', value: `痛点 ${byGroup.pain || 0} | 传播 ${byGroup.reach || 0} | KOL ${byGroup.kol || 0}`, inline: false },
-          { name: '📢 Filo舆情', value: `积极 ${bySentiment.positive || 0} | 中性 ${bySentiment.neutral || 0} | 需关注 ${bySentiment.negative || 0}`, inline: false },
-          { name: '精选推文', value: `${stats.totalTweets} 条`, inline: true },
-          { name: '更新时间', value: runTime, inline: true }
-        ],
+        fields,
         url: DASHBOARD_URL
       }]
     };
   } else {
     // Generic: 简化文本
-    const { byGroup = {}, bySentiment = {} } = stats;
+    const { byGroup = {}, bySentiment = {}, topTopicsWithCount = [] } = stats;
+    const topicText = topTopicsWithCount.length > 0 
+      ? `🔥 热门: ${topTopicsWithCount.map(({ topic }) => topic).join(', ')}\n` 
+      : '';
     payload = {
-      text: `✅ X Radar 扫描完成\n🎯 痛点: ${byGroup.pain || 0} | 传播: ${byGroup.reach || 0}\n📢 舆情: 积极 ${bySentiment.positive || 0} | 需关注 ${bySentiment.negative || 0}\n精选: ${stats.totalTweets} 条\n${DASHBOARD_URL}`
+      text: `✅ X Radar 扫描完成\n${topicText}🎯 痛点: ${byGroup.pain || 0} | 传播: ${byGroup.reach || 0}\n📢 舆情: 积极 ${bySentiment.positive || 0} | 需关注 ${bySentiment.negative || 0}\n精选: ${stats.totalTweets} 条\n${DASHBOARD_URL}`
     };
   }
 
@@ -861,15 +983,21 @@ async function sendSuccessWebhook(stats) {
 }
 
 function loadSuccessStats() {
-  if (!existsSync(COMMENTS_FILE)) {
-    log('WARN', 'Comments file not found');
-    return null;
+  // Try top10.json first (new format), then fall back to top10_with_comments.json
+  let dataFile = TOP10_FILE;
+  if (!existsSync(TOP10_FILE)) {
+    if (!existsSync(COMMENTS_FILE)) {
+      log('WARN', 'No data file found');
+      return null;
+    }
+    dataFile = COMMENTS_FILE;
   }
 
   try {
-    const data = JSON.parse(readFileSync(COMMENTS_FILE, 'utf-8'));
+    const data = JSON.parse(readFileSync(dataFile, 'utf-8'));
     const stats = data.commentGenerationStats || {};
     const selectionStats = data.selectionStats || {};
+    const aggregationInfo = data.aggregationInfo || {};
     
     // 统计各语言数量
     const langStats = stats.byLanguage || {};
@@ -880,20 +1008,27 @@ function loadSuccessStats() {
       })
       .join('、');
     
-    // 提取主要话题关键词（从sourceQuery字段）
+    // 提取主要话题关键词（从sourceQuery字段）- 改进格式
     const topicCounts = {};
     (data.top || []).forEach(item => {
       const query = item.sourceQuery || '';
       // 提取关键词，如 gmail-spam-en -> gmail spam
-      const keywords = query.replace(/-/g, ' ').replace(/(en|cn|jp|zh|ja|ko)$/i, '').trim();
+      let keywords = query.replace(/-/g, ' ').replace(/\s*(en|cn|jp|zh|ja|ko)\s*$/i, '').trim();
+      // 首字母大写
+      keywords = keywords.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
       if (keywords) {
         topicCounts[keywords] = (topicCounts[keywords] || 0) + 1;
       }
     });
-    const topTopics = Object.entries(topicCounts)
+    
+    // TOP 3 热门话题，带数量
+    const topTopicsWithCount = Object.entries(topicCounts)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 3)
-      .map(([topic]) => topic)
+      .map(([topic, count]) => ({ topic, count }));
+    
+    const topTopics = topTopicsWithCount
+      .map(({ topic }) => topic)
       .join('、');
     
     // 新增：读取分组、舆情、洞察统计
@@ -910,6 +1045,18 @@ function loadSuccessStats() {
         text: (t.text || '').slice(0, 50) 
       }));
     
+    // 获取最高分推文预览（TOP 2）
+    const topTweets = (data.top || [])
+      .slice(0, 2)  // 已按分数排序，取前2条
+      .map(t => ({
+        author: t.author || 'Unknown',
+        text: (t.text || '').slice(0, 60),
+        score: t.finalScore || 0,
+        group: t.group,
+        // 使用翻译（如果有）
+        translationZh: t.translationZh || null
+      }));
+    
     return {
       totalTweets: data.top?.length || 0,
       totalCandidates: selectionStats.totalCandidates || 0,
@@ -919,12 +1066,19 @@ function loadSuccessStats() {
       runAt: data.runAt,
       languages,
       topTopics,
+      topTopicsWithCount,  // 带数量的话题列表
+      topTweets,           // 最高分推文预览
       // 新增统计
       byGroup,
       bySentiment,
       byInsightType,
       negativeTweets,
-      hasNegativeSentiment: (bySentiment.negative || 0) > 0
+      hasNegativeSentiment: (bySentiment.negative || 0) > 0,
+      // 聚合信息（周一）- 优先使用 aggregationInfo，否则检测是否周一
+      isAggregated: aggregationInfo.isAggregated || isMondayBeijing(),
+      aggregatedDays: aggregationInfo.aggregatedDays || (isMondayBeijing() ? 3 : 1),
+      loadedDates: aggregationInfo.loadedDates || [],
+      isMonday: isMondayBeijing()
     };
   } catch (e) {
     log('ERROR', 'Failed to load stats', { error: e.message });

@@ -1,5 +1,10 @@
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { log, getInputPath, getOutputPath, copyToLatest, getOutputDir } from './utils.mjs';
+import { readFileSync, writeFileSync, existsSync, readdirSync } from 'fs';
+import { join } from 'path';
+import { log, getInputPath, getOutputPath, copyToLatest, getOutputDir, getTodayDate } from './utils.mjs';
+
+// ============ Monday Aggregation Config ============
+// On Monday, aggregate data from Sat + Sun + Mon (3 days)
+const MONDAY_LOOKBACK_DAYS = 3;
 
 // ============ Load KOL Handles for Verification ============
 const INFLUENCERS_FILE = 'influencers.json';
@@ -1050,31 +1055,128 @@ function selectTop10(rawData) {
   };
 }
 
+/**
+ * Check if today is Monday (for weekend data aggregation)
+ */
+function isMonday() {
+  const now = new Date();
+  // Use Beijing timezone for consistency
+  const beijingOffset = 8 * 60; // UTC+8 in minutes
+  const localOffset = now.getTimezoneOffset();
+  const beijingTime = new Date(now.getTime() + (beijingOffset + localOffset) * 60 * 1000);
+  return beijingTime.getDay() === 1;
+}
+
+/**
+ * Get date string for N days ago
+ */
+function getDateDaysAgo(daysAgo) {
+  const date = new Date();
+  date.setDate(date.getDate() - daysAgo);
+  return date.toISOString().split('T')[0];
+}
+
+/**
+ * Load and merge raw data from multiple days
+ */
+function loadAggregatedData(lookbackDays) {
+  const allSources = [];
+  const loadedDates = [];
+  let latestRunAt = null;
+  
+  for (let i = 0; i < lookbackDays; i++) {
+    const dateStr = getDateDaysAgo(i);
+    const rawFile = join('out', dateStr, 'raw.json');
+    
+    if (existsSync(rawFile)) {
+      try {
+        const data = JSON.parse(readFileSync(rawFile, 'utf-8'));
+        if (data.sources && data.sources.length > 0) {
+          allSources.push(...data.sources);
+          loadedDates.push(dateStr);
+          
+          // Track latest runAt
+          if (!latestRunAt || (data.runAt && data.runAt > latestRunAt)) {
+            latestRunAt = data.runAt;
+          }
+          
+          log('INFO', `Loaded data from ${dateStr}`, { 
+            sources: data.sources.length 
+          });
+        }
+      } catch (e) {
+        log('WARN', `Failed to load ${rawFile}`, { error: e.message });
+      }
+    } else {
+      log('DEBUG', `No data file for ${dateStr}`);
+    }
+  }
+  
+  return {
+    sources: allSources,
+    loadedDates,
+    runAt: latestRunAt || new Date().toISOString(),
+    runDate: getTodayDate(),
+    aggregatedDays: loadedDates.length
+  };
+}
+
 async function main() {
   log('INFO', '=== Starting Selection Process ===');
   log('INFO', `Config: MIN_FILO_FIT=${MIN_FILO_FIT}`);
   
-  // Read raw data from latest (or date-specific directory)
-  const inputFile = getInputPath('raw.json');
-  const rawData = JSON.parse(readFileSync(inputFile, 'utf-8'));
+  // Check if Monday - aggregate weekend data
+  const monday = isMonday();
+  const lookbackDays = monday ? MONDAY_LOOKBACK_DAYS : 1;
+  
+  log('INFO', monday 
+    ? `Monday detected - aggregating ${MONDAY_LOOKBACK_DAYS} days of data (Sat+Sun+Mon)`
+    : 'Regular weekday - using today\'s data only'
+  );
+  
+  let rawData;
+  let aggregationInfo = null;
+  
+  if (lookbackDays > 1) {
+    // Monday: aggregate multiple days
+    rawData = loadAggregatedData(lookbackDays);
+    aggregationInfo = {
+      isAggregated: true,
+      aggregatedDays: rawData.aggregatedDays,
+      loadedDates: rawData.loadedDates
+    };
+    log('INFO', `Aggregated data loaded`, { 
+      totalSources: rawData.sources.length,
+      dates: rawData.loadedDates
+    });
+  } else {
+    // Regular day: single file
+    const inputFile = getInputPath('raw.json');
+    rawData = JSON.parse(readFileSync(inputFile, 'utf-8'));
+    log('INFO', `Loaded raw data from ${inputFile}`, { 
+      sources: rawData.sources?.length,
+      runDate: rawData.runDate,
+      runAt: rawData.runAt 
+    });
+  }
   
   // Use runDate from raw data to ensure consistent directory
-  const runDate = rawData.runDate;
+  const runDate = rawData.runDate || getTodayDate();
   const outputFile = getOutputPath('top10.json', runDate);
-  
-  log('INFO', `Loaded raw data from ${inputFile}`, { 
-    sources: rawData.sources?.length,
-    runDate: runDate,
-    runAt: rawData.runAt 
-  });
   
   // Select top 10
   const result = selectTop10(rawData);
   
+  // Add aggregation info if applicable
+  if (aggregationInfo) {
+    result.aggregationInfo = aggregationInfo;
+  }
+  
   // Write output
   writeFileSync(outputFile, JSON.stringify(result, null, 2));
   log('INFO', `Output written to ${outputFile}`, { 
-    selected: result.top.length 
+    selected: result.top.length,
+    aggregated: aggregationInfo?.isAggregated || false
   });
   
   // Copy to latest directory

@@ -2,7 +2,7 @@ name: X Radar Pipeline
 
 on:
   schedule:
-    # Run every 6 hours: 00:00, 06:00, 12:00, 18:00 UTC
+    # 数据抓取：每 6 小时运行一次
     - cron: '0 */6 * * *'
   workflow_dispatch:
     # Allow manual trigger
@@ -233,16 +233,6 @@ jobs:
           fi
           
           echo "=== Push successful ==="
-
-      # ===== Send Success Notification =====
-      - name: Send success notification
-        if: steps.scraper.outcome == 'success'
-        run: npm run notify:success
-        env:
-          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
-          DASHBOARD_URL: ${{ secrets.DASHBOARD_URL }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
       # ===== Upload Artifacts =====
       - name: Upload artifacts
