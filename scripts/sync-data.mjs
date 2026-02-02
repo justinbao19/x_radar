@@ -38,8 +38,8 @@ function syncData() {
     log('INFO', 'Created data directory');
   }
 
-  // Check for source file
-  const sourceFile = join(OUT_DIR, 'top10_with_comments.json');
+  // Check for source file (top10.json - comments are now generated on-demand)
+  const sourceFile = join(OUT_DIR, 'top10.json');
   if (!existsSync(sourceFile)) {
     log('ERROR', 'Source file not found', { path: sourceFile });
     process.exit(1);
@@ -69,8 +69,7 @@ function syncData() {
     filename,
     timestamp: runAt,
     date,
-    tweetCount: sourceData.top?.length || 0,
-    succeeded: sourceData.commentGenerationStats?.succeeded || 0
+    tweetCount: sourceData.top?.length || 0
   };
 
   if (existingIndex >= 0) {
