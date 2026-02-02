@@ -36,8 +36,8 @@ jobs:
         run: |
           if [ -f "web/public/data/manifest.json" ]; then
             echo "has_data=true" >> $GITHUB_OUTPUT
-            # Get latest data file
-            LATEST=$(node -e "const m=require('./web/public/data/manifest.json'); console.log(m.files?.[0] || '')")
+            # Get latest data file (files[0] is an object with filename property)
+            LATEST=$(node -e "const m=require('./web/public/data/manifest.json'); console.log(m.files?.[0]?.filename || '')")
             echo "latest_file=$LATEST" >> $GITHUB_OUTPUT
           else
             echo "has_data=false" >> $GITHUB_OUTPUT
