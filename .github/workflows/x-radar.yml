@@ -110,6 +110,15 @@ jobs:
           LLM_MODEL: ${{ secrets.LLM_MODEL || 'claude-sonnet-4-20250514' }}
         continue-on-error: true  # Don't fail entire job if translation fails
 
+      - name: Run commenter
+        if: steps.scraper.outcome == 'success'
+        run: npm run comment
+        env:
+          LLM_API_URL: ${{ secrets.LLM_API_URL }}
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_MODEL: ${{ secrets.LLM_MODEL || 'claude-sonnet-4-20250514' }}
+        continue-on-error: true  # Don't fail entire job if comment generation fails
+
       # ===== Output Summary =====
       - name: Show output summary
         if: always()
@@ -138,6 +147,14 @@ jobs:
             node -e "const d=require('./$TOP10_FILE'); const s=d.translationStats||{}; console.log('Translated:', s.translated || 0, '/ Skipped (zh):', s.skipped || 0, '/ Failed:', s.failed || 0)"
           else
             echo "No translation stats available"
+          fi
+          echo ""
+          echo "=== Comment generation stats ==="
+          COMMENT_FILE=$(find out -name "top10_with_comments.json" -type f 2>/dev/null | head -1)
+          if [ -n "$COMMENT_FILE" ]; then
+            node -e "const d=require('./$COMMENT_FILE'); const s=d.commentGenerationStats||{}; console.log('Total:', s.total || 0, '/ Succeeded:', s.succeeded || 0, '/ Skipped:', s.skipped || 0, '/ Failed:', s.failed || 0)"
+          else
+            echo "No comment stats available"
           fi
 
       # ===== Sync Data to Web =====
