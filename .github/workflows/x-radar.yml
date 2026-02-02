@@ -17,7 +17,7 @@ env:
 jobs:
   scrape-and-comment:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 35
     permissions:
       contents: write
       issues: write
@@ -110,14 +110,8 @@ jobs:
           LLM_MODEL: ${{ secrets.LLM_MODEL || 'claude-sonnet-4-20250514' }}
         continue-on-error: true  # Don't fail entire job if translation fails
 
-      - name: Run commenter
-        if: steps.scraper.outcome == 'success'
-        run: npm run comment
-        env:
-          LLM_API_URL: ${{ secrets.LLM_API_URL }}
-          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
-          LLM_MODEL: ${{ secrets.LLM_MODEL || 'claude-sonnet-4-20250514' }}
-        continue-on-error: true  # Don't fail entire job if comment generation fails
+      # Note: Comment generation is now on-demand via web API (web/src/app/api/generate-comment)
+      # This saves ~20-30 minutes of pipeline time
 
       # ===== Output Summary =====
       - name: Show output summary
@@ -149,13 +143,7 @@ jobs:
             echo "No translation stats available"
           fi
           echo ""
-          echo "=== Comment generation stats ==="
-          COMMENT_FILE=$(find out -name "top10_with_comments.json" -type f 2>/dev/null | head -1)
-          if [ -n "$COMMENT_FILE" ]; then
-            node -e "const d=require('./$COMMENT_FILE'); const s=d.commentGenerationStats||{}; console.log('Total:', s.total || 0, '/ Succeeded:', s.succeeded || 0, '/ Skipped:', s.skipped || 0, '/ Failed:', s.failed || 0)"
-          else
-            echo "No comment stats available"
-          fi
+          echo "Note: Comments are generated on-demand via web API"
 
       # ===== Sync Data to Web =====
       # ===== Cleanup Expired Cache =====
