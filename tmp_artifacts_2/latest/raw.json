@@ -1,0 +1,72 @@
+{
+  "runDate": "2026-02-03",
+  "runAt": "2026-02-03T05:39:59.337Z",
+  "stats": {
+    "totalSources": 3,
+    "successfulSources": 1,
+    "failedSources": 2,
+    "totalTweets": 2,
+    "byGroup": {
+      "pain": 0,
+      "reach": 0,
+      "kol": 0,
+      "sentiment": 2,
+      "insight": 0
+    }
+  },
+  "sources": [
+    {
+      "group": "sentiment",
+      "name": "filo-mentions-en",
+      "query": "(FiloMail OR \"Filo Mail\" OR \"Filo-Mail\" OR filomail OR \"filo mail\" OR \"filo-mail\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:en since:2026-01-28",
+      "searchUrl": "https://x.com/search?q=(FiloMail%20OR%20%22Filo%20Mail%22%20OR%20%22Filo-Mail%22%20OR%20filomail%20OR%20%22filo%20mail%22%20OR%20%22filo-mail%22%20OR%20%40Filo_Mail%20OR%20%40FiloMail%20OR%20%40filomail)%20-from%3AFilo_Mail%20-from%3AFiloMail%20-filter%3Aretweets%20lang%3Aen%20since%3A2026-01-28&f=live",
+      "scrapedAt": "2026-02-03T05:40:04.923Z",
+      "tweetCount": 2,
+      "tweets": [
+        {
+          "url": "https://x.com/YeeeeetinOnThem/status/2017746984061292706",
+          "author": "@YeeeeetinOnThem",
+          "datetime": "2026-01-31T23:49:03.000Z",
+          "text": "@Jacksepticeye maybe I’m going crazy but I’m pretty certain Filo Mail is using your voice AI’ed in for their ad. I know an Irish accent isn’t something other people are allowed to have but idk it does sound a lot like you.",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/JustinBao_/status/2016784106001138149",
+          "author": "@JustinBao_",
+          "datetime": "2026-01-29T08:02:55.000Z",
+          "text": "Soon it’ll be AI replying to AI. Agents can take the heavy lifting, and @Filo_Mail already handles half my repetitive daily comms.",
+          "likes": 4,
+          "retweets": 0,
+          "replies": 0
+        }
+      ],
+      "errors": [],
+      "retryable": false
+    },
+    {
+      "group": "sentiment",
+      "name": "filo-mentions-cn",
+      "query": "(FiloMail OR \"Filo Mail\" OR \"Filo-Mail\" OR filomail OR \"filo mail\" OR \"filo-mail\" OR \"Filo 邮件\" OR \"Filo 邮箱\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:zh since:2026-01-28",
+      "searchUrl": "https://x.com/search?q=(FiloMail%20OR%20%22Filo%20Mail%22%20OR%20%22Filo-Mail%22%20OR%20filomail%20OR%20%22filo%20mail%22%20OR%20%22filo-mail%22%20OR%20%22Filo%20%E9%82%AE%E4%BB%B6%22%20OR%20%22Filo%20%E9%82%AE%E7%AE%B1%22%20OR%20%40Filo_Mail%20OR%20%40FiloMail%20OR%20%40filomail)%20-from%3AFilo_Mail%20-from%3AFiloMail%20-filter%3Aretweets%20lang%3Azh%20since%3A2026-01-28&f=live",
+      "scrapedAt": "2026-02-03T05:40:43.686Z",
+      "tweetCount": 0,
+      "tweets": [],
+      "errors": [],
+      "retryable": false
+    },
+    {
+      "group": "sentiment",
+      "name": "filo-mentions-jp",
+      "query": "(FiloMail OR \"Filo Mail\" OR \"Filo-Mail\" OR filomail OR \"filo mail\" OR \"filo-mail\" OR \"Filo メール\" OR \"filoメール\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:ja since:2026-01-28",
+      "searchUrl": "https://x.com/search?q=(FiloMail%20OR%20%22Filo%20Mail%22%20OR%20%22Filo-Mail%22%20OR%20filomail%20OR%20%22filo%20mail%22%20OR%20%22filo-mail%22%20OR%20%22Filo%20%E3%83%A1%E3%83%BC%E3%83%AB%22%20OR%20%22filo%E3%83%A1%E3%83%BC%E3%83%AB%22%20OR%20%40Filo_Mail%20OR%20%40FiloMail%20OR%20%40filomail)%20-from%3AFilo_Mail%20-from%3AFiloMail%20-filter%3Aretweets%20lang%3Aja%20since%3A2026-01-28&f=live",
+      "scrapedAt": "2026-02-03T05:41:21.934Z",
+      "tweetCount": 0,
+      "tweets": [],
+      "errors": [],
+      "retryable": false
+    }
+  ],
+  "errors": []
+}

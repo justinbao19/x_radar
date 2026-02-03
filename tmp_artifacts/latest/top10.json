@@ -1,0 +1,53 @@
+{
+  "runDate": "2026-02-03",
+  "runAt": "2026-02-03T05:23:23.258Z",
+  "selectionStats": {
+    "totalCandidates": 2,
+    "uniqueAfterDedup": 2,
+    "tooOldFiltered": 1,
+    "feedbackUrlFiltered": 0,
+    "learnedKeywordFiltered": 0,
+    "hardFiltered": 1,
+    "hardReasons": {
+      "drugs": 1
+    },
+    "softFiltered": 0,
+    "softReasons": {},
+    "lowSignalPenalized": 0,
+    "filoFitFiltered": 0,
+    "relevanceFiltered": 0,
+    "sentimentNoBrandFiltered": 0,
+    "sentimentMinScoreFiltered": 0,
+    "insightNoiseFiltered": 0,
+    "insightWeakSignalFiltered": 0,
+    "insightCompetitorFiltered": 0,
+    "insightMinScoreFiltered": 0,
+    "emailActionOnlyFiltered": 0,
+    "noEmotionPenalized": 0,
+    "customerServicePenalized": 0,
+    "competitorPenalized": 0,
+    "viralTemplateFiltered": 0,
+    "promoFiltered": 0,
+    "promoPenalized": 0,
+    "kolAuthorMismatch": 0,
+    "kolRelevanceFiltered": 0,
+    "qualified": 0,
+    "aiPicked": 0,
+    "warning": "NO_TWEETS_PASSED_FILTERS"
+  },
+  "qualityConfig": {
+    "aiPickTopN": 20,
+    "kolMinFiloFitScore": 40,
+    "minFinalScore": 50,
+    "insightMinFinalScore": 40,
+    "insightMinFiloFitScore": 20,
+    "sentimentMinFinalScore": 15,
+    "noEmotionPenalty": 0.5,
+    "filoFitMultiplier": 20,
+    "viralityMultiplier": 20,
+    "strongEmotionBonus": 30,
+    "weakEmotionBonus": 10,
+    "requestSignalBonus": 25
+  },
+  "top": []
+}
