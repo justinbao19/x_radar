@@ -208,7 +208,7 @@ export function checkLowSignalDenylist(text) {
   
   const matches = [];
   for (const { word, category } of LOW_SIGNAL_KEYWORDS) {
-    if (lowerText.includes(word)) {
+    if (matchesKeyword(lowerText, word)) {
       matches.push({ category, keyword: word });
     }
   }
