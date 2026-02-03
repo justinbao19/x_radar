@@ -6,6 +6,9 @@ import { log, getInputPath, getOutputPath, copyToLatest, getOutputDir, getTodayD
 // On Monday, aggregate data from Sat + Sun + Mon (3 days)
 const MONDAY_LOOKBACK_DAYS = 3;
 
+// Sentiment freshness window (days) - aligns with scrape lookback
+const SENTIMENT_LOOKBACK_DAYS = parseInt(process.env.SENTIMENT_LOOKBACK_DAYS || '7', 10);
+
 // Optional group filter: e.g. ONLY_GROUPS=sentiment,reach
 const ONLY_GROUPS = (process.env.ONLY_GROUPS || '')
   .split(',')
@@ -463,13 +466,16 @@ function selectTop10(rawData) {
   
   // ============ Freshness Filter ============
   const now = Date.now();
-  const maxAgeMs = MAX_TWEET_AGE_DAYS * 24 * 60 * 60 * 1000;
+  const defaultMaxAgeMs = MAX_TWEET_AGE_DAYS * 24 * 60 * 60 * 1000;
+  const sentimentMaxAgeDays = Number.isNaN(SENTIMENT_LOOKBACK_DAYS) ? 7 : SENTIMENT_LOOKBACK_DAYS;
+  const sentimentMaxAgeMs = Math.max(1, sentimentMaxAgeDays) * 24 * 60 * 60 * 1000;
   
   const freshTweets = uniqueTweets.filter(t => {
     if (!t.datetime) return true; // Keep if no datetime (can't determine age)
     
     const tweetDate = new Date(t.datetime);
     const ageMs = now - tweetDate.getTime();
+    const maxAgeMs = t.group === 'sentiment' ? sentimentMaxAgeMs : defaultMaxAgeMs;
     
     if (ageMs > maxAgeMs) {
       log('DEBUG', `Too old (${Math.floor(ageMs / (24 * 60 * 60 * 1000))} days): ${t.url}`);

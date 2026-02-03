@@ -102,6 +102,24 @@ function flattenKeywords(tier) {
   return keywords;
 }
 
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function shouldUseWordBoundary(keyword) {
+  return /^[a-z0-9]+$/.test(keyword) && keyword.length <= 4;
+}
+
+function matchesKeyword(lowerText, keyword) {
+  if (!keyword) return false;
+  const normalized = keyword.toLowerCase();
+  if (shouldUseWordBoundary(normalized)) {
+    const pattern = new RegExp(`\\b${escapeRegExp(normalized)}\\b`, 'i');
+    return pattern.test(lowerText);
+  }
+  return lowerText.includes(normalized);
+}
+
 const HARD_KEYWORDS = flattenKeywords(denylist.hard || {});
 const SOFT_KEYWORDS = flattenKeywords(denylist.soft || {});
 const LOW_SIGNAL_KEYWORDS = flattenKeywords(denylist.low_signal || {});
@@ -155,7 +173,7 @@ export function checkHardDenylist(text) {
   const lowerText = text.toLowerCase();
   
   for (const { word, category } of HARD_KEYWORDS) {
-    if (lowerText.includes(word)) {
+    if (matchesKeyword(lowerText, word)) {
       return { match: true, category, keyword: word };
     }
   }
