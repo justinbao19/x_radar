@@ -11,6 +11,7 @@
     "comment": "node src/commenter.mjs",
     "translate": "node src/translator.mjs",
     "run": "npm run scrape && npm run select && npm run format && npm run translate",
+    "sentiment:run": "ONLY_GROUPS=sentiment SENTIMENT_LOOKBACK_DAYS=7 npm run scrape && ONLY_GROUPS=sentiment npm run select && npm run format && npm run translate",
     "apply-feedback": "node scripts/apply-feedback.mjs",
     "sync-data": "node scripts/sync-data.mjs",
     "update-manifest": "node scripts/update-manifest.mjs",

@@ -6,6 +6,18 @@ import { log, getInputPath, getOutputPath, copyToLatest, getOutputDir, getTodayD
 // On Monday, aggregate data from Sat + Sun + Mon (3 days)
 const MONDAY_LOOKBACK_DAYS = 3;
 
+// Optional group filter: e.g. ONLY_GROUPS=sentiment,reach
+const ONLY_GROUPS = (process.env.ONLY_GROUPS || '')
+  .split(',')
+  .map(g => g.trim())
+  .filter(Boolean);
+const ONLY_GROUPS_SET = new Set(ONLY_GROUPS);
+
+function filterSourcesByGroup(sources = []) {
+  if (ONLY_GROUPS_SET.size === 0) return sources;
+  return sources.filter(s => ONLY_GROUPS_SET.has(s.group));
+}
+
 // ============ Load KOL Handles for Verification ============
 const INFLUENCERS_FILE = 'influencers.json';
 let KOL_HANDLES = new Set();
@@ -188,8 +200,11 @@ const PAIN_GROUP_BONUS = 3;
 
 // Filo brand keywords - tweet must contain at least one to be valid sentiment
 const FILO_BRAND_KEYWORDS = [
-  'filomail', 'filo mail', 'filo_mail', '@filo_mail',
-  'filoメール', 'filo邮件', 'filo郵件'
+  'filomail', 'filo mail', 'filo-mail', 'filo_mail', '@filo_mail', '@filomail',
+  'filoメール', 'filo メール',
+  'filo邮件', 'filo 邮件', 'filo郵件', 'filo 郵件',
+  'filo邮箱', 'filo 邮箱',
+  'filo email'
 ];
 
 /**
@@ -201,7 +216,11 @@ const FILO_BRAND_KEYWORDS = [
 function mentionsFilo(text) {
   if (!text) return false;
   const lowerText = text.toLowerCase();
-  return FILO_BRAND_KEYWORDS.some(kw => lowerText.includes(kw.toLowerCase()));
+  const normalizedText = lowerText.replace(/\s+/g, ' ').trim();
+  return FILO_BRAND_KEYWORDS.some(kw => {
+    const normalizedKw = kw.toLowerCase();
+    return normalizedText.includes(normalizedKw) || lowerText.includes(normalizedKw);
+  });
 }
 
 /**
@@ -405,7 +424,15 @@ function selectTop10(rawData) {
   // Merge all tweets from all sources
   const allTweets = [];
   
-  for (const source of rawData.sources || []) {
+  const sourceList = filterSourcesByGroup(rawData.sources || []);
+  if (ONLY_GROUPS_SET.size > 0) {
+    log('INFO', `Group filter applied: ${ONLY_GROUPS.join(',')}`, { 
+      before: rawData.sources?.length || 0,
+      after: sourceList.length
+    });
+  }
+  
+  for (const source of sourceList) {
     for (const tweet of source.tweets || []) {
       // sentiment and insight keep their group, kol becomes reach, others stay as-is
       let group = source.group;

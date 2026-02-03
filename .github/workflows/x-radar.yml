@@ -5,7 +5,15 @@ on:
     # 数据抓取：每 6 小时运行一次
     - cron: '0 */6 * * *'
   workflow_dispatch:
-    # Allow manual trigger
+    inputs:
+      only_groups:
+        description: 'Comma-separated groups to run (e.g., sentiment)'
+        required: false
+        default: ''
+      sentiment_lookback_days:
+        description: 'Sentiment lookback window in days'
+        required: false
+        default: '7'
 
 concurrency:
   group: x-radar-pipeline
@@ -13,6 +21,8 @@ concurrency:
 
 env:
   NODE_ENV: production
+  SENTIMENT_LOOKBACK_DAYS: ${{ inputs.sentiment_lookback_days || '7' }}
+  ONLY_GROUPS: ${{ inputs.only_groups }}
 
 jobs:
   scrape-and-comment:

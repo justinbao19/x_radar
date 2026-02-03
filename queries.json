@@ -2,17 +2,17 @@
   "sentiment": [
     {
       "name": "filo-mentions-en",
-      "query": "(FiloMail OR \"filo mail\" OR filomail OR @Filo_Mail) -from:Filo_Mail -filter:retweets lang:en",
+      "query": "(FiloMail OR \"Filo Mail\" OR \"Filo-Mail\" OR filomail OR \"filo mail\" OR \"filo-mail\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:en",
       "max": 70
     },
     {
       "name": "filo-mentions-cn",
-      "query": "(FiloMail OR \"filo mail\" OR filomail OR @Filo_Mail) -from:Filo_Mail -filter:retweets lang:zh",
+      "query": "(FiloMail OR \"Filo Mail\" OR \"Filo-Mail\" OR filomail OR \"filo mail\" OR \"filo-mail\" OR \"Filo 邮件\" OR \"Filo 邮箱\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:zh",
       "max": 50
     },
     {
       "name": "filo-mentions-jp",
-      "query": "(FiloMail OR \"filo mail\" OR filomail OR @Filo_Mail) -from:Filo_Mail -filter:retweets lang:ja",
+      "query": "(FiloMail OR \"Filo Mail\" OR \"Filo-Mail\" OR filomail OR \"filo mail\" OR \"filo-mail\" OR \"Filo メール\" OR \"filoメール\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:ja",
       "max": 50
     }
   ],

@@ -22,6 +22,16 @@ const INFLUENCERS_FILE = 'influencers.json';
 const MAX_SOURCES_PER_RUN = parseInt(process.env.MAX_SOURCES || '24', 10);
 const SAMPLING_MODE = process.env.SAMPLING_MODE || 'random'; // 'random' or 'all'
 
+// Group filter (optional): e.g. ONLY_GROUPS=sentiment,reach
+const ONLY_GROUPS = (process.env.ONLY_GROUPS || '')
+  .split(',')
+  .map(g => g.trim())
+  .filter(Boolean);
+const ONLY_GROUPS_SET = new Set(ONLY_GROUPS);
+
+// Sentiment lookback window (days) for search query
+const SENTIMENT_LOOKBACK_DAYS = parseInt(process.env.SENTIMENT_LOOKBACK_DAYS || '7', 10);
+
 // Runtime limit guard (minutes) - stops scraping if exceeded
 const RUN_TIME_LIMIT_MIN = parseInt(process.env.RUN_TIME_LIMIT_MIN || '60', 10);
 
@@ -61,6 +71,15 @@ const SELECTORS = {
 };
 
 // ============ Helper Functions ============
+
+/**
+ * Get date string for N days ago
+ */
+function getDateDaysAgo(daysAgo) {
+  const date = new Date();
+  date.setDate(date.getDate() - daysAgo);
+  return date.toISOString().split('T')[0];
+}
 
 /**
  * Try multiple selectors and return first match
@@ -453,11 +472,15 @@ function buildSourceList() {
   
   // Sentiment queries (Filo舆情)
   for (const q of queries.sentiment || []) {
+    const lookbackDays = Number.isNaN(SENTIMENT_LOOKBACK_DAYS) ? 7 : SENTIMENT_LOOKBACK_DAYS;
+    const sinceDays = Math.max(0, lookbackDays - 1);
+    const sinceDate = lookbackDays > 1 ? getDateDaysAgo(sinceDays) : null;
+    const sentimentQuery = sinceDate ? `${q.query} since:${sinceDate}` : q.query;
     allSources.push({
       group: 'sentiment',
       name: q.name,
-      query: q.query,
-      searchUrl: buildSearchUrl(q.query),
+      query: sentimentQuery,
+      searchUrl: buildSearchUrl(sentimentQuery),
       max: q.max || 30
     });
   }
@@ -494,6 +517,15 @@ function buildSourceList() {
       handles: influencers.handles?.length,
       hasDenyTerms: !!denyTerms
     });
+  }
+
+  // Optional group filter
+  if (ONLY_GROUPS_SET.size > 0) {
+    const before = allSources.length;
+    const filtered = allSources.filter(s => ONLY_GROUPS_SET.has(s.group));
+    log('INFO', `Group filter applied: ${ONLY_GROUPS.join(',')}`, { before, after: filtered.length });
+    allSources.length = 0;
+    allSources.push(...filtered);
   }
   
   // Apply sampling strategy
@@ -565,6 +597,7 @@ async function main() {
   
   log('INFO', '=== X Radar Scraper Starting ===');
   log('INFO', `Config: MAX_SOURCES=${MAX_SOURCES_PER_RUN}, SAMPLING_MODE=${SAMPLING_MODE}, TIME_LIMIT=${RUN_TIME_LIMIT_MIN}min`);
+  log('INFO', `Sentiment lookback days: ${SENTIMENT_LOOKBACK_DAYS}, ONLY_GROUPS=${ONLY_GROUPS.join(',') || 'none'}`);
   
   // Clean old output directories (keep last 7 days)
   log('INFO', 'Checking for old data to clean up...');
