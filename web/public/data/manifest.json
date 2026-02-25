@@ -1,6 +1,12 @@
 {
-  "lastUpdated": "2026-02-19T19:12:29.113Z",
+  "lastUpdated": "2026-02-25T08:01:11.500Z",
   "files": [
+    {
+      "filename": "2026-02-25T07-36.json",
+      "timestamp": "2026-02-25T07:36:37.241Z",
+      "date": "2026-02-25",
+      "tweetCount": 113
+    },
     {
       "filename": "2026-02-19T18-49.json",
       "timestamp": "2026-02-19T18:49:05.753Z",
@@ -36,142 +42,10 @@
       "timestamp": "2026-02-18T13:01:00.301Z",
       "date": "2026-02-18",
       "tweetCount": 130
-    },
-    {
-      "filename": "2026-02-18T07-00.json",
-      "timestamp": "2026-02-18T07:00:02.591Z",
-      "date": "2026-02-18",
-      "tweetCount": 131
-    },
-    {
-      "filename": "2026-02-18T02-02.json",
-      "timestamp": "2026-02-18T02:02:58.005Z",
-      "date": "2026-02-18",
-      "tweetCount": 129
-    },
-    {
-      "filename": "2026-02-17T18-56.json",
-      "timestamp": "2026-02-17T18:56:07.158Z",
-      "date": "2026-02-17",
-      "tweetCount": 132
-    },
-    {
-      "filename": "2026-02-17T13-00.json",
-      "timestamp": "2026-02-17T13:00:29.882Z",
-      "date": "2026-02-17",
-      "tweetCount": 123
-    },
-    {
-      "filename": "2026-02-17T06-57.json",
-      "timestamp": "2026-02-17T06:57:36.605Z",
-      "date": "2026-02-17",
-      "tweetCount": 122
-    },
-    {
-      "filename": "2026-02-17T01-59.json",
-      "timestamp": "2026-02-17T01:59:09.197Z",
-      "date": "2026-02-17",
-      "tweetCount": 120
-    },
-    {
-      "filename": "2026-02-16T18-41.json",
-      "timestamp": "2026-02-16T18:41:16.731Z",
-      "date": "2026-02-16",
-      "tweetCount": 118
-    },
-    {
-      "filename": "2026-02-16T13-00.json",
-      "timestamp": "2026-02-16T13:00:09.118Z",
-      "date": "2026-02-16",
-      "tweetCount": 107
-    },
-    {
-      "filename": "2026-02-16T07-01.json",
-      "timestamp": "2026-02-16T07:01:31.371Z",
-      "date": "2026-02-16",
-      "tweetCount": 118
-    },
-    {
-      "filename": "2026-02-16T02-01.json",
-      "timestamp": "2026-02-16T02:01:45.543Z",
-      "date": "2026-02-16",
-      "tweetCount": 102
-    },
-    {
-      "filename": "2026-02-15T18-35.json",
-      "timestamp": "2026-02-15T18:35:03.631Z",
-      "date": "2026-02-15",
-      "tweetCount": 108
-    },
-    {
-      "filename": "2026-02-15T12-47.json",
-      "timestamp": "2026-02-15T12:47:24.700Z",
-      "date": "2026-02-15",
-      "tweetCount": 107
-    },
-    {
-      "filename": "2026-02-15T06-51.json",
-      "timestamp": "2026-02-15T06:51:11.927Z",
-      "date": "2026-02-15",
-      "tweetCount": 91
-    },
-    {
-      "filename": "2026-02-15T02-05.json",
-      "timestamp": "2026-02-15T02:05:36.499Z",
-      "date": "2026-02-15",
-      "tweetCount": 117
-    },
-    {
-      "filename": "2026-02-14T18-32.json",
-      "timestamp": "2026-02-14T18:32:43.698Z",
-      "date": "2026-02-14",
-      "tweetCount": 126
-    },
-    {
-      "filename": "2026-02-14T12-43.json",
-      "timestamp": "2026-02-14T12:43:45.686Z",
-      "date": "2026-02-14",
-      "tweetCount": 133
-    },
-    {
-      "filename": "2026-02-14T06-42.json",
-      "timestamp": "2026-02-14T06:42:14.439Z",
-      "date": "2026-02-14",
-      "tweetCount": 124
-    },
-    {
-      "filename": "2026-02-14T01-55.json",
-      "timestamp": "2026-02-14T01:55:03.118Z",
-      "date": "2026-02-14",
-      "tweetCount": 136
-    },
-    {
-      "filename": "2026-02-13T18-46.json",
-      "timestamp": "2026-02-13T18:46:18.169Z",
-      "date": "2026-02-13",
-      "tweetCount": 124
-    },
-    {
-      "filename": "2026-02-13T12-56.json",
-      "timestamp": "2026-02-13T12:56:14.261Z",
-      "date": "2026-02-13",
-      "tweetCount": 133
-    },
-    {
-      "filename": "2026-02-13T06-58.json",
-      "timestamp": "2026-02-13T06:58:28.084Z",
-      "date": "2026-02-13",
-      "tweetCount": 123
-    },
-    {
-      "filename": "2026-02-13T02-06.json",
-      "timestamp": "2026-02-13T02:06:17.625Z",
-      "date": "2026-02-13",
-      "tweetCount": 134
     }
   ],
   "authStatus": {
     "valid": true,
-    "lastCheck": "2026-02-19T19:12:29.113Z"
+    "lastCheck": "2026-02-25T08:01:11.500Z"
   }
 }
