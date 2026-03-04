@@ -2,67 +2,13 @@
 
 import { Tweet } from '@/lib/types';
 import { formatNumber, formatRelativeTime } from '@/lib/data';
+import { getGroupLabel, getGroupColor, getSentimentStyle, getInsightStyle } from '@/lib/styles';
 
 interface TweetListProps {
   tweets: Tweet[];
   onSelect?: (tweet: Tweet) => void;
 }
 
-// Helper function to get group styling
-function getGroupStyle(tweet: Tweet) {
-  const groupLabels: Record<string, string> = {
-    pain: '痛点',
-    reach: '传播',
-    kol: 'KOL',
-    sentiment: '舆情',
-    insight: '洞察'
-  };
-  
-  const label = tweet.originalGroup === 'kol' ? 'KOL' : (groupLabels[tweet.group] || tweet.group.toUpperCase());
-  
-  let color = 'bg-sky-50 text-sky-700 border border-sky-200/50';
-  if (tweet.group === 'pain') {
-    color = 'bg-rose-50 text-rose-700 border border-rose-200/50';
-  } else if (tweet.originalGroup === 'kol') {
-    color = 'bg-purple-50 text-purple-700 border border-purple-200/50';
-  } else if (tweet.group === 'sentiment') {
-    color = 'bg-orange-50 text-orange-700 border border-orange-200/50';
-  } else if (tweet.group === 'insight') {
-    color = 'bg-cyan-50 text-cyan-700 border border-cyan-200/50';
-  }
-  
-  return { label, color };
-}
-
-// Helper function to get sentiment styling
-function getSentimentStyle(sentimentLabel?: string) {
-  switch (sentimentLabel) {
-    case 'negative':
-      return { label: '需关注', color: 'bg-red-100 text-red-700 border border-red-300', icon: '⚠️' };
-    case 'positive':
-      return { label: '积极', color: 'bg-green-50 text-green-700 border border-green-200', icon: '✓' };
-    case 'neutral':
-      return { label: '中性', color: 'bg-stone-100 text-stone-600 border border-stone-200', icon: '○' };
-    default:
-      return null;
-  }
-}
-
-// Helper function to get insight type styling
-function getInsightStyle(insightType?: string) {
-  switch (insightType) {
-    case 'feature_request':
-      return { label: '功能需求', color: 'bg-amber-50 text-amber-700 border border-amber-200' };
-    case 'competitor_praise':
-      return { label: '竞品好评', color: 'bg-indigo-50 text-indigo-700 border border-indigo-200' };
-    case 'ai_demand':
-      return { label: 'AI需求', color: 'bg-cyan-50 text-cyan-700 border border-cyan-200' };
-    default:
-      return null;
-  }
-}
-
-// Helper function to get display text (prefer translation)
 function getDisplayText(tweet: Tweet): { text: string; isTranslation: boolean } {
   const translation = tweet.comments?.tweetTranslationZh;
   const isNonChinese = tweet.detectedLanguage && tweet.detectedLanguage.toLowerCase() !== 'zh';
@@ -73,11 +19,10 @@ function getDisplayText(tweet: Tweet): { text: string; isTranslation: boolean } 
   return { text: tweet.text || '', isTranslation: false };
 }
 
-// Helper function to get status badge
 function StatusBadge({ tweet }: { tweet: Tweet }) {
   if (tweet.comments) {
     return (
-      <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200/50">
+      <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200/50">
         <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
         </svg>
@@ -86,13 +31,13 @@ function StatusBadge({ tweet }: { tweet: Tweet }) {
     );
   } else if (tweet.commentSkipped) {
     return (
-      <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-700 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200/50">
+      <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-700 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200/50">
         跳过
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1 text-xs font-medium text-red-700 bg-red-50 px-2.5 py-1 rounded-md border border-red-200/50">
+    <span className="inline-flex items-center gap-1 text-xs font-medium text-red-700 bg-red-50 px-2.5 py-1 rounded-lg border border-red-200/50">
       失败
     </span>
   );
@@ -104,7 +49,8 @@ export function TweetList({ tweets, onSelect }: TweetListProps) {
       {/* Mobile View - Stacked Cards */}
       <div className="md:hidden space-y-3">
         {tweets.map((tweet) => {
-          const groupStyle = getGroupStyle(tweet);
+          const groupLabel = getGroupLabel(tweet);
+          const groupColor = getGroupColor(tweet);
           const sentimentStyle = getSentimentStyle(tweet.sentimentLabel);
           const insightStyle = getInsightStyle(tweet.insightType);
           const isNegative = tweet.sentimentLabel === 'negative';
@@ -120,14 +66,11 @@ export function TweetList({ tweets, onSelect }: TweetListProps) {
                   : 'border-stone-200/80 hover:border-stone-300'
               }`}
             >
-              {/* Top Row: Rank, Author, Tags, Status */}
               <div className="flex items-center justify-between gap-2 mb-3">
                 <div className="flex items-center gap-2 min-w-0 flex-1">
-                  {/* Rank Badge */}
-                  <span className="w-6 h-6 rounded-md bg-gradient-to-br from-stone-800 to-stone-900 text-white text-xs font-bold flex items-center justify-center shadow-sm flex-shrink-0">
+                  <span className="w-6 h-6 rounded-lg bg-linear-to-br from-stone-800 to-stone-900 text-white text-xs font-bold flex items-center justify-center shadow-sm shrink-0">
                     {tweet.rank}
                   </span>
-                  {/* Author */}
                   <a 
                     href={`https://x.com/${tweet.author?.replace('@', '')}`}
                     target="_blank"
@@ -138,33 +81,29 @@ export function TweetList({ tweets, onSelect }: TweetListProps) {
                     {tweet.author}
                   </a>
                 </div>
-                {/* Status Badge */}
                 <StatusBadge tweet={tweet} />
               </div>
               
-              {/* Tags Row */}
               <div className="flex flex-wrap items-center gap-1.5 mb-3">
-                <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${groupStyle.color}`}>
-                  {groupStyle.label}
+                <span className={`text-xs font-semibold px-2 py-0.5 rounded-lg ${groupColor}`}>
+                  {groupLabel}
                 </span>
                 {sentimentStyle && (
-                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-md flex items-center gap-1 ${sentimentStyle.color}`}>
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-lg flex items-center gap-1 ${sentimentStyle.color}`}>
                     <span>{sentimentStyle.icon}</span>
                     {sentimentStyle.label}
                   </span>
                 )}
                 {insightStyle && (
-                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${insightStyle.color}`}>
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-lg ${insightStyle.color}`}>
                     {insightStyle.label}
                   </span>
                 )}
-                {/* Time */}
                 <span className="text-xs text-stone-400">
                   {formatRelativeTime(tweet.datetime)}
                 </span>
               </div>
               
-              {/* Content Preview - Show translation if available */}
               <p className="text-sm text-stone-600 line-clamp-2 mb-3">
                 {displayContent.isTranslation && (
                   <span className="text-stone-400 mr-1">[译]</span>
@@ -172,7 +111,6 @@ export function TweetList({ tweets, onSelect }: TweetListProps) {
                 {displayContent.text.slice(0, 120)}{displayContent.text.length > 120 ? '...' : ''}
               </p>
               
-              {/* Bottom Row: Engagement & Score */}
               <div className="flex items-center justify-between text-xs text-stone-500 pt-2 border-t border-stone-100">
                 <div className="flex items-center gap-4">
                   <span className="flex items-center gap-1">
@@ -197,23 +135,24 @@ export function TweetList({ tweets, onSelect }: TweetListProps) {
         })}
       </div>
 
-      {/* Desktop View - Table */}
+      {/* Desktop View - Table with fixed column widths */}
       <div className="hidden md:block bg-white rounded-2xl border border-stone-200/80 overflow-hidden shadow-sm">
-        <table className="w-full">
-          <thead className="bg-gradient-to-r from-stone-50 to-stone-100/50 border-b border-stone-200/80">
+        <table className="w-full table-fixed">
+          <thead className="bg-linear-to-r from-stone-50 to-stone-100/50 border-b border-stone-200/80">
             <tr>
-              <th className="px-4 py-3.5 text-left text-xs font-semibold text-stone-500 uppercase tracking-wider">#</th>
-              <th className="px-4 py-3.5 text-left text-xs font-semibold text-stone-500 uppercase tracking-wider">作者</th>
+              <th className="w-14 px-4 py-3.5 text-left text-xs font-semibold text-stone-500 uppercase tracking-wider">#</th>
+              <th className="w-36 px-4 py-3.5 text-left text-xs font-semibold text-stone-500 uppercase tracking-wider">作者</th>
               <th className="px-4 py-3.5 text-left text-xs font-semibold text-stone-500 uppercase tracking-wider">内容</th>
-              <th className="px-4 py-3.5 text-left text-xs font-semibold text-stone-500 uppercase tracking-wider">分类</th>
-              <th className="px-4 py-3.5 text-right text-xs font-semibold text-stone-500 uppercase tracking-wider">互动</th>
-              <th className="px-4 py-3.5 text-right text-xs font-semibold text-stone-500 uppercase tracking-wider">评分</th>
-              <th className="px-4 py-3.5 text-center text-xs font-semibold text-stone-500 uppercase tracking-wider">状态</th>
+              <th className="w-32 px-4 py-3.5 text-left text-xs font-semibold text-stone-500 uppercase tracking-wider">分类</th>
+              <th className="w-28 px-4 py-3.5 text-right text-xs font-semibold text-stone-500 uppercase tracking-wider">互动</th>
+              <th className="w-20 px-4 py-3.5 text-right text-xs font-semibold text-stone-500 uppercase tracking-wider">评分</th>
+              <th className="w-24 px-4 py-3.5 text-center text-xs font-semibold text-stone-500 uppercase tracking-wider">状态</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-stone-100">
             {tweets.map((tweet) => {
-              const groupStyle = getGroupStyle(tweet);
+              const groupLabel = getGroupLabel(tweet);
+              const groupColor = getGroupColor(tweet);
               const sentimentStyle = getSentimentStyle(tweet.sentimentLabel);
               const insightStyle = getInsightStyle(tweet.insightType);
               const displayContent = getDisplayText(tweet);
@@ -225,27 +164,27 @@ export function TweetList({ tweets, onSelect }: TweetListProps) {
                   className="hover:bg-amber-50/30 cursor-pointer transition-colors duration-150"
                 >
                   <td className="px-4 py-3.5">
-                    <span className="w-7 h-7 rounded-lg bg-gradient-to-br from-stone-800 to-stone-900 text-white text-xs font-bold flex items-center justify-center shadow-sm">
+                    <span className="w-7 h-7 rounded-lg bg-linear-to-br from-stone-800 to-stone-900 text-white text-xs font-bold flex items-center justify-center shadow-sm">
                       {tweet.rank}
                     </span>
                   </td>
                   <td className="px-4 py-3.5">
-                    <div className="flex flex-col">
+                    <div className="flex flex-col min-w-0">
                       <a 
                         href={`https://x.com/${tweet.author?.replace('@', '')}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm font-medium text-stone-800 hover:text-amber-600 transition-colors"
+                        className="text-sm font-medium text-stone-800 hover:text-amber-600 transition-colors truncate"
                         onClick={e => e.stopPropagation()}
                       >
                         {tweet.author}
                       </a>
-                      <span className="text-xs text-stone-400">
+                      <span className="text-xs text-stone-400 truncate">
                         {formatRelativeTime(tweet.datetime)}
                       </span>
                     </div>
                   </td>
-                  <td className="px-4 py-3.5 max-w-md">
+                  <td className="px-4 py-3.5">
                     <p className="text-sm text-stone-600 truncate">
                       {displayContent.isTranslation && (
                         <span className="text-stone-400 mr-1">[译]</span>
@@ -255,17 +194,17 @@ export function TweetList({ tweets, onSelect }: TweetListProps) {
                   </td>
                   <td className="px-4 py-3.5">
                     <div className="flex flex-wrap items-center gap-1">
-                      <span className={`text-xs font-semibold px-2 py-1 rounded-md ${groupStyle.color}`}>
-                        {groupStyle.label}
+                      <span className={`text-xs font-semibold px-2 py-1 rounded-lg ${groupColor}`}>
+                        {groupLabel}
                       </span>
                       {sentimentStyle && (
-                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-md flex items-center gap-1 ${sentimentStyle.color}`}>
+                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-lg flex items-center gap-1 ${sentimentStyle.color}`}>
                           <span>{sentimentStyle.icon}</span>
                           {sentimentStyle.label}
                         </span>
                       )}
                       {insightStyle && (
-                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${insightStyle.color}`}>
+                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-lg ${insightStyle.color}`}>
                           {insightStyle.label}
                         </span>
                       )}

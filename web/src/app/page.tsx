@@ -30,6 +30,48 @@ import {
 import { useVotes } from '@/lib/VoteContext';
 import { Tweet, Manifest, RunCountPreset, ViewMode, CategoryFilter as CategoryFilterType, LanguageFilter as LanguageFilterType, SortOption, RadarCategory, PainRadarFilter } from '@/lib/types';
 
+function TweetModal({ tweet, recentRunAts, onClose }: { tweet: Tweet; recentRunAts: string[]; onClose: () => void }) {
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleEsc);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', handleEsc);
+      document.body.style.overflow = '';
+    };
+  }, [onClose]);
+
+  return (
+    <div 
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <div 
+        className="relative max-w-2xl w-full max-h-[90vh] overflow-y-auto rounded-2xl animate-slide-up"
+        onClick={e => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-stone-100/90 hover:bg-stone-200 text-stone-500 hover:text-stone-700 transition-colors shadow-sm"
+          aria-label="关闭"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+        <TweetCard 
+          tweet={tweet} 
+          index={tweet.rank}
+          showComments={true}
+          isNew={isTweetNew(tweet, recentRunAts)}
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const mainRef = useRef<HTMLElement | null>(null);
   const [frozenHeight, setFrozenHeight] = useState<number | null>(null);
@@ -301,7 +343,7 @@ export default function Dashboard() {
 
   if (error && !manifest) {
     return (
-      <div className="min-h-screen bg-[#FAF9F7] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">📭</div>
           <h1 className="text-xl font-semibold text-stone-800 mb-2">暂无数据</h1>
@@ -315,7 +357,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF9F7] flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header lastUpdated={lastUpdated} />
       
       {/* Radar Category Selector - Top Level Navigation */}
@@ -332,18 +374,20 @@ export default function Dashboard() {
         </div>
       )}
       
-      {/* Stats Bar - only show for pain_radar */}
-      {stats && radarCategory === 'pain_radar' && (
+      {/* Stats Bar - shown for all radar categories */}
+      {stats && (
         <StatsBar 
           stats={stats} 
           showAiPicked={showAiPickedOnly}
           onToggleAiPicked={() => setShowAiPickedOnly(!showAiPickedOnly)}
+          radarCategory={radarCategory}
+          filteredCount={sortedTweets.length}
         />
       )}
 
       {/* Filters */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 relative z-30">
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-hide sm:overflow-visible sm:flex-wrap">
           <DatePicker 
             value={timePreset} 
             onChange={setTimePreset}
@@ -365,7 +409,7 @@ export default function Dashboard() {
             value={sortBy}
             onChange={setSortBy}
           />
-          <div className="hidden sm:block w-px h-5 bg-stone-200 mx-1" />
+          <div className="hidden sm:block w-px h-5 bg-stone-200 mx-1 shrink-0" />
           <ViewToggle 
             value={viewMode} 
             onChange={setViewMode} 
@@ -380,8 +424,36 @@ export default function Dashboard() {
         style={frozenHeight ? { minHeight: `${frozenHeight}px` } : undefined}
       >
         {isInitialLoading ? (
-          <div className="flex items-center justify-center min-h-[40vh]">
-            <div className="animate-spin rounded-full h-10 w-10 border-4 border-amber-200 border-t-amber-500"></div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-stone-200/80 overflow-hidden animate-pulse">
+                <div className="p-6 pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-full bg-stone-200" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 bg-stone-200 rounded w-28" />
+                      <div className="flex gap-2">
+                        <div className="h-5 bg-stone-100 rounded-full w-14" />
+                        <div className="h-5 bg-stone-100 rounded-full w-16" />
+                      </div>
+                    </div>
+                    <div className="w-16 h-12 bg-stone-100 rounded-xl" />
+                  </div>
+                </div>
+                <div className="px-6 pb-4 space-y-3">
+                  <div className="bg-stone-50 rounded-xl p-4 space-y-2">
+                    <div className="h-3 bg-stone-200 rounded w-full" />
+                    <div className="h-3 bg-stone-200 rounded w-4/5" />
+                    <div className="h-3 bg-stone-200 rounded w-3/5" />
+                  </div>
+                  <div className="flex gap-4 pt-2">
+                    <div className="h-4 bg-stone-100 rounded w-12" />
+                    <div className="h-4 bg-stone-100 rounded w-12" />
+                    <div className="h-4 bg-stone-100 rounded w-12" />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         ) : sortedTweets.length === 0 ? (
           <div className="flex flex-col items-center justify-center min-h-[40vh]">
@@ -421,17 +493,16 @@ export default function Dashboard() {
                 ))}
               </div>
             ) : (
-              <div className="columns-1 lg:columns-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
                 {paginatedTweets.map((tweet, index) => (
-                  <div key={tweet.url} className="mb-6 break-inside-avoid">
-                    <TweetCard 
-                      tweet={tweet} 
-                      index={(currentPage - 1) * itemsPerPage + index}
-                      showComments={true}
-                      collapsible={true}
-                      isNew={isTweetNew(tweet, recentRunAts)}
-                    />
-                  </div>
+                  <TweetCard 
+                    key={tweet.url}
+                    tweet={tweet} 
+                    index={(currentPage - 1) * itemsPerPage + index}
+                    showComments={true}
+                    collapsible={true}
+                    isNew={isTweetNew(tweet, recentRunAts)}
+                  />
                 ))}
               </div>
             )}
@@ -447,7 +518,7 @@ export default function Dashboard() {
           </>
         )}
         {showRefreshOverlay && (
-          <div className="absolute inset-0 bg-[#FAF9F7]/60 backdrop-blur-[1px] flex items-center justify-center rounded-2xl">
+          <div className="absolute inset-0 bg-background/60 backdrop-blur-[1px] flex items-center justify-center rounded-2xl">
             <div className="flex items-center gap-3 px-4 py-2 bg-white/90 border border-stone-200/60 rounded-full shadow-sm">
               <div className="animate-spin rounded-full h-4 w-4 border-2 border-amber-200 border-t-amber-500"></div>
               <span className="text-sm text-stone-500">更新中</span>
@@ -458,22 +529,11 @@ export default function Dashboard() {
 
       {/* Selected Tweet Modal (for list view) */}
       {selectedTweet && (
-        <div 
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          onClick={() => setSelectedTweet(null)}
-        >
-          <div 
-            className="max-w-2xl w-full max-h-[90vh] overflow-y-auto rounded-2xl animate-slide-up"
-            onClick={e => e.stopPropagation()}
-          >
-            <TweetCard 
-              tweet={selectedTweet} 
-              index={selectedTweet.rank}
-              showComments={true}
-              isNew={isTweetNew(selectedTweet, recentRunAts)}
-            />
-          </div>
-        </div>
+        <TweetModal
+          tweet={selectedTweet}
+          recentRunAts={recentRunAts}
+          onClose={() => setSelectedTweet(null)}
+        />
       )}
 
       {/* Feedback Modal for downvote */}

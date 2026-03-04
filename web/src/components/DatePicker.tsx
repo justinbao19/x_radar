@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Calendar, ChevronDown, Info } from 'lucide-react';
 import { RunCountPreset, RUNS_PER_DAY } from '@/lib/types';
+import { BottomSheet } from './BottomSheet';
 
 interface DatePickerProps {
   value: RunCountPreset;
@@ -20,7 +21,6 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
   const [showTooltip, setShowTooltip] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Click outside to close
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
@@ -38,13 +38,29 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
     setOpen(false);
   };
 
-  // Get display label for button
   const activePreset = presets.find(p => p.key === value);
   const displayLabel = activePreset?.label || '近 7 天';
 
+  const optionsList = (
+    <div className="space-y-1">
+      {presets.map(preset => (
+        <button
+          key={preset.key}
+          onClick={() => handlePresetClick(preset.key)}
+          className={`w-full flex items-center px-3 py-2.5 sm:py-2 rounded-xl sm:rounded-lg text-sm font-medium transition-colors ${
+            value === preset.key
+              ? 'bg-stone-800 text-white'
+              : 'text-stone-600 hover:bg-stone-100'
+          }`}
+        >
+          {preset.label}
+        </button>
+      ))}
+    </div>
+  );
+
   return (
     <div ref={containerRef} className="relative inline-flex items-center shrink-0 gap-1">
-      {/* Trigger Button */}
       <button
         type="button"
         onClick={() => setOpen(!open)}
@@ -57,7 +73,6 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
         <ChevronDown className={`w-3.5 h-3.5 text-stone-400 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
-      {/* Info Icon with Tooltip */}
       <div className="relative">
         <button
           type="button"
@@ -69,9 +84,8 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
           <Info className="w-4 h-4" />
         </button>
         
-        {/* Tooltip - z-[100] ensures it's above dropdown (z-50) */}
         {showTooltip && (
-          <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 z-[100] w-48 p-2.5 bg-stone-800 text-white text-xs rounded-lg shadow-xl">
+          <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 z-100 w-48 p-2.5 bg-stone-800 text-white text-xs rounded-lg shadow-xl">
             <div className="font-medium mb-1.5">按爬取次数筛选</div>
             <div className="space-y-1 text-stone-300">
               <div>今天 = 最近 {RUNS_PER_DAY} 次</div>
@@ -81,42 +95,24 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
             <div className="mt-2 pt-2 border-t border-stone-700 text-stone-400">
               每天爬取 {RUNS_PER_DAY} 次
             </div>
-            {/* Arrow */}
             <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-stone-800 rotate-45" />
           </div>
         )}
       </div>
 
-      {/* Dropdown Panel */}
+      {/* Desktop dropdown */}
       {open && (
-        <>
-          {/* Mobile backdrop */}
-          <div 
-            className="fixed inset-0 bg-black/20 z-40 sm:hidden" 
-            onClick={() => setOpen(false)}
-          />
-          <div className="fixed left-4 right-4 top-1/3 z-50 w-auto max-w-[200px] mx-auto sm:absolute sm:left-0 sm:right-auto sm:top-full sm:mt-2 sm:w-auto sm:max-w-none sm:mx-0">
-            <div className="bg-white rounded-xl border border-stone-200 shadow-lg overflow-hidden animate-fade-in">
-              <div className="p-1.5">
-                <div className="text-xs text-stone-400 px-2 py-1 sm:hidden">选择时间范围</div>
-                {presets.map(preset => (
-                  <button
-                    key={preset.key}
-                    onClick={() => handlePresetClick(preset.key)}
-                    className={`w-full flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      value === preset.key
-                        ? 'bg-stone-800 text-white'
-                        : 'text-stone-600 hover:bg-stone-100'
-                    }`}
-                  >
-                    {preset.label}
-                  </button>
-                ))}
-              </div>
-            </div>
+        <div className="hidden sm:block absolute left-0 top-full mt-2 z-50 w-auto">
+          <div className="bg-white rounded-xl border border-stone-200 shadow-lg overflow-hidden animate-fade-in p-1.5">
+            {optionsList}
           </div>
-        </>
+        </div>
       )}
+
+      {/* Mobile bottom sheet */}
+      <BottomSheet open={open} onClose={() => setOpen(false)} title="选择时间范围">
+        {optionsList}
+      </BottomSheet>
     </div>
   );
 }

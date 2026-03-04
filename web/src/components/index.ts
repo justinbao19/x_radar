@@ -12,3 +12,4 @@ export { SortSelector } from './SortSelector';
 export { LanguageFilter } from './LanguageFilter';
 export { VoteButtons } from './VoteButtons';
 export { FeedbackModal } from './FeedbackModal';
+export { BottomSheet } from './BottomSheet';

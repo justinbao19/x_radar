@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { Tweet, ReplyOption, TweetComments } from '@/lib/types';
 import { formatNumber, formatDateTime, formatRelativeTime } from '@/lib/data';
 import { VoteButtons } from './VoteButtons';
+import { useToast } from '@/lib/ToastContext';
+import { getGroupLabel, getGroupColor, getSentimentStyle, getInsightStyle, getScoreStyle, languageMap } from '@/lib/styles';
 
 interface TweetCardProps {
   tweet: Tweet;
@@ -13,7 +15,6 @@ interface TweetCardProps {
   isNew?: boolean;
 }
 
-// Comment generation states
 type CommentState = 'idle' | 'loading' | 'success' | 'error';
 
 function ReplyOptionCard({ 
@@ -28,13 +29,13 @@ function ReplyOptionCard({
   const riskColors = {
     low: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
     medium: 'bg-amber-50 text-amber-700 border border-amber-200',
-    high: 'bg-red-50 text-red-700 border border-red-200'
+    high: 'bg-red-50 text-red-700 border border-red-200',
   };
 
   const riskLabels = {
     low: '低风险',
     medium: '中风险',
-    high: '高风险'
+    high: '高风险',
   };
 
   const [showExplain, setShowExplain] = useState(false);
@@ -42,7 +43,7 @@ function ReplyOptionCard({
   return (
     <div className={`p-4 rounded-xl border transition-all ${
       isRecommended 
-        ? 'border-amber-300 bg-gradient-to-br from-amber-50/80 to-orange-50/50 shadow-sm' 
+        ? 'border-amber-300 bg-linear-to-br from-amber-50/80 to-orange-50/50 shadow-sm' 
         : 'border-stone-200 bg-white hover:border-stone-300'
     }`}>
       {isRecommended && (
@@ -54,13 +55,12 @@ function ReplyOptionCard({
         </div>
       )}
       
-      <p className="text-stone-700 text-sm leading-relaxed mb-2 pr-16">
+      <p className="text-stone-700 text-sm leading-relaxed mb-2 sm:pr-16">
         {option.comment}
       </p>
       
-      {/* Comment Translation */}
       {option.comment_zh && (
-        <p className="text-stone-500 text-xs leading-relaxed mb-3 pr-16 pl-3 border-l-2 border-amber-300 bg-amber-50/30 py-1 rounded-r">
+        <p className="text-stone-500 text-xs leading-relaxed mb-3 sm:pr-16 pl-3 border-l-2 border-amber-300 bg-amber-50/30 py-1 rounded-r">
           {option.comment_zh}
         </p>
       )}
@@ -111,81 +111,22 @@ function ReplyOptionCard({
   );
 }
 
-// 根据分数返回对应的样式类
-function getScoreStyle(score: number): { bg: string; text: string; label: string } {
-  if (score >= 500) {
-    // 传奇级 - 紫金渐变
-    return {
-      bg: 'bg-gradient-to-br from-amber-50 via-orange-50 to-purple-50 border-amber-300/60',
-      text: 'bg-gradient-to-r from-amber-600 via-orange-500 to-purple-600 bg-clip-text text-transparent',
-      label: '传奇'
-    };
-  } else if (score >= 200) {
-    // 优秀 - 橙色渐变
-    return {
-      bg: 'bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200/60',
-      text: 'bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent',
-      label: '优秀'
-    };
-  } else if (score >= 100) {
-    // 良好 - 蓝色渐变
-    return {
-      bg: 'bg-gradient-to-br from-sky-50 to-blue-50 border-sky-200/60',
-      text: 'bg-gradient-to-r from-sky-500 to-blue-500 bg-clip-text text-transparent',
-      label: '良好'
-    };
-  } else if (score >= 50) {
-    // 普通 - 绿灰色
-    return {
-      bg: 'bg-stone-50 border-stone-200/60',
-      text: 'text-stone-600',
-      label: '普通'
-    };
-  } else {
-    // 较低 - 灰色
-    return {
-      bg: 'bg-stone-50 border-stone-100',
-      text: 'text-stone-400',
-      label: '一般'
-    };
-  }
-}
-
 export function TweetCard({ tweet, index, showComments = true, collapsible = false, isNew = false }: TweetCardProps) {
   const [activeTab, setActiveTab] = useState<number>(0);
-  const [copied, setCopied] = useState(false);
   const [commentsExpanded, setCommentsExpanded] = useState(false);
+  const { showToast } = useToast();
   
-  // On-demand comment generation states
   const [commentState, setCommentState] = useState<CommentState>('idle');
   const [generatedComments, setGeneratedComments] = useState<TweetComments | null>(null);
   const [commentError, setCommentError] = useState<string | null>(null);
 
-  const languageMap: Record<string, { flag: string; label: string }> = {
-    en: { flag: '🇺🇸', label: '英语' },
-    ja: { flag: '🇯🇵', label: '日语' },
-    zh: { flag: '🇨🇳', label: '中文' },
-    ko: { flag: '🇰🇷', label: '韩语' },
-    fr: { flag: '🇫🇷', label: '法语' },
-    de: { flag: '🇩🇪', label: '德语' },
-    es: { flag: '🇪🇸', label: '西班牙语' },
-    pt: { flag: '🇵🇹', label: '葡萄牙语' },
-    ru: { flag: '🇷🇺', label: '俄语' },
-    other: { flag: '🌐', label: '其他' }
-  };
-  
-  // Reset expanded state when collapsible changes
   useEffect(() => {
     setCommentsExpanded(!collapsible && showComments);
   }, [collapsible, showComments]);
   
-  // Use generated comments if available, otherwise use from data
   const displayComments = generatedComments || tweet.comments;
-  
-  // Check if tweet has comments to show (either pre-generated or on-demand generated)
   const hasComments = displayComments?.options?.length || tweet.commentSkipped || tweet.commentError || commentState !== 'idle';
   
-  // Generate comments on demand
   const handleGenerateComment = async () => {
     if (commentState === 'loading') return;
     
@@ -199,8 +140,8 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
         body: JSON.stringify({
           tweetUrl: tweet.url,
           tweetText: tweet.text,
-          language: tweet.detectedLanguage || 'other'
-        })
+          language: tweet.detectedLanguage || 'other',
+        }),
       });
       
       const data = await response.json();
@@ -219,54 +160,10 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
     }
   };
 
-  const groupLabels: Record<string, string> = {
-    pain: '痛点',
-    reach: '传播',
-    kol: 'KOL',
-    sentiment: '舆情',
-    insight: '洞察'
-  };
-  const groupLabel = tweet.originalGroup === 'kol' ? 'KOL' : groupLabels[tweet.group] || tweet.group;
-  
-  // Group color based on group type
-  const getGroupColor = () => {
-    if (tweet.group === 'pain') return 'bg-rose-50 text-rose-700 border border-rose-200/50';
-    if (tweet.originalGroup === 'kol') return 'bg-purple-50 text-purple-700 border border-purple-200/50';
-    if (tweet.group === 'sentiment') return 'bg-orange-50 text-orange-700 border border-orange-200/50';
-    if (tweet.group === 'insight') return 'bg-cyan-50 text-cyan-700 border border-cyan-200/50';
-    return 'bg-sky-50 text-sky-700 border border-sky-200/50';
-  };
-  const groupColor = getGroupColor();
-  
-  // Sentiment label styling
-  const getSentimentStyle = () => {
-    switch (tweet.sentimentLabel) {
-      case 'negative':
-        return { label: '需关注', color: 'bg-red-100 text-red-700 border border-red-300', icon: '⚠️' };
-      case 'positive':
-        return { label: '积极', color: 'bg-green-50 text-green-700 border border-green-200', icon: '✓' };
-      case 'neutral':
-        return { label: '中性', color: 'bg-stone-100 text-stone-600 border border-stone-200', icon: '○' };
-      default:
-        return null;
-    }
-  };
-  const sentimentStyle = getSentimentStyle();
-  
-  // Insight type label styling
-  const getInsightStyle = () => {
-    switch (tweet.insightType) {
-      case 'feature_request':
-        return { label: '功能需求', color: 'bg-amber-50 text-amber-700 border border-amber-200' };
-      case 'competitor_praise':
-        return { label: '竞品好评', color: 'bg-indigo-50 text-indigo-700 border border-indigo-200' };
-      case 'ai_demand':
-        return { label: 'AI需求', color: 'bg-cyan-50 text-cyan-700 border border-cyan-200' };
-      default:
-        return null;
-    }
-  };
-  const insightStyle = getInsightStyle();
+  const groupLabel = getGroupLabel(tweet);
+  const groupColor = getGroupColor(tweet);
+  const sentimentStyle = getSentimentStyle(tweet.sentimentLabel);
+  const insightStyle = getInsightStyle(tweet.insightType);
   
   const authorHandle = tweet.author?.startsWith('@') ? tweet.author : `@${tweet.author}`;
   const authorUrl = `https://x.com/${authorHandle.slice(1)}`;
@@ -274,11 +171,9 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    showToast('已复制到剪贴板');
   };
 
-  // Sort options and find recommended (use displayComments instead of tweet.comments)
   const angleOrder = ['witty', 'practical', 'subtle_product'];
   const sortedOptions = displayComments?.options 
     ? [...displayComments.options].sort((a, b) => 
@@ -288,7 +183,6 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
   
   const recommendedIndex = sortedOptions.findIndex(opt => opt.recommended);
   
-  // Set initial active tab when tweet changes
   useEffect(() => {
     if (recommendedIndex >= 0) {
       setActiveTab(recommendedIndex);
@@ -300,30 +194,70 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
   const tabLabels: Record<string, string> = {
     witty: '机智风格',
     practical: '务实风格',
-    subtle_product: '产品植入'
+    subtle_product: '产品植入',
   };
   const detectedLang = (tweet.detectedLanguage || 'unknown').toLowerCase();
   const languageInfo = languageMap[detectedLang] || { flag: '❔', label: '未知' };
 
-  // Special styling for negative sentiment tweets
   const isNegativeSentiment = tweet.sentimentLabel === 'negative';
   const cardBorderClass = isNegativeSentiment 
     ? 'border-red-300 ring-2 ring-red-100' 
     : 'border-stone-200/80 hover:border-stone-300';
   
+  const scoreStyle = getScoreStyle(tweet.finalScore);
+  
   return (
-    <article className={`bg-white rounded-2xl border overflow-hidden hover:shadow-xl hover:shadow-stone-200/50 transition-all duration-300 card-hover break-inside-avoid relative ${cardBorderClass}`}>
+    <article className={`bg-white rounded-2xl border overflow-hidden hover:shadow-lg hover:shadow-stone-200/50 transition-all duration-300 card-hover break-inside-avoid relative ${cardBorderClass}`}>
       {/* Header */}
-      <div className="p-6 pb-4 relative">
-        {/* New Badge */}
+      <div className="p-4 sm:p-6 pb-3 sm:pb-4 relative">
         {isNew && (
-          <span className="absolute top-3 right-3 z-10 px-2 py-0.5 text-[10px] sm:text-xs font-bold bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full shadow-md shadow-emerald-500/25 animate-pulse-soft">
+          <span className="absolute top-3 right-3 z-10 px-2 py-0.5 text-[10px] sm:text-xs font-bold bg-linear-to-r from-emerald-500 to-teal-500 text-white rounded-full shadow-md shadow-emerald-500/25 animate-pulse-soft">
             New
           </span>
         )}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+
+        {/* Mobile: compact header */}
+        <div className="flex items-center gap-3 sm:hidden">
+          <div className="w-9 h-9 rounded-full bg-linear-to-br from-stone-100 to-stone-200 flex items-center justify-center text-stone-600 font-semibold text-base border border-stone-200/50 shrink-0">
+            {initial}
+          </div>
+          <div className="min-w-0 flex-1">
+            <a 
+              href={authorUrl} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block max-w-[160px] truncate font-semibold text-stone-800 hover:text-amber-600 transition-colors text-sm"
+            >
+              {authorHandle}
+            </a>
+            <div className="flex items-center gap-1.5 mt-1">
+              <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${groupColor}`}>
+                {groupLabel}
+              </span>
+              {sentimentStyle && (
+                <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-0.5 ${sentimentStyle.color}`}>
+                  <span>{sentimentStyle.icon}</span>
+                  {sentimentStyle.label}
+                </span>
+              )}
+              {insightStyle && (
+                <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${insightStyle.color}`}>
+                  {insightStyle.label}
+                </span>
+              )}
+            </div>
+          </div>
+          <div className={`text-right px-2.5 py-1.5 rounded-lg border shrink-0 ${scoreStyle.bg}`}>
+            <div className={`text-lg font-bold leading-tight ${scoreStyle.text}`}>
+              {formatNumber(tweet.finalScore)}
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop: full header */}
+        <div className="hidden sm:flex sm:items-start sm:justify-between">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-11 h-11 rounded-full bg-gradient-to-br from-stone-100 to-stone-200 flex items-center justify-center text-stone-600 font-semibold text-lg border border-stone-200/50">
+            <div className="w-11 h-11 rounded-full bg-linear-to-br from-stone-100 to-stone-200 flex items-center justify-center text-stone-600 font-semibold text-lg border border-stone-200/50">
               {initial}
             </div>
             <div className="min-w-0">
@@ -331,22 +265,20 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
                 href={authorUrl} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="block max-w-[180px] truncate font-semibold text-stone-800 hover:text-amber-600 transition-colors sm:max-w-none"
+                className="block font-semibold text-stone-800 hover:text-amber-600 transition-colors"
               >
                 {authorHandle}
               </a>
-              <div className="hidden sm:flex flex-wrap items-center gap-1.5 mt-1.5">
+              <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
                 <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${groupColor}`}>
                   {groupLabel}
                 </span>
-                {/* Sentiment Label */}
                 {sentimentStyle && (
                   <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1 ${sentimentStyle.color}`}>
                     <span>{sentimentStyle.icon}</span>
                     {sentimentStyle.label}
                   </span>
                 )}
-                {/* Insight Type Label */}
                 {insightStyle && (
                   <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${insightStyle.color}`}>
                     {insightStyle.label}
@@ -359,7 +291,6 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
                 >
                   <span>{languageInfo.flag}</span>
                 </span>
-                {/* 发布时间戳 */}
                 <span className="text-xs text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-full border border-stone-200/50 flex items-center gap-1">
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -367,7 +298,7 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
                   {formatRelativeTime(tweet.datetime)}
                 </span>
                 {tweet.aiPicked !== false && (
-                  <span className="text-xs font-semibold text-amber-700 bg-gradient-to-r from-amber-100 to-orange-100 px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-amber-200/50">
+                  <span className="text-xs font-semibold text-amber-700 bg-linear-to-r from-amber-100 to-orange-100 px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-amber-200/50">
                     <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2Z"/>
                     </svg>
@@ -377,85 +308,27 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
               </div>
             </div>
           </div>
-          <div className="hidden sm:block shrink-0">
-            {(() => {
-              const scoreStyle = getScoreStyle(tweet.finalScore);
-              return (
-                <div className={`text-right px-3 py-2 rounded-xl border ${scoreStyle.bg}`}>
-                  <div className={`text-xl font-bold ${scoreStyle.text}`}>
-                    {formatNumber(tweet.finalScore)}
-                  </div>
-                  <div className="text-xs text-stone-400 uppercase tracking-wide">Score</div>
-                </div>
-              );
-            })()}
-          </div>
-          <div className="flex flex-wrap items-center gap-2 sm:hidden">
-            <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${groupColor}`}>
-              {groupLabel}
-            </span>
-            {/* Sentiment Label - Mobile */}
-            {sentimentStyle && (
-              <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1 ${sentimentStyle.color}`}>
-                <span>{sentimentStyle.icon}</span>
-                {sentimentStyle.label}
-              </span>
-            )}
-            {/* Insight Type Label - Mobile */}
-            {insightStyle && (
-              <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${insightStyle.color}`}>
-                {insightStyle.label}
-              </span>
-            )}
-            <span
-              className="text-xs text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-full border border-stone-200/50 flex items-center gap-1"
-              title={languageInfo.label}
-              aria-label={languageInfo.label}
-            >
-              <span>{languageInfo.flag}</span>
-            </span>
-            <span className="text-xs text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-full border border-stone-200/50 flex items-center gap-1">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              {formatRelativeTime(tweet.datetime)}
-            </span>
-            {tweet.aiPicked !== false && (
-              <span className="text-xs font-semibold text-amber-700 bg-gradient-to-r from-amber-100 to-orange-100 px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-amber-200/50">
-                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2Z"/>
-                </svg>
-                精选
-              </span>
-            )}
-            <div className="ml-auto shrink-0">
-              {(() => {
-                const scoreStyle = getScoreStyle(tweet.finalScore);
-                return (
-                  <div className={`text-right px-3 py-2 rounded-xl border ${scoreStyle.bg}`}>
-                    <div className={`text-xl font-bold ${scoreStyle.text}`}>
-                      {formatNumber(tweet.finalScore)}
-                    </div>
-                    <div className="text-xs text-stone-400 uppercase tracking-wide">Score</div>
-                  </div>
-                );
-              })()}
+          <div className="shrink-0">
+            <div className={`text-right px-3 py-2 rounded-xl border ${scoreStyle.bg}`}>
+              <div className={`text-xl font-bold ${scoreStyle.text}`}>
+                {formatNumber(tweet.finalScore)}
+              </div>
+              <div className="text-xs text-stone-400 uppercase tracking-wide">Score</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="px-6 pb-4">
-        <div className="bg-gradient-to-r from-stone-50 to-stone-100/50 rounded-xl p-4 border-l-4 border-stone-300">
+      <div className="px-4 sm:px-6 pb-4">
+        <div className="bg-linear-to-r from-stone-50 to-stone-100/50 rounded-xl p-3 sm:p-4 border-l-4 border-stone-300">
           <p className="text-stone-700 text-sm leading-relaxed whitespace-pre-wrap">
             {tweet.text || '无内容'}
           </p>
         </div>
 
-        {/* Translation - from pipeline translationZh field or legacy comments.tweetTranslationZh */}
         {(tweet.translationZh || tweet.comments?.tweetTranslationZh) && tweet.detectedLanguage !== 'zh' && (
-          <div className="mt-3 bg-gradient-to-r from-sky-50 to-cyan-50 rounded-xl p-4 border-l-4 border-sky-400">
+          <div className="mt-3 bg-linear-to-r from-sky-50 to-cyan-50 rounded-xl p-3 sm:p-4 border-l-4 border-sky-400">
             <div className="flex items-center gap-1.5 text-sky-600 text-xs font-semibold mb-2">
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 19l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
@@ -468,7 +341,7 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
           </div>
         )}
 
-        {/* Metrics */}
+        {/* Metrics + Actions */}
         <div className="flex flex-wrap items-center gap-3 sm:gap-4 mt-4 text-stone-500">
           <div className="flex items-center gap-1.5 text-sm hover:text-rose-500 transition-colors cursor-default">
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -489,8 +362,8 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
             <span className="font-medium">{formatNumber(tweet.replies)}</span>
           </div>
           
-          {/* Vote Buttons - Rating the tweet quality */}
-          <div className="hidden sm:flex items-center ml-2 pl-3 border-l border-stone-200">
+          {/* Vote Buttons - visible on all screen sizes */}
+          <div className="flex items-center ml-1 pl-2 sm:ml-2 sm:pl-3 border-l border-stone-200">
             <VoteButtons 
               tweetUrl={tweet.url}
               tweetText={tweet.text}
@@ -503,7 +376,7 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
             href={tweet.url} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="w-full sm:w-auto sm:ml-auto inline-flex items-center justify-center gap-2 px-5 py-2 bg-gradient-to-r from-stone-800 to-stone-900 text-white text-sm font-medium rounded-full hover:from-stone-700 hover:to-stone-800 transition-all shadow-lg shadow-stone-900/20 hover:shadow-stone-900/30"
+            className="w-full sm:w-auto sm:ml-auto inline-flex items-center justify-center gap-2 px-5 py-2 bg-linear-to-r from-stone-800 to-stone-900 text-white text-sm font-medium rounded-full hover:from-stone-700 hover:to-stone-800 transition-all shadow-md shadow-stone-900/20 hover:shadow-stone-900/30"
           >
             查看原推文
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -511,14 +384,25 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
             </svg>
           </a>
         </div>
+
+        {/* Mobile-only: secondary info row */}
+        <div className="flex items-center gap-2 mt-3 text-xs text-stone-400 sm:hidden flex-wrap">
+          <span className="flex items-center gap-1">
+            {languageInfo.flag}
+          </span>
+          <span>{formatRelativeTime(tweet.datetime)}</span>
+          {tweet.aiPicked !== false && (
+            <span className="text-[11px] font-semibold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">
+              精选
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Comments Section */}
       {(showComments || collapsible) && (
-        <div className="bg-gradient-to-b from-stone-50 to-stone-100/50 border-t border-stone-200/80">
-          {/* Generate Button or Collapsible Toggle */}
+        <div className="bg-linear-to-b from-stone-50 to-stone-100/50 border-t border-stone-200/80">
           {commentState === 'idle' && !displayComments?.options?.length && !tweet.commentSkipped ? (
-            // Show generate button when no comments exist
             <button
               onClick={handleGenerateComment}
               className="w-full px-6 py-3.5 flex items-center justify-center gap-2 text-sm font-medium text-amber-600 hover:bg-amber-50/50 transition-colors"
@@ -550,7 +434,6 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
             </button>
           ) : null}
           
-          {/* Loading State */}
           {commentState === 'loading' && (
             <div className="px-6 py-8 flex flex-col items-center justify-center gap-3">
               <div className="w-8 h-8 border-3 border-amber-200 border-t-amber-500 rounded-full animate-spin"></div>
@@ -558,7 +441,6 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
             </div>
           )}
           
-          {/* Error State */}
           {commentState === 'error' && (
             <div className="p-6 pt-4">
               <div className="bg-red-50 border border-red-200/80 rounded-xl p-4 text-red-800 text-sm">
@@ -573,9 +455,8 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
             </div>
           )}
           
-          {/* Comments Content */}
           {((collapsible ? commentsExpanded : showComments) || commentState === 'success') && hasComments && commentState !== 'loading' && commentState !== 'error' && (
-            <div className="p-6 pt-4">
+            <div className="p-4 sm:p-6 pt-4">
               {tweet.commentSkipped ? (
                 <div className="bg-amber-50 border border-amber-200/80 rounded-xl p-4 text-amber-800 text-sm">
                   <strong>已跳过：</strong> {tweet.skipReason}
@@ -592,12 +473,10 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
                         实时生成
                       </span>
                     )}
-                    <div className="flex-1 h-px bg-gradient-to-r from-stone-200 to-transparent"></div>
+                    <div className="flex-1 h-px bg-linear-to-r from-stone-200 to-transparent"></div>
                   </div>
                   
-                  {/* Tabs with sliding indicator */}
                   <div className="relative flex p-1.5 bg-stone-100 rounded-2xl border border-stone-200/80 mb-4 shadow-sm">
-                    {/* Sliding background indicator */}
                     <div 
                       className="absolute top-1.5 bottom-1.5 rounded-xl transition-all duration-300 ease-out"
                       style={{
@@ -608,14 +487,14 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
                           : 'white',
                         boxShadow: sortedOptions[activeTab]?.recommended
                           ? '0 4px 6px -1px rgba(245, 158, 11, 0.25), 0 2px 4px -2px rgba(245, 158, 11, 0.15)'
-                          : '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)'
+                          : '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
                       }}
                     />
                     {sortedOptions.map((opt, i) => (
                       <button
                         key={opt.angle}
                         onClick={() => setActiveTab(i)}
-                        className={`relative z-10 flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-200 ${
+                        className={`relative z-10 flex-1 flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-colors duration-200 ${
                           activeTab === i
                             ? opt.recommended
                               ? 'text-white'
@@ -626,7 +505,7 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
                         }`}
                       >
                         {opt.recommended && (
-                          <svg className={`w-3.5 h-3.5 transition-transform duration-200 ${activeTab === i ? 'scale-110' : ''}`} viewBox="0 0 24 24" fill="currentColor">
+                          <svg className={`w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform duration-200 ${activeTab === i ? 'scale-110' : ''}`} viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2Z"/>
                           </svg>
                         )}
@@ -635,7 +514,6 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
                     ))}
                   </div>
 
-                  {/* Active Option */}
                   {sortedOptions[activeTab] && (
                     <ReplyOptionCard
                       option={sortedOptions[activeTab]}
@@ -651,16 +529,6 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
               )}
             </div>
           )}
-        </div>
-      )}
-
-      {/* Toast */}
-      {copied && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-gradient-to-r from-stone-800 to-stone-900 text-white px-6 py-3 rounded-xl shadow-2xl z-50 animate-fade-in flex items-center gap-2">
-          <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-          已复制到剪贴板
         </div>
       )}
     </article>

@@ -1,33 +1,41 @@
 @import "tailwindcss";
 
-/* Claude-inspired warm color palette */
+@theme {
+  --color-background: #FAF9F7;
+  --color-background-secondary: #F5F3EF;
+  --color-background-tertiary: #EFEDE8;
+  --color-foreground: #1A1915;
+  --color-foreground-secondary: #5D5A52;
+  --color-foreground-muted: #8A8680;
+  --color-primary: #D97706;
+  --color-primary-hover: #B45309;
+  --color-primary-light: #FEF3C7;
+  --color-primary-muted: #FBBF24;
+  --color-accent: #DC7B5C;
+  --color-accent-hover: #C4694D;
+  --color-accent-light: #FDF2EF;
+  --color-border: #E7E5E0;
+  --color-border-hover: #D4D1CA;
+  --color-card: #FFFFFF;
+  --color-card-hover: #FDFCFA;
+}
+
 :root {
-  /* Background colors - warm cream tones */
   --background: #FAF9F7;
   --background-secondary: #F5F3EF;
   --background-tertiary: #EFEDE8;
-  
-  /* Foreground/Text colors */
   --foreground: #1A1915;
   --foreground-secondary: #5D5A52;
   --foreground-muted: #8A8680;
-  
-  /* Primary accent - warm terracotta/amber */
   --primary: #D97706;
   --primary-hover: #B45309;
   --primary-light: #FEF3C7;
   --primary-muted: #FBBF24;
-  
-  /* Secondary accent - warm coral */
   --accent: #DC7B5C;
   --accent-hover: #C4694D;
   --accent-light: #FDF2EF;
-  
-  /* Borders and dividers */
   --border: #E7E5E0;
   --border-hover: #D4D1CA;
-  
-  /* Status colors - warmed versions */
   --success: #65A30D;
   --success-light: #ECFCCB;
   --warning: #D97706;
@@ -36,12 +44,8 @@
   --error-light: #FEE2E2;
   --info: #0891B2;
   --info-light: #CFFAFE;
-  
-  /* Card and surface */
   --card: #FFFFFF;
   --card-hover: #FDFCFA;
-  
-  /* Special - AI/精选 highlight */
   --ai-picked: #D97706;
   --ai-picked-light: #FEF3C7;
 }
@@ -168,14 +172,14 @@ button {
   transition: all 0.15s ease;
 }
 
-/* Card hover effect */
+/* Card hover effect - consistent shadow elevation */
 .card-hover {
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px -5px rgba(26, 25, 21, 0.1), 0 4px 10px -5px rgba(26, 25, 21, 0.04);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px -4px rgba(26, 25, 21, 0.1), 0 2px 6px -2px rgba(26, 25, 21, 0.05);
 }
 
 /* Hide scrollbar but keep scroll functionality */

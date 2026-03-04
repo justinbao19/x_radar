@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { CategoryFilter as CategoryFilterType, RadarCategory, Tweet } from '@/lib/types';
 import { isTweetNew, TweetStats } from '@/lib/data';
+import { BottomSheet } from './BottomSheet';
 
 interface CategoryFilterProps {
   value: CategoryFilterType[];
@@ -15,7 +16,6 @@ interface CategoryFilterProps {
 
 type FilterOption = { key: CategoryFilterType; label: string; color: string; activeColor: string };
 
-// Pain Radar filters
 const painRadarFilters: FilterOption[] = [
   { key: 'all', label: '全部', color: 'bg-stone-500', activeColor: 'bg-gradient-to-r from-stone-700 to-stone-800' },
   { key: 'new', label: '新推文', color: 'bg-emerald-500', activeColor: 'bg-gradient-to-r from-emerald-500 to-teal-500' },
@@ -24,7 +24,6 @@ const painRadarFilters: FilterOption[] = [
   { key: 'kol', label: 'KOL', color: 'bg-purple-500', activeColor: 'bg-gradient-to-r from-purple-500 to-purple-600' },
 ];
 
-// Sentiment filters (Filo舆情)
 const sentimentFilters: FilterOption[] = [
   { key: 'all', label: '全部', color: 'bg-stone-500', activeColor: 'bg-gradient-to-r from-stone-700 to-stone-800' },
   { key: 'new', label: '新推文', color: 'bg-emerald-500', activeColor: 'bg-gradient-to-r from-emerald-500 to-teal-500' },
@@ -33,7 +32,6 @@ const sentimentFilters: FilterOption[] = [
   { key: 'neutral', label: '中性', color: 'bg-stone-400', activeColor: 'bg-gradient-to-r from-stone-500 to-stone-600' },
 ];
 
-// Insight filters (用户洞察)
 const insightFilters: FilterOption[] = [
   { key: 'all', label: '全部', color: 'bg-stone-500', activeColor: 'bg-gradient-to-r from-stone-700 to-stone-800' },
   { key: 'new', label: '新推文', color: 'bg-emerald-500', activeColor: 'bg-gradient-to-r from-emerald-500 to-teal-500' },
@@ -46,7 +44,6 @@ export function CategoryFilter({ value, onChange, stats, radarCategory = 'pain_r
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Select filters based on radar category
   const categories = useMemo(() => {
     switch (radarCategory) {
       case 'filo_sentiment':
@@ -85,7 +82,6 @@ export function CategoryFilter({ value, onChange, stats, radarCategory = 'pain_r
   }, []);
 
   const getCount = (key: CategoryFilterType): number | undefined => {
-    // For pain radar, use stats
     if (radarCategory === 'pain_radar' && stats) {
       switch (key) {
         case 'all': return stats.total;
@@ -96,7 +92,6 @@ export function CategoryFilter({ value, onChange, stats, radarCategory = 'pain_r
       }
     }
     
-    // For sentiment and insight, count from radarFilteredTweets
     if (radarCategory === 'filo_sentiment') {
       switch (key) {
         case 'all': return radarFilteredTweets.length;
@@ -128,6 +123,41 @@ export function CategoryFilter({ value, onChange, stats, radarCategory = 'pain_r
       .join(' / ') || '全部';
   }, [value, categories]);
 
+  const optionsList = (
+    <div className="space-y-1">
+      {categories.map(cat => {
+        const isActive = value.includes(cat.key);
+        const count = getCount(cat.key);
+
+        return (
+          <button
+            key={cat.key}
+            onClick={() => handleClick(cat.key)}
+            className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 sm:px-2 sm:py-1.5 rounded-xl sm:rounded-lg text-sm font-medium transition-colors ${
+              isActive
+                ? 'bg-stone-800 text-white'
+                : 'text-stone-600 hover:bg-stone-100'
+            }`}
+            role="option"
+            aria-selected={isActive}
+          >
+            <span className="flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full ${cat.color}`} />
+              {cat.label}
+            </span>
+            {count !== undefined && (
+              <span className={`text-xs ${
+                isActive ? 'text-stone-300' : 'text-stone-400'
+              }`}>
+                {count}
+              </span>
+            )}
+          </button>
+        );
+      })}
+    </div>
+  );
+
   return (
     <div ref={containerRef} className="relative inline-flex items-center shrink-0">
       <button
@@ -143,52 +173,21 @@ export function CategoryFilter({ value, onChange, stats, radarCategory = 'pain_r
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
-      {open && (
-        <>
-          {/* Mobile backdrop */}
-          <div 
-            className="fixed inset-0 bg-black/20 z-40 sm:hidden" 
-            onClick={() => setOpen(false)}
-          />
-          {/* Dropdown */}
-          <div
-            role="listbox"
-            className="fixed left-4 right-4 top-1/3 z-50 w-auto max-w-[240px] mx-auto rounded-xl bg-white border border-stone-200 shadow-lg p-1.5 sm:absolute sm:left-0 sm:right-auto sm:top-full sm:mt-2 sm:w-48 sm:max-w-none sm:mx-0"
-          >
-            <div className="text-xs text-stone-400 px-2 py-1 sm:hidden">选择分类</div>
-            {categories.map(cat => {
-              const isActive = value.includes(cat.key);
-              const count = getCount(cat.key);
 
-              return (
-                <button
-                  key={cat.key}
-                  onClick={() => handleClick(cat.key)}
-                  className={`w-full flex items-center justify-between gap-2 px-2 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'bg-stone-800 text-white'
-                      : 'text-stone-600 hover:bg-stone-100'
-                  }`}
-                  role="option"
-                  aria-selected={isActive}
-                >
-                  <span className="flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full ${cat.color}`} />
-                    {cat.label}
-                  </span>
-                  {count !== undefined && (
-                    <span className={`text-xs ${
-                      isActive ? 'text-stone-300' : 'text-stone-400'
-                    }`}>
-                      {count}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </>
+      {/* Desktop dropdown */}
+      {open && (
+        <div
+          role="listbox"
+          className="hidden sm:block absolute left-0 top-full mt-2 z-50 w-48 rounded-xl bg-white border border-stone-200 shadow-lg p-1.5 animate-fade-in"
+        >
+          {optionsList}
+        </div>
       )}
+
+      {/* Mobile bottom sheet */}
+      <BottomSheet open={open} onClose={() => setOpen(false)} title="选择分类">
+        {optionsList}
+      </BottomSheet>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { VoteProvider } from "@/lib/VoteContext";
+import { ToastProvider } from "@/lib/ToastContext";
 
 export const metadata: Metadata = {
   title: "X Radar Dashboard",
@@ -22,7 +23,9 @@ export default function RootLayout({
     <html lang="zh-CN">
       <body>
         <VoteProvider>
-          {children}
+          <ToastProvider>
+            {children}
+          </ToastProvider>
         </VoteProvider>
       </body>
     </html>
