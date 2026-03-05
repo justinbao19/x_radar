@@ -332,7 +332,7 @@ export function checkBrandSafety(text, filoFitScore = 0) {
   // 2. Check soft denylist - drop unless high FiloFit
   const softCheck = checkSoftDenylist(text);
   if (softCheck.match) {
-    const keywordCount = filoFitScore / 5;
+    const keywordCount = Math.round(filoFitScore / 20);
     if (keywordCount < SOFT_THRESHOLD) {
       return {
         safe: false,
@@ -350,7 +350,7 @@ export function checkBrandSafety(text, filoFitScore = 0) {
       tier: 'soft',
       category: softCheck.category,
       keyword: softCheck.keyword,
-      reason: `Soft denylist match but high FiloFit (${keywordCount} >= ${SOFT_THRESHOLD})`
+      reason: `Soft denylist match but high FiloFit (${keywordCount} keywords >= ${SOFT_THRESHOLD})`
     };
   }
   
@@ -380,8 +380,8 @@ export function checkBrandSafety(text, filoFitScore = 0) {
  * @param {number} filoFitScore - Current FiloFit score
  * @returns {{ pass: boolean, reason?: string }}
  */
-export function checkMinFiloFit(filoFitScore) {
-  const keywordCount = filoFitScore / 5;
+export function checkMinFiloFit(filoFitScore, multiplier = 20) {
+  const keywordCount = Math.floor(filoFitScore / multiplier);
   if (keywordCount < MIN_FILO_FIT) {
     return {
       pass: false,

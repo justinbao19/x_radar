@@ -70,18 +70,18 @@ describe('Safety Module', () => {
   
   describe('FiloFit Threshold', () => {
     it('should pass high FiloFit scores', () => {
-      const result = checkMinFiloFit(15); // 3 keywords
+      const result = checkMinFiloFit(60); // 3 keywords * 20 = 60
       assert.strictEqual(result.pass, true);
     });
     
     it('should fail low FiloFit scores', () => {
-      const result = checkMinFiloFit(5); // 1 keyword
+      const result = checkMinFiloFit(20); // 1 keyword * 20 = 20
       assert.strictEqual(result.pass, false);
     });
     
     it('should use correct threshold', () => {
-      // MIN_FILO_FIT * 5 = threshold score
-      const thresholdScore = MIN_FILO_FIT * 5;
+      // MIN_FILO_FIT * 20 = threshold score (multiplier changed from 5 to 20)
+      const thresholdScore = MIN_FILO_FIT * 20;
       const belowResult = checkMinFiloFit(thresholdScore - 1);
       const atResult = checkMinFiloFit(thresholdScore);
       
