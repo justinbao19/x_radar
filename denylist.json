@@ -5,19 +5,22 @@
       "join my newsletter", "join our newsletter", "check out my newsletter",
       "link in bio", "dm for details", "dm me for",
       "メルマガ登録", "購読はこちら", "フォローお願い", "お申し込みは",
-      "订阅我的", "关注我获取", "点击链接获取", "私信我"
+      "订阅我的", "关注我获取", "点击链接获取", "私信我",
+      "구독하기", "뉴스레터 구독", "팔로우하세요", "DM 주세요"
     ],
     "politics": [
       "election", "vote", "voting", "ballot", "democrat", "republican", "政治", "选举", "投票",
-      "選挙", "投票", "政権", "政府", "regime", "政权", "coup", "impeach"
+      "選挙", "投票", "政権", "政府", "regime", "政权", "coup", "impeach",
+      "선거", "투표", "정권", "정치"
     ],
     "war_military": [
       "war", "military", "army", "soldier", "战争", "军队", "軍", "戦争", "invasion", "missile",
-      "bomb", "bombing", "爆炸", "爆発", "missile", "drone strike", "airstrike"
+      "bomb", "bombing", "爆炸", "爆発", "missile", "drone strike", "airstrike",
+      "전쟁", "군대", "폭탄", "미사일"
     ],
     "terrorism_extremism": [
       "terrorist", "terrorism", "恐怖", "テロ", "jihad", "isis", "al-qaeda", "extremist",
-      "radicalized", "militia", "insurgent", "极端", "過激派"
+      "radicalized", "militia", "insurgent", "极端", "過激派", "테러", "극단주의"
     ],
     "violence_crime_selfharm": [
       "murder", "suicide", "self-harm", "殺人", "自殺", "自杀", "自残", "枪击", "shooting",

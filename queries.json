@@ -14,6 +14,11 @@
       "name": "filo-mentions-jp",
       "query": "(FiloMail OR \"Filo Mail\" OR \"Filo-Mail\" OR filomail OR \"filo mail\" OR \"filo-mail\" OR \"Filo メール\" OR \"filoメール\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:ja",
       "max": 50
+    },
+    {
+      "name": "filo-mentions-ko",
+      "query": "(FiloMail OR \"Filo Mail\" OR \"Filo-Mail\" OR filomail OR \"filo mail\" OR \"filo-mail\" OR \"Filo 메일\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:ko",
+      "max": 50
     }
   ],
   "insight": [
@@ -41,6 +46,11 @@
       "name": "competitor-praise-cn",
       "query": "(Superhuman OR Spark OR Edison OR Shortwave) (好用 OR 推荐 OR 神器 OR 太棒) -订阅 -报名 -投稿 -招聘 -私信 -联系 -客服 -支持 -newsletter -subscribe -filter:retweets lang:zh",
       "max": 50
+    },
+    {
+      "name": "email-pain-feature-ko",
+      "query": "(이메일 OR 받은편지함 OR gmail OR 메일함) (원하다 OR 바라다 OR 기능 OR 있으면 OR 좋겠다 OR 필요) -구독 -뉴스레터 -채용 -홍보 -광고 -filter:retweets lang:ko",
+      "max": 50
     }
   ],
   "pain": [
@@ -60,6 +70,11 @@
       "max": 70
     },
     {
+      "name": "gmail-spam-ko",
+      "query": "(gmail OR 이메일 OR 받은편지함 OR 메일함) (스팸 OR 너무많 OR 찾을수없 OR 짜증 OR 최악 OR 문제 OR 버그 OR 귀찮) -구독 -팔로우 -filter:retweets lang:ko",
+      "max": 60
+    },
+    {
       "name": "inbox-overwhelm-en",
       "query": "(email OR inbox OR gmail) (overwhelmed OR drowning OR \"too many\" OR chaos OR mess OR \"out of control\" OR \"can't keep up\" OR nightmare OR hell) -subscribe -newsletter -\"sign up\" -\"join my\" -filter:retweets",
       "max": 60
@@ -67,6 +82,11 @@
     {
       "name": "inbox-overwhelm-jp",
       "query": "(受信トレイ OR メール OR gmail) (多すぎ OR 整理できない OR 見つからない OR うざい OR 最悪 OR 困る OR 大変 OR 地獄) -メルマガ登録 -購読 -フォロー -filter:retweets",
+      "max": 60
+    },
+    {
+      "name": "inbox-overwhelm-ko",
+      "query": "(이메일 OR 받은편지함 OR gmail OR 메일) (너무많 OR 정리못 OR 폭발 OR 지옥 OR 미치겠 OR 감당안돼 OR 스트레스) -구독 -뉴스레터 -filter:retweets lang:ko",
       "max": 60
     },
     {
@@ -85,6 +105,11 @@
       "name": "ai-email-jp",
       "query": "(AIエージェント OR AI秘書 OR 自動化) (メール OR 受信トレイ OR 生産性) -メルマガ登録 -購読 -filter:retweets",
       "max": 70
+    },
+    {
+      "name": "ai-email-ko",
+      "query": "(AI에이전트 OR AI비서 OR 자동화) (이메일 OR 받은편지함 OR 생산성 OR 메일) -구독 -뉴스레터 -filter:retweets lang:ko",
+      "max": 60
     },
     {
       "name": "ai-inbox-intersection",

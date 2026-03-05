@@ -27,7 +27,9 @@ const STRONG_PAIN_WORDS = [
   'うざい', '最悪', '地獄', 'ひどい', 'イライラ', 'ムカつく', '嫌い',
   '耐えられない', '限界', 'ストレス',
   // Chinese - clear emotional expression
-  '烦死', '受不了', '崩溃', '噩梦', '糟糕', '垃圾', '太烦', '无语', '吐了'
+  '烦死', '受不了', '崩溃', '噩梦', '糟糕', '垃圾', '太烦', '无语', '吐了',
+  // Korean - clear emotional expression
+  '짜증', '최악', '지옥', '미치겠', '끔찍', '쓰레기', '싫어', '스트레스', '폭발'
 ];
 
 // WEAK: Neutral problem descriptions - might be user OR customer service
@@ -38,7 +40,9 @@ const WEAK_PAIN_WORDS = [
   // Japanese - neutral problem words
   '困る', '大変', 'バグ', '問題',
   // Chinese - neutral problem words  
-  '问题', '找不到', '难用', '太多'
+  '问题', '找不到', '难用', '太多',
+  // Korean - neutral problem words
+  '문제', '찾을수없', '불편', '버그'
 ];
 
 // Combined for backward compatibility (checkPainEmotion uses this)
@@ -137,21 +141,26 @@ export const PAIN_KEYWORDS = [
   'スパム', '未読', '整理',
   // Chinese
   '邮箱', '收件箱', '垃圾邮件', '邮件', '通知', '退订',
-  '未读', '整理', '信息过载'
+  '未读', '整理', '信息过载',
+  // Korean
+  '이메일', '받은편지함', '메일함', '스팸', '알림',
+  '수신거부', '안읽음', '정리', '메일'
 ];
 
 // Reach group keywords (AI + productivity)
 export const REACH_AI_KEYWORDS = [
   'ai', 'agent', 'agents', 'llm', 'gpt', 'claude', 'automation',
   'AIエージェント', 'AI秘書', '自動化',
-  'AI助手', '智能', '自动化'
+  'AI助手', '智能', '自动化',
+  'AI에이전트', 'AI비서', '자동화'
 ];
 
 export const REACH_PRODUCTIVITY_KEYWORDS = [
   'productivity', 'workflow', 'search', 'knowledge', 'notification',
   'email', 'inbox', 'organize', 'triage', 'summary', 'summarize',
   '生産性', 'ワークフロー', '検索', '整理', '要約',
-  '生产力', '效率', '搜索', '整理', '总结', '待办'
+  '生产力', '效率', '搜索', '整理', '总结', '待办',
+  '생산성', '워크플로우', '검색', '정리', '요약', '할일'
 ];
 
 // Combined FiloFit keywords for scoring

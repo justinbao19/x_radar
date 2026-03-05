@@ -260,13 +260,18 @@ const FILO_KEYWORDS = {
   cn: [
     '邮箱', '收件箱', '通知', '垃圾邮件', '搜索', '找不到', '总结', '待办',
     '任务', '整理', '降噪', '邮件', '生产力', '自动化', '效率', '太多'
+  ],
+  ko: [
+    '이메일', '받은편지함', '메일함', '알림', '스팸', '검색', '찾을수없',
+    '요약', '할일', '정리', '메일', '생산성', '자동화', '효율', '너무많'
   ]
 };
 
 const ALL_KEYWORDS = [
   ...FILO_KEYWORDS.en.map(k => k.toLowerCase()),
   ...FILO_KEYWORDS.jp,
-  ...FILO_KEYWORDS.cn
+  ...FILO_KEYWORDS.cn,
+  ...FILO_KEYWORDS.ko
 ];
 
 /**

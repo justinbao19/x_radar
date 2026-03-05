@@ -86,6 +86,7 @@ D) 写作与回复 → AI Drafts（上下文理解 + 语气选择 + 多语言）
          - 日语：〜よ / 〜から安心 / 〜なんだよね / 〜けど便利
          - 英语：works well / helps a lot / pretty effective / solves this exact problem
          - 中文：很有用 / 效果不错 / 确实方便 / 正好解决这个
+         - 韩语：도움이 돼요 / 효과 좋아요 / 꽤 편해요 / 딱 이 문제 해결해줘요
       
       ✅ 好例子：
       - "FiloのAI要約、まさにこういう時に便利なんだよね"
@@ -128,7 +129,7 @@ D) 写作与回复 → AI Drafts（上下文理解 + 语气选择 + 多语言）
 
 输出严格 JSON，无其他文字：
 {
-  "language": "en|ja|zh|other",
+  "language": "en|ja|zh|ko|other",
   "product_relevance": "high|medium|low",
   "tweet_translation_zh": "推文中文翻译（中文推文留空）",
   "options": [
