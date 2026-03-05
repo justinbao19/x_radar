@@ -2,6 +2,96 @@ import { readFileSync, writeFileSync, existsSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { log, getInputPath, getOutputPath, copyToLatest, getOutputDir, getTodayDate } from './utils.mjs';
 
+// ============ Cross-Day Dedup Config ============
+// Look back N days to avoid re-pushing the same tweet
+const DEDUP_LOOKBACK_DAYS = parseInt(process.env.DEDUP_LOOKBACK_DAYS || '7', 10);
+const DEDUP_HISTORY_FILE = 'out/dedup-history.json';
+
+/**
+ * Load URLs from previous days' top10.json files to avoid re-pushing
+ * Also maintains a persistent dedup-history.json for robustness
+ */
+function loadHistoricalUrls() {
+  const historicalUrls = new Set();
+
+  // 1. Load from persistent history file
+  if (existsSync(DEDUP_HISTORY_FILE)) {
+    try {
+      const history = JSON.parse(readFileSync(DEDUP_HISTORY_FILE, 'utf-8'));
+      const cutoffMs = DEDUP_LOOKBACK_DAYS * 24 * 60 * 60 * 1000;
+      const now = Date.now();
+      for (const entry of history.entries || []) {
+        if (now - new Date(entry.date).getTime() <= cutoffMs) {
+          historicalUrls.add(entry.url);
+        }
+      }
+      log('INFO', `Loaded ${historicalUrls.size} URLs from dedup history (${DEDUP_LOOKBACK_DAYS}d window)`);
+    } catch (e) {
+      log('WARN', 'Failed to load dedup history', { error: e.message });
+    }
+  }
+
+  // 2. Also scan date-specific output dirs as fallback
+  const outDir = 'out';
+  if (existsSync(outDir)) {
+    const dirs = readdirSync(outDir).filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d));
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - DEDUP_LOOKBACK_DAYS);
+
+    for (const dir of dirs) {
+      if (new Date(dir) < cutoffDate) continue;
+      const top10File = join(outDir, dir, 'top10.json');
+      if (existsSync(top10File)) {
+        try {
+          const data = JSON.parse(readFileSync(top10File, 'utf-8'));
+          for (const tweet of data.top || []) {
+            if (tweet.url) historicalUrls.add(tweet.url);
+          }
+        } catch (e) {
+          log('DEBUG', `Failed to read ${top10File}`, { error: e.message });
+        }
+      }
+    }
+  }
+
+  log('INFO', `Total historical URLs for dedup: ${historicalUrls.size}`);
+  return historicalUrls;
+}
+
+/**
+ * Save today's selected URLs to persistent dedup history
+ * Prunes entries older than lookback window
+ */
+function saveToHistory(selectedTweets) {
+  let history = { entries: [] };
+  
+  if (existsSync(DEDUP_HISTORY_FILE)) {
+    try {
+      history = JSON.parse(readFileSync(DEDUP_HISTORY_FILE, 'utf-8'));
+    } catch (e) {
+      log('WARN', 'Failed to read existing dedup history, starting fresh');
+    }
+  }
+
+  // Add today's URLs
+  const today = new Date().toISOString().split('T')[0];
+  for (const tweet of selectedTweets) {
+    if (tweet.url) {
+      history.entries.push({ url: tweet.url, date: today });
+    }
+  }
+
+  // Prune old entries
+  const cutoffMs = DEDUP_LOOKBACK_DAYS * 24 * 60 * 60 * 1000;
+  const now = Date.now();
+  history.entries = history.entries.filter(e => 
+    now - new Date(e.date).getTime() <= cutoffMs
+  );
+
+  writeFileSync(DEDUP_HISTORY_FILE, JSON.stringify(history, null, 2));
+  log('INFO', `Saved ${selectedTweets.length} URLs to dedup history (total: ${history.entries.length})`);
+}
+
 // ============ Monday Aggregation Config ============
 // On Monday, aggregate data from Sat + Sun + Mon (3 days)
 const MONDAY_LOOKBACK_DAYS = 3;
@@ -464,13 +554,26 @@ function selectTop10(rawData) {
   
   log('INFO', `Unique tweets after dedup: ${uniqueTweets.length}`);
   
+  // ============ Cross-Day Dedup ============
+  const historicalUrls = loadHistoricalUrls();
+  let crossDayFiltered = 0;
+  const crossDayDedupedTweets = uniqueTweets.filter(t => {
+    if (historicalUrls.has(t.url)) {
+      crossDayFiltered++;
+      log('DEBUG', `Cross-day dedup: ${t.url}`);
+      return false;
+    }
+    return true;
+  });
+  log('INFO', `After cross-day dedup: ${crossDayDedupedTweets.length} (filtered: ${crossDayFiltered})`);
+  
   // ============ Freshness Filter ============
   const now = Date.now();
   const defaultMaxAgeMs = MAX_TWEET_AGE_DAYS * 24 * 60 * 60 * 1000;
   const sentimentMaxAgeDays = Number.isNaN(SENTIMENT_LOOKBACK_DAYS) ? 7 : SENTIMENT_LOOKBACK_DAYS;
   const sentimentMaxAgeMs = Math.max(1, sentimentMaxAgeDays) * 24 * 60 * 60 * 1000;
   
-  const freshTweets = uniqueTweets.filter(t => {
+  const freshTweets = crossDayDedupedTweets.filter(t => {
     if (!t.datetime) return true; // Keep if no datetime (can't determine age)
     
     const tweetDate = new Date(t.datetime);
@@ -484,7 +587,7 @@ function selectTop10(rawData) {
     return true;
   });
   
-  const tooOldFiltered = uniqueTweets.length - freshTweets.length;
+  const tooOldFiltered = crossDayDedupedTweets.length - freshTweets.length;
   log('INFO', `Freshness filter (${MAX_TWEET_AGE_DAYS} days): ${freshTweets.length} kept, ${tooOldFiltered} filtered`);
   
   // ============ User Feedback URL Denylist ============
@@ -943,6 +1046,8 @@ function selectTop10(rawData) {
       selectionStats: {
         totalCandidates: allTweets.length,
         uniqueAfterDedup: uniqueTweets.length,
+        crossDayFiltered,
+        freshAfterAgeFilter: freshTweets.length,
         ...filterStats,
         qualified: 0,
         aiPicked: 0,
@@ -1053,6 +1158,7 @@ function selectTop10(rawData) {
   const stats = {
     totalCandidates: allTweets.length,
     uniqueAfterDedup: uniqueTweets.length,
+    crossDayFiltered,
     freshAfterAgeFilter: freshTweets.length,
     ...filterStats,
     qualified: finalSelection.length,
@@ -1211,6 +1317,9 @@ async function main() {
     selected: result.top.length,
     aggregated: aggregationInfo?.isAggregated || false
   });
+  
+  // Save selected URLs to cross-day dedup history
+  saveToHistory(result.top || []);
   
   // Copy to latest directory
   copyToLatest(getOutputDir(runDate));
