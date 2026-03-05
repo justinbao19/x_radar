@@ -1,14 +1,34 @@
 {
   "handles": [
-    "sama",
+    "rahulvohra",
+    "Superhuman",
+    "elie2222",
+    "SparkMailApp",
+    "danshipper",
+    "bensbites",
+    "levelsio",
+    "marclouv",
+    "mattshumer_",
     "karpathy",
-    "AndrewYNg",
-    "lexfridman",
-    "naval",
     "paulg",
-    "toaboraso",
-    "benediktevans"
+    "SaaSGrowthHacks",
+    "haborossm"
   ],
-  "allowedQuery": "(AI OR agent OR search OR productivity OR workflow OR email OR inbox OR notification)",
+  "_annotations": {
+    "rahulvohra": "Superhuman CEO, 162K followers. Tweets about email/inbox/productivity daily. Direct competitor but high-value signal source — his audience IS our audience",
+    "Superhuman": "Official Superhuman account. Competitor content = competitive intel + audience overlap",
+    "elie2222": "Elie Steinbock, Inbox Zero (open source email tool) founder. Builds in public, tweets about email problems constantly",
+    "SparkMailApp": "Spark Mail official. Direct competitor, tracks their feature announcements + user reactions",
+    "danshipper": "Dan Shipper, Every.to CEO. 150K+. Writes extensively about AI + productivity workflows. His audience = knowledge workers who hate email",
+    "bensbites": "Ben's Bites AI newsletter. 200K+. Covers AI tools daily. When he mentions email/productivity tools, massive reach",
+    "levelsio": "Pieter Levels, 500K+. Indie maker king. When he tweets about tools/productivity, it moves markets. High reach amplifier",
+    "marclouv": "Marc Lou, 200K+. Indie SaaS builder. Build-in-public community overlaps heavily with early adopters",
+    "mattshumer_": "Matt Shumer, AI agent builder. Tweets about AI agents + automation. Directly relevant to Filo's future direction",
+    "karpathy": "Andrej Karpathy, 900K+. Kept from original list — when he tweets about AI tools/agents it's extremely high signal",
+    "paulg": "Paul Graham, 2M+. Kept from original list — occasional email/productivity takes get massive engagement",
+    "SaaSGrowthHacks": "SaaS growth tactics account. Our target audience follows this for tool recommendations",
+    "haborossm": "Productivity/AI tools reviewer. Regular content about email and workflow tools"
+  },
+  "allowedQuery": "(AI OR agent OR search OR productivity OR workflow OR email OR inbox OR notification OR automation OR todo OR task OR organize OR summary)",
   "denyTerms": "-election -vote -regime -war -military -army -terrorist -suicide -murder -bomb -nazi -porn -nude -cocaine -heroin -meth -airdrop -doxx -leaked -hacked -选举 -投票 -战争 -军队 -恐怖 -自杀 -爆炸 -纳粹 -色情 -泄露 -選挙 -戦争 -軍 -テロ -自殺 -爆発 -ナチ -ポルノ -ハック"
 }
