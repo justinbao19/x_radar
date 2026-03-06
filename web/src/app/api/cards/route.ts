@@ -12,6 +12,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('user_id');
     const dateParam = searchParams.get('date');
+    const groupFilter = searchParams.get('group');
 
     if (!userId) {
       return NextResponse.json({ error: 'user_id is required' }, { status: 400 });
@@ -60,8 +61,16 @@ export async function GET(request: NextRequest) {
       reach: 3,
     };
 
+    const groupMap: Record<string, string[]> = {
+      pain_radar: ['pain', 'reach'],
+      filo_sentiment: ['sentiment'],
+      user_insight: ['insight'],
+    };
+    const allowedGroups = groupFilter ? groupMap[groupFilter] ?? [groupFilter] : null;
+
     const undecided = tweets
       .filter(t => !decidedIds.has(t.id))
+      .filter(t => !allowedGroups || allowedGroups.includes(t.group))
       .sort((a, b) => {
         const aPri = groupPriority[a.group] ?? 4;
         const bPri = groupPriority[b.group] ?? 4;
