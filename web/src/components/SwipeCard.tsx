@@ -3,8 +3,6 @@
 import { motion, useMotionValue, useTransform, PanInfo } from 'framer-motion';
 import { SwipeTweet, TweetGroup } from '@/lib/types';
 import { openExternalLink, hapticFeedback } from '@/lib/telegram';
-import { GroupBadge } from './GroupBadge';
-import { EngagementBadge } from './EngagementBadge';
 
 interface SwipeCardProps {
   tweet: SwipeTweet;
@@ -13,165 +11,184 @@ interface SwipeCardProps {
   active: boolean;
 }
 
-const GROUP_STYLES: Record<TweetGroup, { border: string; headerBg: string; accent: string }> = {
-  sentiment: { border: 'border-blue-300/60', headerBg: 'from-blue-50 to-indigo-50/50', accent: 'text-blue-600' },
-  pain: { border: 'border-rose-300/60', headerBg: 'from-rose-50 to-orange-50/50', accent: 'text-rose-600' },
-  insight: { border: 'border-purple-300/60', headerBg: 'from-purple-50 to-fuchsia-50/50', accent: 'text-purple-600' },
-  reach: { border: 'border-emerald-300/60', headerBg: 'from-emerald-50 to-teal-50/50', accent: 'text-emerald-600' },
+const GROUP_THEME: Record<TweetGroup, { gradient: string; iconBg: string; icon: string; label: string; border: string }> = {
+  sentiment: { gradient: 'from-blue-500 to-indigo-600', iconBg: 'bg-white/20', icon: '⭐', label: '品牌提及', border: 'border-blue-200' },
+  pain:      { gradient: 'from-rose-500 to-orange-500', iconBg: 'bg-white/20', icon: '🔥', label: '痛点', border: 'border-rose-200' },
+  insight:   { gradient: 'from-purple-500 to-fuchsia-500', iconBg: 'bg-white/20', icon: '💡', label: '洞察', border: 'border-purple-200' },
+  reach:     { gradient: 'from-emerald-500 to-teal-500', iconBg: 'bg-white/20', icon: '📢', label: '传播', border: 'border-emerald-200' },
 };
 
-const SWIPE_THRESHOLD = 100;
+const FALLBACK_THEME = { gradient: 'from-stone-500 to-stone-600', iconBg: 'bg-white/20', icon: '📋', label: '推文', border: 'border-stone-200' };
+
+const SWIPE_THRESHOLD = 80;
+const SWIPE_EXIT = 400;
 
 export function SwipeCard({ tweet, onConfirm, onSkip, active }: SwipeCardProps) {
   const x = useMotionValue(0);
-  const rotate = useTransform(x, [-200, 0, 200], [-8, 0, 8]);
-  const opacity = useTransform(x, [-300, -100, 0, 100, 300], [0.3, 1, 1, 1, 0.3]);
-  const confirmOpacity = useTransform(x, [0, SWIPE_THRESHOLD], [0, 1]);
-  const skipOpacity = useTransform(x, [-SWIPE_THRESHOLD, 0], [1, 0]);
-  const confirmScale = useTransform(x, [0, SWIPE_THRESHOLD], [0.5, 1]);
-  const skipScale = useTransform(x, [-SWIPE_THRESHOLD, 0], [1, 0.5]);
+  const rotate = useTransform(x, [-200, 0, 200], [-10, 0, 10]);
+  const cardOpacity = useTransform(x, [-SWIPE_EXIT, -200, 0, 200, SWIPE_EXIT], [0, 1, 1, 1, 0]);
 
-  const groupStyle = GROUP_STYLES[tweet.group as TweetGroup] ?? {
-    border: 'border-stone-200/60',
-    headerBg: 'from-stone-50 to-stone-100/50',
-    accent: 'text-stone-600',
-  };
+  // Glow overlays
+  const confirmGlow = useTransform(x, [0, SWIPE_THRESHOLD * 1.5], [0, 0.25]);
+  const skipGlow = useTransform(x, [-SWIPE_THRESHOLD * 1.5, 0], [0.25, 0]);
+
+  // Stamp effects
+  const confirmStampOpacity = useTransform(x, [20, SWIPE_THRESHOLD], [0, 1]);
+  const confirmStampScale = useTransform(x, [20, SWIPE_THRESHOLD], [0.5, 1]);
+  const skipStampOpacity = useTransform(x, [-SWIPE_THRESHOLD, -20], [1, 0]);
+  const skipStampScale = useTransform(x, [-SWIPE_THRESHOLD, -20], [1, 0.5]);
+
+  const theme = GROUP_THEME[tweet.group as TweetGroup] ?? FALLBACK_THEME;
 
   const showTranslation = tweet.translationZh && tweet.language &&
     !['zh', 'zh-cn', 'zh-tw'].includes(tweet.language.toLowerCase());
 
   function handleDragEnd(_: unknown, info: PanInfo) {
     if (info.offset.x > SWIPE_THRESHOLD) {
-      hapticFeedback('success');
       onConfirm();
     } else if (info.offset.x < -SWIPE_THRESHOLD) {
-      hapticFeedback('medium');
       onSkip();
     }
   }
 
   return (
     <motion.div
-      className={`absolute inset-0 ${active ? 'z-10' : 'z-0'}`}
-      style={{ x, rotate, opacity }}
+      className={`absolute inset-0 ${active ? 'z-10 cursor-grab active:cursor-grabbing' : 'z-0 pointer-events-none'}`}
+      style={active ? { x, rotate, opacity: cardOpacity } : undefined}
       drag={active ? 'x' : false}
       dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.7}
+      dragElastic={0.6}
       onDragEnd={handleDragEnd}
-      animate={active ? { scale: 1, y: 0 } : { scale: 0.95, y: 10 }}
-      exit={{ x: 300, opacity: 0, transition: { duration: 0.25 } }}
-      transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+      animate={active ? { scale: 1, y: 0 } : { scale: 0.92, y: 16 }}
+      exit={{ x: SWIPE_EXIT, opacity: 0, scale: 0.8, rotate: 15, transition: { duration: 0.35, ease: 'easeIn' } }}
+      transition={{ type: 'spring', stiffness: 260, damping: 26 }}
     >
-      <div className={`h-full rounded-2xl border ${groupStyle.border} bg-white shadow-lg shadow-stone-200/50 overflow-hidden flex flex-col`}>
-        {/* Swipe indicators */}
-        <motion.div
-          className="absolute top-8 right-6 z-20 flex items-center gap-2 bg-emerald-500/95 backdrop-blur-sm text-white px-5 py-2.5 rounded-2xl font-bold text-base shadow-xl shadow-emerald-500/20 -rotate-6"
-          style={{ opacity: confirmOpacity, scale: confirmScale }}
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
-          REPLY
-        </motion.div>
-        <motion.div
-          className="absolute top-8 left-6 z-20 flex items-center gap-2 bg-rose-500/95 backdrop-blur-sm text-white px-5 py-2.5 rounded-2xl font-bold text-base shadow-xl shadow-rose-500/20 rotate-6"
-          style={{ opacity: skipOpacity, scale: skipScale }}
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
-          SKIP
-        </motion.div>
+      <div className={`h-full rounded-3xl border-2 ${theme.border} bg-white shadow-2xl shadow-stone-300/30 overflow-hidden flex flex-col relative`}>
 
-        {/* Header */}
-        <div className={`bg-gradient-to-r ${groupStyle.headerBg} px-5 pt-4 pb-3 border-b border-stone-100/80`}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className={`w-9 h-9 rounded-full bg-gradient-to-br from-stone-100 to-stone-200 flex items-center justify-center text-sm font-bold ${groupStyle.accent}`}>
+        {/* === Swipe glow overlays === */}
+        {active && (
+          <>
+            <motion.div className="absolute inset-0 z-10 rounded-3xl pointer-events-none bg-emerald-400" style={{ opacity: confirmGlow }} />
+            <motion.div className="absolute inset-0 z-10 rounded-3xl pointer-events-none bg-rose-400" style={{ opacity: skipGlow }} />
+          </>
+        )}
+
+        {/* === Stamp indicators (Tinder LIKE/NOPE style) === */}
+        {active && (
+          <>
+            <motion.div
+              className="absolute top-6 left-5 z-20 border-[3px] border-emerald-500 text-emerald-500 px-4 py-1.5 rounded-lg font-black text-xl tracking-wider -rotate-12"
+              style={{ opacity: confirmStampOpacity, scale: confirmStampScale }}
+            >
+              REPLY
+            </motion.div>
+            <motion.div
+              className="absolute top-6 right-5 z-20 border-[3px] border-rose-500 text-rose-500 px-4 py-1.5 rounded-lg font-black text-xl tracking-wider rotate-12"
+              style={{ opacity: skipStampOpacity, scale: skipStampScale }}
+            >
+              NOPE
+            </motion.div>
+          </>
+        )}
+
+        {/* === LAYER 1: Hero header === */}
+        <div className={`bg-gradient-to-br ${theme.gradient} px-5 pt-5 pb-4 relative overflow-hidden`}>
+          {/* Decorative circles */}
+          <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-white/10" />
+          <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-full bg-white/5" />
+
+          <div className="relative z-10 flex items-start justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-lg font-bold text-white border border-white/20">
                 {tweet.author.replace('@', '').charAt(0).toUpperCase()}
               </div>
               <div>
-                <span className="text-sm font-semibold text-stone-800">{tweet.author}</span>
-                {tweet.aiPicked && (
-                  <div className="flex items-center gap-1 mt-0.5">
-                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                    <span className="text-[10px] font-medium text-amber-600 uppercase tracking-wider">AI 精选</span>
-                  </div>
-                )}
+                <p className="text-white font-semibold text-[15px] leading-tight">{tweet.author}</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className={`${theme.iconBg} backdrop-blur-sm text-white/90 text-[11px] font-medium px-2 py-0.5 rounded-full border border-white/10`}>
+                    {theme.icon} {theme.label}
+                  </span>
+                  {tweet.aiPicked && (
+                    <span className="bg-amber-400/90 text-amber-900 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <span className="w-1 h-1 rounded-full bg-amber-900 animate-pulse" />
+                      AI 精选
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
-            <GroupBadge group={tweet.group} />
+            <div className="text-right">
+              <span className={`text-2xl font-black text-white/90`}>{Math.round(tweet.finalScore)}</span>
+              <p className="text-[10px] text-white/60 font-medium uppercase tracking-wider">Score</p>
+            </div>
           </div>
         </div>
 
-        {/* Scrollable content */}
-        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3.5">
+        {/* === LAYER 2: Content === */}
+        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
           {/* Original text */}
-          <p className="text-[15px] leading-[1.65] text-stone-800 font-normal">{tweet.text}</p>
+          <p className="text-[16px] leading-[1.7] text-stone-800">{tweet.text}</p>
 
           {/* Translation */}
           {showTranslation && (
-            <div className="relative pl-3 border-l-2 border-amber-300/70">
-              <p className="text-[13px] leading-relaxed text-stone-500 bg-amber-50/40 rounded-r-lg px-3 py-2">
-                {tweet.translationZh}
-              </p>
+            <div className="border-l-[3px] border-amber-400 pl-3 py-1">
+              <p className="text-[13px] leading-relaxed text-stone-500">{tweet.translationZh}</p>
             </div>
           )}
 
-          {/* Engagement + Score row */}
-          <div className="flex items-center justify-between pt-1">
-            <EngagementBadge
-              likes={tweet.engagement.likes}
-              replies={tweet.engagement.replies}
-              retweets={tweet.engagement.retweets}
-            />
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs font-medium text-stone-400">Score</span>
-              <span className={`text-sm font-bold ${tweet.finalScore >= 500 ? 'text-amber-600' : tweet.finalScore >= 200 ? 'text-orange-500' : 'text-stone-500'}`}>
-                {Math.round(tweet.finalScore)}
-              </span>
-            </div>
+          {/* Engagement */}
+          <div className="flex items-center gap-4 text-xs text-stone-400 pt-1">
+            <span className="flex items-center gap-1"><span className="text-rose-400">♥</span> {tweet.engagement.likes}</span>
+            <span className="flex items-center gap-1"><span className="text-blue-400">💬</span> {tweet.engagement.replies}</span>
+            <span className="flex items-center gap-1"><span className="text-emerald-400">↻</span> {tweet.engagement.retweets}</span>
           </div>
 
           {/* Reason */}
           {tweet.reason && (
-            <p className="text-xs text-stone-400 leading-relaxed">{tweet.reason}</p>
+            <p className="text-[11px] text-stone-400 leading-relaxed">{tweet.reason}</p>
           )}
-
-          {/* View original */}
-          <button
-            onClick={(e) => { e.stopPropagation(); openExternalLink(tweet.url); }}
-            className="inline-flex items-center gap-1.5 text-xs text-blue-500 hover:text-blue-600 font-medium transition-colors"
-          >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-            查看原文
-          </button>
 
           {/* Reply angle */}
           {tweet.replyAngle && (
-            <div className="bg-stone-50/80 rounded-xl p-3 border border-stone-100/80">
-              <div className="flex items-center gap-1.5 mb-1">
-                <svg className="w-3.5 h-3.5 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
-                <span className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider">回复角度</span>
-              </div>
-              <p className="text-sm text-stone-600">{tweet.replyAngle}</p>
+            <div className="bg-amber-50/80 rounded-xl p-3 border border-amber-100">
+              <p className="text-[10px] font-semibold text-amber-600/80 uppercase tracking-wider mb-1">回复切入角度</p>
+              <p className="text-[13px] text-stone-700 leading-relaxed">{tweet.replyAngle}</p>
             </div>
           )}
         </div>
 
-        {/* Bottom action buttons */}
-        <div className="p-4 pt-3 border-t border-stone-100/80 bg-gradient-to-t from-stone-50/50 to-transparent">
-          <div className="flex gap-3">
-            <button
+        {/* === LAYER 3: Action buttons (Tinder style) === */}
+        <div className="px-5 py-4 border-t border-stone-100 bg-gradient-to-t from-stone-50/80 to-white">
+          <div className="flex items-center justify-center gap-5">
+            {/* Skip button */}
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
               onClick={() => { hapticFeedback('medium'); onSkip(); }}
-              className="flex-1 py-3 rounded-xl bg-stone-100 hover:bg-stone-200/80 text-stone-600 font-medium text-sm transition-all active:scale-[0.97] flex items-center justify-center gap-2"
+              className="w-14 h-14 rounded-full bg-white border-2 border-rose-200 text-rose-500 flex items-center justify-center shadow-lg shadow-rose-100/50 hover:border-rose-300 hover:shadow-rose-200/50 transition-colors"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-              跳过
-            </button>
-            <button
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            </motion.button>
+
+            {/* View original (small) */}
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={(e) => { e.stopPropagation(); openExternalLink(tweet.url); }}
+              className="w-10 h-10 rounded-full bg-white border-2 border-blue-200 text-blue-500 flex items-center justify-center shadow-md shadow-blue-100/50 hover:border-blue-300 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+            </motion.button>
+
+            {/* Confirm button */}
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
               onClick={() => { hapticFeedback('success'); onConfirm(); }}
-              className="flex-1 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-medium text-sm transition-all active:scale-[0.97] shadow-sm shadow-emerald-500/20 flex items-center justify-center gap-2"
+              className="w-14 h-14 rounded-full bg-white border-2 border-emerald-200 text-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-100/50 hover:border-emerald-300 hover:shadow-emerald-200/50 transition-colors"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-              回复
-            </button>
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+            </motion.button>
           </div>
         </div>
       </div>

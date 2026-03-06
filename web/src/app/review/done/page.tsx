@@ -50,8 +50,8 @@ export default function ReviewDonePage() {
   const stats = summary?.stats;
 
   return (
-    <div className="min-h-screen bg-stone-50 flex items-center justify-center p-6">
-      <div className="max-w-sm w-full space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-stone-100 via-stone-50 to-amber-50/30 flex items-center justify-center p-6">
+      <div className="max-w-md w-full space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
           <div className="text-5xl">✅</div>

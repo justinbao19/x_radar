@@ -41,7 +41,7 @@ export function SkipReasonSheet({ open, onClose, onSubmit }: SkipReasonSheetProp
     <div className="fixed inset-0 z-50" onClick={handleClose}>
       <div className="absolute inset-0 bg-black/30 backdrop-blur-[1px]" />
       <div
-        className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl animate-slide-up max-h-[80vh] flex flex-col"
+        className="absolute bottom-0 left-0 right-0 max-w-md mx-auto bg-white rounded-t-2xl shadow-2xl animate-slide-up max-h-[80vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Drag handle */}
