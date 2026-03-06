@@ -41,6 +41,7 @@ export default function ReviewPage() {
 
   const [allCards, setAllCards] = useState<SwipeTweet[]>([]);
   const [decidedIds, setDecidedIds] = useState<Set<string>>(new Set());
+  const [deferredIds, setDeferredIds] = useState<Set<string>>(new Set());
   const [totalFromServer, setTotalFromServer] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -49,12 +50,12 @@ export default function ReviewPage() {
   const [activeTab, setActiveTab] = useState<RadarTab>('all');
 
   const filteredCards = useMemo(() => {
-    const undecided = allCards.filter(c => !decidedIds.has(c.id));
+    const undecided = allCards.filter(c => !decidedIds.has(c.id) && !deferredIds.has(c.id));
     if (activeTab === 'all') return undecided;
     const allowed = GROUP_MAP[activeTab];
     if (!allowed) return undecided;
     return undecided.filter(c => c.group && allowed.includes(c.group));
-  }, [allCards, decidedIds, activeTab]);
+  }, [allCards, decidedIds, deferredIds, activeTab]);
 
   const tabCounts = useMemo(() => {
     const undecided = allCards.filter(c => !decidedIds.has(c.id));
@@ -117,7 +118,6 @@ export default function ReviewPage() {
 
   function handleConfirm() {
     if (!currentCard) return;
-    hapticFeedback('success');
     setHistory(prev => [...prev, { tweet: currentCard, action: 'confirmed' }]);
     setDecidedIds(prev => new Set(prev).add(currentCard.id));
     submitDecision({ tweetId: currentCard.id, userId, action: 'confirmed' });
@@ -135,6 +135,11 @@ export default function ReviewPage() {
     setHistory(prev => [...prev, { tweet: currentCard, action: 'skipped', skipReason: reason, skipNote: note }]);
     setDecidedIds(prev => new Set(prev).add(currentCard.id));
     submitDecision({ tweetId: currentCard.id, userId, action: 'skipped', skipReason: reason, skipNote: note });
+  }
+
+  function handleDefer() {
+    if (!currentCard) return;
+    setDeferredIds(prev => new Set(prev).add(currentCard.id));
   }
 
   async function handleUndo() {
@@ -276,10 +281,10 @@ export default function ReviewPage() {
             ) : (
               <AnimatePresence mode="popLayout">
                 {nextCard && (
-                  <SwipeCard key={nextCard.id} tweet={nextCard} onConfirm={() => {}} onSkip={() => {}} active={false} />
+                  <SwipeCard key={nextCard.id} tweet={nextCard} onConfirm={() => {}} onSkip={() => {}} onDefer={() => {}} active={false} />
                 )}
                 {currentCard && (
-                  <SwipeCard key={currentCard.id} tweet={currentCard} onConfirm={handleConfirm} onSkip={handleSkipStart} active={true} />
+                  <SwipeCard key={currentCard.id} tweet={currentCard} onConfirm={handleConfirm} onSkip={handleSkipStart} onDefer={handleDefer} active={true} />
                 )}
               </AnimatePresence>
             )}
