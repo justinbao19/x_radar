@@ -22,7 +22,14 @@ export function Header({ lastUpdated }: HeaderProps) {
             <span className="text-xs text-stone-500 -mt-0.5">智能推文追踪</span>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          {lastUpdated && (
+            <div className="hidden sm:flex items-center gap-2 text-[13px] bg-stone-50 border border-stone-200/60 px-3 py-1.5 rounded-full">
+              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+              <span className="text-stone-400">更新于</span>
+              <span className="text-stone-600 font-medium">{formatDateTime(lastUpdated)}</span>
+            </div>
+          )}
           <Link
             href="/review"
             className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-sm font-medium rounded-xl shadow-sm shadow-amber-500/20 transition-all active:scale-[0.97]"
@@ -33,12 +40,6 @@ export function Header({ lastUpdated }: HeaderProps) {
             <span className="hidden sm:inline">滑卡 Review</span>
             <span className="sm:hidden">Review</span>
           </Link>
-          {lastUpdated && (
-            <div className="hidden sm:flex items-center gap-2 text-sm text-stone-500 bg-stone-100/80 px-3 py-1.5 rounded-full">
-              <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-              更新于 {formatDateTime(lastUpdated)}
-            </div>
-          )}
         </div>
       </div>
     </header>
