@@ -40,6 +40,7 @@ export function SwipeCard({ tweet, onConfirm, onSkip, onDefer, active }: SwipeCa
 
   const [replies, setReplies] = useState<ReplyOption[] | null>(null);
   const [loadingReplies, setLoadingReplies] = useState(false);
+  const [replyError, setReplyError] = useState<string | null>(null);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
 
   const theme = GROUP_THEME[tweet.group as TweetGroup] ?? FALLBACK_THEME;
@@ -60,6 +61,7 @@ export function SwipeCard({ tweet, onConfirm, onSkip, onDefer, active }: SwipeCa
   async function handleGenerateReplies() {
     if (loadingReplies || replies) return;
     setLoadingReplies(true);
+    setReplyError(null);
     try {
       const res = await fetch('/api/generate-comment', {
         method: 'POST',
@@ -73,8 +75,11 @@ export function SwipeCard({ tweet, onConfirm, onSkip, onDefer, active }: SwipeCa
       const data = await res.json();
       if (data.success && data.comments?.options) {
         setReplies(data.comments.options);
+      } else {
+        setReplyError(data.error || '生成失败，请重试');
       }
     } catch (err) {
+      setReplyError('网络错误，请重试');
       console.error('Failed to generate replies:', err);
     } finally {
       setLoadingReplies(false);
@@ -185,6 +190,18 @@ export function SwipeCard({ tweet, onConfirm, onSkip, onDefer, active }: SwipeCa
             <div className="w-full py-4 flex items-center justify-center gap-2 text-sm text-amber-600">
               <div className="w-4 h-4 border-2 border-amber-200 border-t-amber-500 rounded-full animate-spin" />
               生成中...
+            </div>
+          )}
+
+          {replyError && !loadingReplies && !replies && (
+            <div className="w-full py-3 px-4 rounded-xl bg-rose-50 border border-rose-200/60 text-center space-y-2">
+              <p className="text-xs text-rose-600">{replyError}</p>
+              <button
+                onClick={() => { setReplyError(null); handleGenerateReplies(); }}
+                className="text-xs font-medium text-rose-700 underline underline-offset-2 hover:text-rose-800"
+              >
+                点击重试
+              </button>
             </div>
           )}
 
