@@ -167,10 +167,19 @@ export function SwipeCard({ tweet, onConfirm, onSkip, onDefer, active }: SwipeCa
             </div>
           )}
 
-          <div className="flex items-center gap-4 text-xs text-stone-400 pt-1">
-            <span className="flex items-center gap-1"><span className="text-rose-400">♥</span> {tweet.engagement.likes}</span>
-            <span className="flex items-center gap-1"><span className="text-blue-400">💬</span> {tweet.engagement.replies}</span>
-            <span className="flex items-center gap-1"><span className="text-emerald-400">↻</span> {tweet.engagement.retweets}</span>
+          <div className="flex items-center justify-between pt-1">
+            <div className="flex items-center gap-4 text-xs text-stone-400">
+              <span className="flex items-center gap-1"><span className="text-rose-400">♥</span> {tweet.engagement.likes}</span>
+              <span className="flex items-center gap-1"><span className="text-blue-400">💬</span> {tweet.engagement.replies}</span>
+              <span className="flex items-center gap-1"><span className="text-emerald-400">↻</span> {tweet.engagement.retweets}</span>
+            </div>
+            <button
+              onClick={(e) => { e.stopPropagation(); openExternalLink(tweet.url); }}
+              className="flex items-center gap-1 text-[11px] font-medium text-blue-500 hover:text-blue-600 px-2 py-1 rounded-lg hover:bg-blue-50 transition-colors"
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+              查看原文
+            </button>
           </div>
 
           {tweet.reason && <p className="text-[11px] text-stone-400 leading-relaxed">{tweet.reason}</p>}
