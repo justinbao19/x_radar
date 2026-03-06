@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { SwipeCard } from '@/components/SwipeCard';
 import { SkipReasonSheet } from '@/components/SkipReasonSheet';
@@ -191,7 +192,19 @@ export default function ReviewPage() {
     <div className="min-h-screen bg-gradient-to-br from-stone-100 via-stone-50 to-amber-50/30 flex flex-col">
       <div className="max-w-md mx-auto w-full flex flex-col flex-1">
         {/* Top bar */}
-        <div className="px-4 pt-4 pb-2 space-y-3">
+        <div className="px-4 pt-3 pb-2 space-y-3">
+          {/* Header: back + title */}
+          <div className="flex items-center justify-between">
+            <Link
+              href="/"
+              className="w-9 h-9 rounded-full bg-white/80 hover:bg-white border border-stone-200/40 shadow-sm flex items-center justify-center text-stone-500 hover:text-stone-700 transition-all active:scale-90"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+            </Link>
+            <span className="text-sm font-semibold text-stone-700">Swipe Review</span>
+            <div className="w-9" />
+          </div>
+
           {/* Radar tabs */}
           <div className="flex gap-1 bg-white/60 backdrop-blur-sm rounded-2xl p-1 border border-stone-200/40 shadow-sm">
             {RADAR_TABS.map(tab => {
