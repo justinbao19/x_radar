@@ -72,6 +72,8 @@ function TweetModal({ tweet, recentRunAts, onClose }: { tweet: Tweet; recentRunA
   );
 }
 
+export type ReviewStatus = { action: string; skipReason?: string };
+
 export default function Dashboard() {
   const mainRef = useRef<HTMLElement | null>(null);
   const [frozenHeight, setFrozenHeight] = useState<number | null>(null);
@@ -80,8 +82,23 @@ export default function Dashboard() {
   const [recentRunAts, setRecentRunAts] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [reviewStatusMap, setReviewStatusMap] = useState<Record<string, ReviewStatus>>({});
   
   const { hiddenUrls, feedbackModal, confirmDownvote, cancelDownvote } = useVotes();
+
+  useEffect(() => {
+    async function loadReviewStatus() {
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        const res = await fetch(`/api/review-status?date=${today}`);
+        if (res.ok) {
+          const data = await res.json();
+          setReviewStatusMap(data.statuses || {});
+        }
+      } catch { /* silent fail */ }
+    }
+    loadReviewStatus();
+  }, []);
   
   const [radarCategory, setRadarCategory] = useState<RadarCategory>('pain_radar');
   
@@ -452,6 +469,7 @@ export default function Dashboard() {
                     showComments={false}
                     collapsible={true}
                     isNew={isTweetNew(tweet, recentRunAts)}
+                    reviewStatus={reviewStatusMap[tweet.url]}
                   />
                 ))}
               </div>
@@ -465,6 +483,7 @@ export default function Dashboard() {
                     showComments={true}
                     collapsible={true}
                     isNew={isTweetNew(tweet, recentRunAts)}
+                    reviewStatus={reviewStatusMap[tweet.url]}
                   />
                 ))}
               </div>

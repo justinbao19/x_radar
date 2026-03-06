@@ -129,24 +129,31 @@ interface GenerateCommentRequest {
 function extractJSON(text: string): Record<string, unknown> | null {
   if (!text) return null;
   
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  // Strip markdown code fences (```json ... ``` or ``` ... ```)
+  let cleaned = text.trim();
+  const fenceMatch = cleaned.match(/```(?:json)?\s*\n?([\s\S]*?)```/);
+  if (fenceMatch) {
+    cleaned = fenceMatch[1].trim();
+  }
+  
+  const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
   if (!jsonMatch) return null;
   
-  try {
-    return JSON.parse(jsonMatch[0]);
-  } catch {
-    // Try to fix common issues
-    const fixed = jsonMatch[0]
-      .replace(/,\s*}/g, '}')
-      .replace(/,\s*]/g, ']')
-      .replace(/'/g, '"');
-    
+  const candidates = [
+    jsonMatch[0],
+    jsonMatch[0].replace(/,\s*}/g, '}').replace(/,\s*]/g, ']'),
+    jsonMatch[0].replace(/,\s*}/g, '}').replace(/,\s*]/g, ']').replace(/'/g, '"'),
+  ];
+  
+  for (const candidate of candidates) {
     try {
-      return JSON.parse(fixed);
+      return JSON.parse(candidate);
     } catch {
-      return null;
+      continue;
     }
   }
+  
+  return null;
 }
 
 async function callClaudeAPI(tweetText: string, language: string): Promise<TweetComments> {
@@ -165,21 +172,40 @@ ${tweetText}
 
 请为这条推文生成 3 个回复选项。记住用推文的原始语言回复，并且绝对不要有任何推销或广告味道。`;
 
-  const response = await fetch(apiUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01'
-    },
-    body: JSON.stringify({
+  const isAnthropicAPI = apiUrl.includes('anthropic.com');
+  
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  
+  let body: Record<string, unknown>;
+  
+  if (isAnthropicAPI) {
+    headers['x-api-key'] = apiKey;
+    headers['anthropic-version'] = '2023-06-01';
+    body = {
       model,
       max_tokens: 1024,
       system: SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: userPrompt }],
+    };
+  } else {
+    // OpenAI-compatible proxy (e.g. OpenRouter, one-api, etc.)
+    headers['Authorization'] = `Bearer ${apiKey}`;
+    body = {
+      model,
+      max_tokens: 1024,
       messages: [
-        { role: 'user', content: userPrompt }
-      ]
-    })
+        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'user', content: userPrompt },
+      ],
+    };
+  }
+  
+  const response = await fetch(apiUrl, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body),
   });
   
   if (!response.ok) {
@@ -188,16 +214,22 @@ ${tweetText}
   }
   
   const data = await response.json();
-  const content = data.content?.[0]?.text;
+  // Anthropic format: data.content[0].text
+  // OpenAI-compatible proxy format: data.choices[0].message.content
+  const content = data.content?.[0]?.text
+    || data.choices?.[0]?.message?.content;
   
   if (!content) {
-    throw new Error('No content in Claude API response');
+    console.error('LLM API returned no content. Full response:', JSON.stringify(data).slice(0, 500));
+    throw new Error(`No content in API response. Keys: [${Object.keys(data).join(', ')}]`);
   }
   
   const parsed = extractJSON(content);
   
   if (!parsed || !parsed.options || !Array.isArray(parsed.options)) {
-    throw new Error('Invalid response format from Claude API');
+    console.error('Failed to parse Claude response. Raw content:', content.slice(0, 500));
+    console.error('Parsed result:', JSON.stringify(parsed).slice(0, 300));
+    throw new Error(`Invalid response format from Claude API. Content preview: ${content.slice(0, 100)}...`);
   }
   
   // Transform to TweetComments format
