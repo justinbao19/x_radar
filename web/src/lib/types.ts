@@ -174,3 +174,89 @@ export interface FilterState {
   viewMode: ViewMode;
   showAiPickedOnly: boolean;
 }
+
+// ============ X Swipe Types ============
+
+export type SkipReason = 'is_ad' | 'customer_service' | 'too_old' | 'no_angle' | 'not_relevant' | 'other';
+
+export type SwipeAction = 'confirmed' | 'skipped';
+
+export type TweetGroup = 'pain' | 'insight' | 'reach' | 'sentiment';
+
+export interface SwipeTweet {
+  id: string;
+  author: string;
+  url: string;
+  text: string;
+  translationZh: string | null;
+  group: TweetGroup | null;
+  language: string | null;
+  engagement: {
+    likes: number;
+    replies: number;
+    retweets: number;
+  };
+  finalScore: number;
+  aiPicked: boolean;
+  reason: string | null;
+  suggestedReply: string | null;
+  replyTranslationZh: string | null;
+  replyAngle: string | null;
+  intentUrl: string | null;
+  tweetDatetime: string | null;
+  relevanceKeywords: string[];
+  painEmotionWords: string[];
+}
+
+export interface Decision {
+  id: string;
+  tweetId: string;
+  userId: string;
+  action: SwipeAction;
+  skipReason: SkipReason | null;
+  skipNote: string | null;
+  decidedAt: string;
+}
+
+export interface CardsResponse {
+  cards: SwipeTweet[];
+  total: number;
+  reviewed: number;
+  remaining: number;
+}
+
+export interface DecisionRequest {
+  tweetId: string;
+  userId: string;
+  action: SwipeAction;
+  skipReason?: SkipReason;
+  skipNote?: string;
+}
+
+export interface DecisionResponse {
+  success: boolean;
+  remaining: number;
+}
+
+export interface SummaryResponse {
+  date: string;
+  confirmed: Array<{
+    id: string;
+    author: string;
+    url: string;
+    text: string;
+    suggestedReply: string | null;
+    intentUrl: string | null;
+  }>;
+  skipped: Array<{
+    id: string;
+    reason: SkipReason | null;
+    note: string | null;
+  }>;
+  stats: {
+    total: number;
+    confirmed: number;
+    skipped: number;
+    skipReasons: Record<string, number>;
+  };
+}

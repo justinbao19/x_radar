@@ -1,16 +1,20 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "./globals.css";
 import { VoteProvider } from "@/lib/VoteContext";
 import { ToastProvider } from "@/lib/ToastContext";
+import { TelegramProvider } from "@/lib/TelegramContext";
 
 export const metadata: Metadata = {
-  title: "X Radar Dashboard",
+  title: "X Radar",
   description: "X (Twitter) 推文抓取与回复建议系统",
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
   viewportFit: "cover"
 };
 
@@ -21,12 +25,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN">
+      <head>
+        <Script
+          src="https://telegram.org/js/telegram-web-app.js"
+          strategy="beforeInteractive"
+        />
+      </head>
       <body>
-        <VoteProvider>
-          <ToastProvider>
-            {children}
-          </ToastProvider>
-        </VoteProvider>
+        <TelegramProvider>
+          <VoteProvider>
+            <ToastProvider>
+              {children}
+            </ToastProvider>
+          </VoteProvider>
+        </TelegramProvider>
       </body>
     </html>
   );

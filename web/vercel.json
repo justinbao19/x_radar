@@ -3,5 +3,11 @@
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
   "framework": "nextjs",
-  "installCommand": "npm install"
+  "installCommand": "npm install",
+  "crons": [
+    {
+      "path": "/api/sync",
+      "schedule": "0 */6 * * *"
+    }
+  ]
 }

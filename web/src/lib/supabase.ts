@@ -1,6 +1,6 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-// ============ Supabase Client ============
+// ============ Supabase Client (Browser / Anon) ============
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -12,6 +12,27 @@ if (!supabaseUrl || !supabaseKey) {
 export const supabase = supabaseUrl && supabaseKey 
   ? createClient(supabaseUrl, supabaseKey)
   : null;
+
+// ============ Supabase Server Client (Service Role) ============
+
+let _serverClient: SupabaseClient | null = null;
+
+export function createServerSupabaseClient(): SupabaseClient | null {
+  if (_serverClient) return _serverClient;
+
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!url || !serviceKey) {
+    console.warn('Supabase service role key not configured. Server operations will be disabled.');
+    return null;
+  }
+
+  _serverClient = createClient(url, serviceKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+  return _serverClient;
+}
 
 // ============ Types ============
 
