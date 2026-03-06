@@ -7,12 +7,18 @@ import { VoteButtons } from './VoteButtons';
 import { useToast } from '@/lib/ToastContext';
 import { getGroupLabel, getGroupColor, getSentimentStyle, getInsightStyle, getScoreStyle, languageMap } from '@/lib/styles';
 
+interface ReviewStatus {
+  action: string;
+  skipReason?: string;
+}
+
 interface TweetCardProps {
   tweet: Tweet;
   index: number;
   showComments?: boolean;
   collapsible?: boolean;
   isNew?: boolean;
+  reviewStatus?: ReviewStatus;
 }
 
 type CommentState = 'idle' | 'loading' | 'success' | 'error';
@@ -111,7 +117,12 @@ function ReplyOptionCard({
   );
 }
 
-export function TweetCard({ tweet, index, showComments = true, collapsible = false, isNew = false }: TweetCardProps) {
+const SKIP_REASON_LABELS: Record<string, string> = {
+  is_ad: '广告', customer_service: '售后', too_old: '过期',
+  no_angle: '无切入', not_relevant: '不相关', other: '其他',
+};
+
+export function TweetCard({ tweet, index, showComments = true, collapsible = false, isNew = false, reviewStatus }: TweetCardProps) {
   const [activeTab, setActiveTab] = useState<number>(0);
   const [commentsExpanded, setCommentsExpanded] = useState(false);
   const { showToast } = useToast();
@@ -200,7 +211,13 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
   const languageInfo = languageMap[detectedLang] || { flag: '❔', label: '未知' };
 
   const isNegativeSentiment = tweet.sentimentLabel === 'negative';
-  const cardBorderClass = isNegativeSentiment 
+  const isConfirmed = reviewStatus?.action === 'confirmed';
+  const isSkipped = reviewStatus?.action === 'skipped';
+  const cardBorderClass = isConfirmed
+    ? 'border-emerald-300 border-l-4 border-l-emerald-500'
+    : isSkipped
+    ? 'border-stone-200/60 opacity-60'
+    : isNegativeSentiment 
     ? 'border-red-300 ring-2 ring-red-100' 
     : 'border-stone-200/80 hover:border-stone-300';
   
@@ -208,9 +225,22 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
   
   return (
     <article className={`bg-white rounded-2xl border overflow-hidden hover:shadow-lg hover:shadow-stone-200/50 transition-all duration-300 card-hover break-inside-avoid relative ${cardBorderClass}`}>
+      {/* Review status badge */}
+      {isConfirmed && (
+        <div className="absolute top-3 right-3 z-20 flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-semibold">
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+          已确认回复
+        </div>
+      )}
+      {isSkipped && (
+        <div className="absolute top-3 right-3 z-20 flex items-center gap-1 px-2 py-1 rounded-full bg-stone-100 border border-stone-200 text-stone-500 text-[10px] font-semibold">
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+          已跳过{reviewStatus?.skipReason ? `·${SKIP_REASON_LABELS[reviewStatus.skipReason] || reviewStatus.skipReason}` : ''}
+        </div>
+      )}
       {/* Header */}
       <div className="p-4 sm:p-6 pb-3 sm:pb-4 relative">
-        {isNew && (
+        {isNew && !reviewStatus && (
           <span className="absolute top-3 right-3 z-10 px-2 py-0.5 text-[10px] sm:text-xs font-bold bg-linear-to-r from-emerald-500 to-teal-500 text-white rounded-full shadow-md shadow-emerald-500/25 animate-pulse-soft">
             New
           </span>
