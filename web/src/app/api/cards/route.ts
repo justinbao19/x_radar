@@ -18,16 +18,22 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'user_id is required' }, { status: 400 });
     }
 
-    const targetDate = dateParam || new Date().toISOString().split('T')[0];
-    const dayStart = `${targetDate}T00:00:00.000Z`;
-    const dayEnd = `${targetDate}T23:59:59.999Z`;
+    const lookbackDays = 3;
+    const now = new Date();
+    const startDate = new Date(now);
+    startDate.setDate(startDate.getDate() - lookbackDays);
+    const rangeStart = dateParam
+      ? `${dateParam}T00:00:00.000Z`
+      : startDate.toISOString();
+    const rangeEnd = dateParam
+      ? `${dateParam}T23:59:59.999Z`
+      : now.toISOString();
 
-    // Fetch tweets for the target date
     const { data: tweets, error: tweetsError } = await supabase
       .from('tweets')
       .select('*')
-      .gte('fetched_at', dayStart)
-      .lte('fetched_at', dayEnd)
+      .gte('fetched_at', rangeStart)
+      .lte('fetched_at', rangeEnd)
       .order('final_score', { ascending: false });
 
     if (tweetsError) {
