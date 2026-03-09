@@ -15,6 +15,7 @@ export { FeedbackModal } from './FeedbackModal';
 export { BottomSheet } from './BottomSheet';
 export { SwipeCard } from './SwipeCard';
 export { SkipReasonSheet } from './SkipReasonSheet';
+export { ReplyQueuePanel } from './ReplyQueuePanel';
 export { ProgressBar } from './ProgressBar';
 export { GroupBadge } from './GroupBadge';
 export { EngagementBadge } from './EngagementBadge';

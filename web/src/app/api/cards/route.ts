@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
       .select('*')
       .gte('fetched_at', rangeStart)
       .lte('fetched_at', rangeEnd)
+      .eq('ai_picked', true)
       .order('final_score', { ascending: false });
 
     if (tweetsError) {

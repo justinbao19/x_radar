@@ -260,3 +260,14 @@ export interface SummaryResponse {
     skipReasons: Record<string, number>;
   };
 }
+
+// ============ Reply Queue ============
+
+export type QueueItemStatus = 'pending' | 'generating' | 'done' | 'error';
+
+export interface ReplyQueueItem {
+  tweet: SwipeTweet;
+  status: QueueItemStatus;
+  replies?: ReplyOption[];
+  error?: string;
+}

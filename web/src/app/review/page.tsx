@@ -1,13 +1,14 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { SwipeCard } from '@/components/SwipeCard';
 import { SkipReasonSheet } from '@/components/SkipReasonSheet';
+import { ReplyQueuePanel } from '@/components/ReplyQueuePanel';
 import { useTelegram } from '@/lib/TelegramContext';
-import { SwipeTweet, SkipReason, CardsResponse, DecisionRequest } from '@/lib/types';
+import { SwipeTweet, SkipReason, CardsResponse, DecisionRequest, ReplyQueueItem } from '@/lib/types';
 import { hapticFeedback } from '@/lib/telegram';
 
 const DEFAULT_USER_ID = '5134454816';
@@ -48,6 +49,10 @@ export default function ReviewPage() {
   const [showSkipSheet, setShowSkipSheet] = useState(false);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [activeTab, setActiveTab] = useState<RadarTab>('all');
+
+  const [replyQueue, setReplyQueue] = useState<ReplyQueueItem[]>([]);
+  const [showQueuePanel, setShowQueuePanel] = useState(false);
+  const generatingRef = useRef(false);
 
   const filteredCards = useMemo(() => {
     const undecided = allCards.filter(c => !decidedIds.has(c.id) && !deferredIds.has(c.id));
@@ -104,6 +109,55 @@ export default function ReviewPage() {
     }
   }, [tg, history.length]);
 
+  // Background reply generation: process one pending item at a time
+  useEffect(() => {
+    if (generatingRef.current) return;
+    const pendingItem = replyQueue.find(item => item.status === 'pending');
+    if (!pendingItem) return;
+
+    generatingRef.current = true;
+
+    setReplyQueue(prev => prev.map(item =>
+      item.tweet.id === pendingItem.tweet.id ? { ...item, status: 'generating' } : item
+    ));
+
+    (async () => {
+      try {
+        const res = await fetch('/api/generate-comment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tweetUrl: pendingItem.tweet.url,
+            tweetText: pendingItem.tweet.text,
+            language: pendingItem.tweet.language || 'en',
+          }),
+        });
+        const data = await res.json();
+        if (data.success && data.comments?.options) {
+          setReplyQueue(prev => prev.map(item =>
+            item.tweet.id === pendingItem.tweet.id
+              ? { ...item, status: 'done', replies: data.comments.options }
+              : item
+          ));
+        } else {
+          setReplyQueue(prev => prev.map(item =>
+            item.tweet.id === pendingItem.tweet.id
+              ? { ...item, status: 'error', error: data.error || '生成失败' }
+              : item
+          ));
+        }
+      } catch {
+        setReplyQueue(prev => prev.map(item =>
+          item.tweet.id === pendingItem.tweet.id
+            ? { ...item, status: 'error', error: '网络错误' }
+            : item
+        ));
+      } finally {
+        generatingRef.current = false;
+      }
+    })();
+  }, [replyQueue]);
+
   async function submitDecision(req: DecisionRequest) {
     try {
       await fetch('/api/decisions', {
@@ -120,6 +174,7 @@ export default function ReviewPage() {
     if (!currentCard) return;
     setHistory(prev => [...prev, { tweet: currentCard, action: 'confirmed' }]);
     setDecidedIds(prev => new Set(prev).add(currentCard.id));
+    setReplyQueue(prev => [...prev, { tweet: currentCard, status: 'pending' }]);
     submitDecision({ tweetId: currentCard.id, userId, action: 'confirmed' });
   }
 
@@ -152,6 +207,9 @@ export default function ReviewPage() {
       next.delete(lastEntry.tweet.id);
       return next;
     });
+    if (lastEntry.action === 'confirmed') {
+      setReplyQueue(prev => prev.filter(item => item.tweet.id !== lastEntry.tweet.id));
+    }
     try {
       await fetch(`/api/decisions?tweet_id=${lastEntry.tweet.id}&user_id=${userId}`, { method: 'DELETE' });
     } catch (err) {
@@ -159,11 +217,27 @@ export default function ReviewPage() {
     }
   }
 
-  // Check if all cards across all tabs are done
-  const allDone = allCards.length > 0 && allCards.every(c => decidedIds.has(c.id));
+  function handleRetry(tweetId: string) {
+    setReplyQueue(prev => prev.map(item =>
+      item.tweet.id === tweetId ? { ...item, status: 'pending', error: undefined } : item
+    ));
+  }
+
+  // When all cards are swiped, auto-expand the queue panel instead of navigating to done
+  const allCardsDone = allCards.length > 0 && allCards.every(c => decidedIds.has(c.id));
   useEffect(() => {
-    if (allDone && !loading) router.push('/review/done');
-  }, [allDone, loading, router]);
+    if (allCardsDone && !loading && replyQueue.length > 0) {
+      setShowQueuePanel(true);
+    }
+  }, [allCardsDone, loading, replyQueue.length]);
+
+  // Navigate to done page only when all cards swiped AND all replies finished AND panel is closed
+  const allRepliesDone = replyQueue.length > 0 && replyQueue.every(i => i.status === 'done' || i.status === 'error');
+  useEffect(() => {
+    if (allCardsDone && !loading && replyQueue.length === 0) {
+      router.push('/review/done');
+    }
+  }, [allCardsDone, loading, replyQueue.length, router]);
 
   const progress = totalFromServer > 0 ? (totalDecided / totalFromServer) * 100 : 0;
 
@@ -198,7 +272,6 @@ export default function ReviewPage() {
       <div className="max-w-md mx-auto w-full flex flex-col flex-1">
         {/* Top bar */}
         <div className="px-4 pt-3 pb-2 space-y-3">
-          {/* Header: back + title */}
           <div className="flex items-center justify-between">
             <Link
               href="/"
@@ -210,7 +283,6 @@ export default function ReviewPage() {
             <div className="w-9" />
           </div>
 
-          {/* Radar tabs */}
           <div className="flex gap-1 bg-white/60 backdrop-blur-sm rounded-2xl p-1 border border-stone-200/40 shadow-sm">
             {RADAR_TABS.map(tab => {
               const count = tabCounts[tab.id];
@@ -237,7 +309,6 @@ export default function ReviewPage() {
             })}
           </div>
 
-          {/* Progress bar */}
           <div className="flex items-center gap-3">
             <div className="flex-1 space-y-1">
               <div className="flex items-center justify-between text-xs">
@@ -268,14 +339,22 @@ export default function ReviewPage() {
         </div>
 
         {/* Card stack area */}
-        <div className="flex-1 relative px-4 pb-4">
-          <div className="relative w-full h-[calc(100vh-200px)] max-h-[680px]">
+        <div className="relative px-4 pb-2">
+          <div className={`relative w-full ${replyQueue.length > 0 ? 'h-[calc(100vh-320px)] max-h-[540px]' : 'h-[calc(100vh-260px)] max-h-[600px]'}`}>
             {filteredCards.length === 0 ? (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center space-y-3">
-                  <div className="w-16 h-16 mx-auto rounded-2xl bg-white shadow-lg flex items-center justify-center"><span className="text-3xl">📭</span></div>
-                  <h2 className="text-base font-semibold text-stone-600">该分类已处理完毕</h2>
-                  <p className="text-sm text-stone-400">切换其他分类继续</p>
+                  <div className="w-16 h-16 mx-auto rounded-2xl bg-white shadow-lg flex items-center justify-center"><span className="text-3xl">{allCardsDone ? '✅' : '📭'}</span></div>
+                  <h2 className="text-base font-semibold text-stone-600">{allCardsDone ? '全部处理完毕' : '该分类已处理完毕'}</h2>
+                  <p className="text-sm text-stone-400">{allCardsDone ? '查看回复队列' : '切换其他分类继续'}</p>
+                  {allCardsDone && replyQueue.length > 0 && (
+                    <button
+                      onClick={() => setShowQueuePanel(true)}
+                      className="mt-2 px-5 py-2.5 bg-stone-800 text-white rounded-xl text-sm font-medium hover:bg-stone-900 transition-colors active:scale-[0.97]"
+                    >
+                      打开回复队列
+                    </button>
+                  )}
                 </div>
               </motion.div>
             ) : (
@@ -290,6 +369,14 @@ export default function ReviewPage() {
             )}
           </div>
         </div>
+
+        {/* Reply queue floating bar */}
+        <ReplyQueuePanel
+          queue={replyQueue}
+          onRetry={handleRetry}
+          expanded={showQueuePanel}
+          onToggleExpand={() => setShowQueuePanel(prev => !prev)}
+        />
       </div>
 
       <SkipReasonSheet open={showSkipSheet} onClose={() => setShowSkipSheet(false)} onSubmit={handleSkipConfirm} />
