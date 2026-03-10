@@ -9,7 +9,9 @@ import { SkipReasonSheet } from '@/components/SkipReasonSheet';
 import { ReplyQueuePanel } from '@/components/ReplyQueuePanel';
 import { useTelegram } from '@/lib/TelegramContext';
 import { SwipeTweet, SkipReason, CardsResponse, DecisionRequest, ReplyQueueItem } from '@/lib/types';
-import { hapticFeedback } from '@/lib/telegram';
+import { hapticFeedback, openExternalLink } from '@/lib/telegram';
+
+const ANGLE_LABELS: Record<string, string> = { witty: '机智', practical: '务实', subtle_product: '产品' };
 
 const DEFAULT_USER_ID = '5134454816';
 
@@ -52,6 +54,8 @@ export default function ReviewPage() {
 
   const [replyQueue, setReplyQueue] = useState<ReplyQueueItem[]>([]);
   const [showQueuePanel, setShowQueuePanel] = useState(false);
+  const [completedItems, setCompletedItems] = useState<ReplyQueueItem[]>([]);
+  const [showCompletedPanel, setShowCompletedPanel] = useState(false);
   const generatingRef = useRef(false);
 
   const filteredCards = useMemo(() => {
@@ -223,6 +227,16 @@ export default function ReviewPage() {
     ));
   }
 
+  const handleComplete = useCallback((tweetId: string, chosenAngle: string) => {
+    setReplyQueue(prev => {
+      const item = prev.find(i => i.tweet.id === tweetId);
+      if (item) {
+        setCompletedItems(old => [...old, { ...item, chosenAngle }]);
+      }
+      return prev.filter(i => i.tweet.id !== tweetId);
+    });
+  }, []);
+
   // When all cards are swiped, auto-expand the queue panel instead of navigating to done
   const allCardsDone = allCards.length > 0 && allCards.every(c => decidedIds.has(c.id));
   useEffect(() => {
@@ -231,13 +245,11 @@ export default function ReviewPage() {
     }
   }, [allCardsDone, loading, replyQueue.length]);
 
-  // Navigate to done page only when all cards swiped AND all replies finished AND panel is closed
-  const allRepliesDone = replyQueue.length > 0 && replyQueue.every(i => i.status === 'done' || i.status === 'error');
   useEffect(() => {
-    if (allCardsDone && !loading && replyQueue.length === 0) {
+    if (allCardsDone && !loading && replyQueue.length === 0 && completedItems.length === 0) {
       router.push('/review/done');
     }
-  }, [allCardsDone, loading, replyQueue.length, router]);
+  }, [allCardsDone, loading, replyQueue.length, completedItems.length, router]);
 
   const progress = totalFromServer > 0 ? (totalDecided / totalFromServer) * 100 : 0;
 
@@ -280,7 +292,19 @@ export default function ReviewPage() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
             </Link>
             <span className="text-sm font-semibold text-stone-700">Swipe Review</span>
-            <div className="w-9" />
+            {completedItems.length > 0 ? (
+              <button
+                onClick={() => setShowCompletedPanel(true)}
+                className="relative w-9 h-9 rounded-full bg-white/80 hover:bg-white border border-stone-200/40 shadow-sm flex items-center justify-center text-emerald-500 hover:text-emerald-600 transition-all active:scale-90"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center bg-emerald-500 text-white text-[10px] font-bold rounded-full px-1">
+                  {completedItems.length}
+                </span>
+              </button>
+            ) : (
+              <div className="w-9" />
+            )}
           </div>
 
           <div className="flex gap-1 bg-white/60 backdrop-blur-sm rounded-2xl p-1 border border-stone-200/40 shadow-sm">
@@ -374,12 +398,99 @@ export default function ReviewPage() {
         <ReplyQueuePanel
           queue={replyQueue}
           onRetry={handleRetry}
+          onComplete={handleComplete}
           expanded={showQueuePanel}
           onToggleExpand={() => setShowQueuePanel(prev => !prev)}
         />
       </div>
 
       <SkipReasonSheet open={showSkipSheet} onClose={() => setShowSkipSheet(false)} onSubmit={handleSkipConfirm} />
+
+      {/* Completed replies drawer */}
+      <AnimatePresence>
+        {showCompletedPanel && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50"
+            onClick={() => setShowCompletedPanel(false)}
+          >
+            <div className="absolute inset-0 bg-black/30 backdrop-blur-[1px]" />
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+              className="absolute bottom-0 left-0 right-0 max-w-md mx-auto bg-white rounded-t-2xl shadow-2xl max-h-[85vh] flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex justify-center pt-3 pb-1">
+                <div className="w-10 h-1 rounded-full bg-stone-300" />
+              </div>
+
+              <div className="px-5 pb-3 pt-1 flex items-center justify-between">
+                <div>
+                  <h3 className="text-base font-semibold text-stone-800">已完成回复</h3>
+                  <p className="text-xs text-stone-400 mt-0.5">
+                    {completedItems.length} 条已回复 · AI 偏好学习数据收集中
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowCompletedPanel(false)}
+                  className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-400 hover:bg-stone-200 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-2">
+                {completedItems.map((item) => {
+                  const chosenReply = item.replies?.find(r => r.angle === item.chosenAngle) ?? item.replies?.[0];
+                  return (
+                    <div key={item.tweet.id} className="rounded-xl border border-emerald-100 bg-emerald-50/30 overflow-hidden">
+                      <div className="flex items-center gap-3 px-4 py-3">
+                        <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+                          <svg className="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-semibold text-stone-600 truncate">{item.tweet.author}</p>
+                          <p className="text-[11px] text-stone-400 truncate">{item.tweet.text}</p>
+                        </div>
+                        <button
+                          onClick={() => openExternalLink(item.tweet.intentUrl || item.tweet.url)}
+                          className="text-[11px] font-medium text-blue-500 px-2 py-1 rounded-lg hover:bg-blue-50 transition-colors shrink-0"
+                        >
+                          原文
+                        </button>
+                      </div>
+                      {chosenReply && (
+                        <div className="px-4 pb-3 border-t border-emerald-100/60">
+                          <div className="pt-2 flex items-center gap-1.5 mb-1">
+                            <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700">
+                              {ANGLE_LABELS[chosenReply.angle] || chosenReply.angle}
+                            </span>
+                          </div>
+                          <p className="text-[13px] text-stone-700 leading-relaxed">{chosenReply.comment}</p>
+                          {chosenReply.comment_zh && (
+                            <p className="text-[11px] text-stone-400 leading-relaxed mt-1">{chosenReply.comment_zh}</p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+
+                {completedItems.length === 0 && (
+                  <div className="text-center py-12 text-stone-400 text-sm">
+                    暂无已完成的回复
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

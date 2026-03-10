@@ -270,4 +270,7 @@ export interface ReplyQueueItem {
   status: QueueItemStatus;
   replies?: ReplyOption[];
   error?: string;
+  copied?: boolean;
+  visited?: boolean;
+  chosenAngle?: string;
 }

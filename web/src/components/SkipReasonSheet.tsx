@@ -19,20 +19,29 @@ const SKIP_REASONS: { value: SkipReason; label: string; icon: string }[] = [
 ];
 
 export function SkipReasonSheet({ open, onClose, onSubmit }: SkipReasonSheetProps) {
-  const [selected, setSelected] = useState<SkipReason | null>(null);
+  const [showOtherInput, setShowOtherInput] = useState(false);
   const [note, setNote] = useState('');
 
   if (!open) return null;
 
-  function handleSubmit() {
-    if (!selected) return;
-    onSubmit(selected, selected === 'other' ? note : undefined);
-    setSelected(null);
+  function handleReasonClick(reason: SkipReason) {
+    if (reason === 'other') {
+      setShowOtherInput(true);
+      return;
+    }
+    onSubmit(reason);
+    setShowOtherInput(false);
+    setNote('');
+  }
+
+  function handleOtherSubmit() {
+    onSubmit('other', note);
+    setShowOtherInput(false);
     setNote('');
   }
 
   function handleClose() {
-    setSelected(null);
+    setShowOtherInput(false);
     setNote('');
     onClose();
   }
@@ -57,11 +66,11 @@ export function SkipReasonSheet({ open, onClose, onSubmit }: SkipReasonSheetProp
           {SKIP_REASONS.map((reason) => (
             <button
               key={reason.value}
-              onClick={() => setSelected(reason.value)}
+              onClick={() => handleReasonClick(reason.value)}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-colors ${
-                selected === reason.value
+                showOtherInput && reason.value === 'other'
                   ? 'bg-blue-50 border-2 border-blue-400 text-blue-700'
-                  : 'bg-stone-50 border-2 border-transparent hover:bg-stone-100 text-stone-700'
+                  : 'bg-stone-50 border-2 border-transparent hover:bg-stone-100 active:bg-stone-200 text-stone-700'
               }`}
             >
               <span className="text-lg">{reason.icon}</span>
@@ -69,29 +78,25 @@ export function SkipReasonSheet({ open, onClose, onSubmit }: SkipReasonSheetProp
             </button>
           ))}
 
-          {/* Custom note for "other" */}
-          {selected === 'other' && (
-            <textarea
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder="补充说明..."
-              className="w-full mt-2 px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-blue-400 focus:outline-none text-sm text-stone-700 resize-none"
-              rows={2}
-              autoFocus
-            />
+          {/* "other" expanded input */}
+          {showOtherInput && (
+            <>
+              <textarea
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder="补充说明..."
+                className="w-full mt-2 px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-blue-400 focus:outline-none text-sm text-stone-700 resize-none"
+                rows={2}
+                autoFocus
+              />
+              <button
+                onClick={handleOtherSubmit}
+                className="w-full mt-1 py-3 rounded-xl font-medium text-sm bg-stone-800 text-white hover:bg-stone-900 active:scale-[0.98] transition-colors"
+              >
+                确认跳过
+              </button>
+            </>
           )}
-
-          <button
-            onClick={handleSubmit}
-            disabled={!selected}
-            className={`w-full mt-3 py-3 rounded-xl font-medium text-sm transition-colors ${
-              selected
-                ? 'bg-stone-800 text-white hover:bg-stone-900 active:scale-[0.98]'
-                : 'bg-stone-200 text-stone-400 cursor-not-allowed'
-            }`}
-          >
-            确认跳过
-          </button>
         </div>
       </div>
     </div>

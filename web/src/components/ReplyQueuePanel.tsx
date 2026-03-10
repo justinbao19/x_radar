@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ReplyQueueItem } from '@/lib/types';
 import { openExternalLink, hapticFeedback } from '@/lib/telegram';
@@ -10,12 +10,15 @@ const ANGLE_LABELS: Record<string, string> = { witty: '机智', practical: '务�
 interface ReplyQueuePanelProps {
   queue: ReplyQueueItem[];
   onRetry: (tweetId: string) => void;
+  onComplete: (tweetId: string, chosenAngle: string) => void;
   expanded: boolean;
   onToggleExpand: () => void;
 }
 
-export function ReplyQueuePanel({ queue, onRetry, expanded, onToggleExpand }: ReplyQueuePanelProps) {
+export function ReplyQueuePanel({ queue, onRetry, onComplete, expanded, onToggleExpand }: ReplyQueuePanelProps) {
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [selectedTab, setSelectedTab] = useState<Record<string, number>>({});
+  const [actionState, setActionState] = useState<Record<string, { copied: boolean; visited: boolean; angle?: string }>>({});
 
   const doneCount = queue.filter(i => i.status === 'done').length;
   const errorCount = queue.filter(i => i.status === 'error').length;
@@ -23,14 +26,47 @@ export function ReplyQueuePanel({ queue, onRetry, expanded, onToggleExpand }: Re
   const allDone = total > 0 && doneCount + errorCount === total;
   const progress = total > 0 ? (doneCount / total) * 100 : 0;
 
-  async function handleCopy(text: string, key: string) {
+  const getActiveIdx = useCallback((item: ReplyQueueItem): number => {
+    if (selectedTab[item.tweet.id] != null) return selectedTab[item.tweet.id];
+    const recIdx = item.replies?.findIndex(r => r.recommended) ?? -1;
+    return recIdx >= 0 ? recIdx : 0;
+  }, [selectedTab]);
+
+  async function handleCopy(text: string, tweetId: string, angle: string) {
     try {
       await navigator.clipboard.writeText(text);
-      setCopiedKey(key);
+      setCopiedKey(tweetId);
       hapticFeedback('light');
       setTimeout(() => setCopiedKey(null), 1500);
+      setActionState(prev => ({
+        ...prev,
+        [tweetId]: { ...prev[tweetId], copied: true, angle },
+      }));
     } catch { /* clipboard may not be available */ }
   }
+
+  function handleVisit(tweetId: string, url: string) {
+    openExternalLink(url);
+    setActionState(prev => ({
+      ...prev,
+      [tweetId]: { ...prev[tweetId], visited: true },
+    }));
+  }
+
+  useEffect(() => {
+    for (const [tweetId, state] of Object.entries(actionState)) {
+      if (state.copied && state.visited && state.angle) {
+        hapticFeedback('success');
+        onComplete(tweetId, state.angle);
+        setActionState(prev => {
+          const next = { ...prev };
+          delete next[tweetId];
+          return next;
+        });
+        break;
+      }
+    }
+  }, [actionState, onComplete]);
 
   if (total === 0) return null;
 
@@ -39,34 +75,34 @@ export function ReplyQueuePanel({ queue, onRetry, expanded, onToggleExpand }: Re
       {/* Collapsed floating bar */}
       {!expanded && (
         <div className="px-4 pb-3 pt-1">
-        <button
-          onClick={onToggleExpand}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl bg-white border border-stone-200/60 shadow-lg shadow-stone-200/30 active:scale-[0.98] transition-transform"
-        >
-          <div className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center shrink-0">
-            {allDone ? (
-              <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-            ) : (
-              <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
-            )}
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-semibold text-stone-700">
-                {allDone ? '回复已就绪' : '回复队列'}
-              </span>
-              <span className="text-[11px] font-medium text-stone-400 tabular-nums">{doneCount}/{total}</span>
+          <button
+            onClick={onToggleExpand}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl bg-white border border-stone-200/60 shadow-lg shadow-stone-200/30 active:scale-[0.98] transition-transform"
+          >
+            <div className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center shrink-0">
+              {allDone ? (
+                <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+              ) : (
+                <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
+              )}
             </div>
-            <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
-              <motion.div
-                className={`h-full rounded-full ${allDone ? 'bg-emerald-400' : 'bg-amber-400'}`}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.4 }}
-              />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-semibold text-stone-700">
+                  {allDone ? '回复已就绪' : '回复队列'}
+                </span>
+                <span className="text-[11px] font-medium text-stone-400 tabular-nums">{doneCount}/{total}</span>
+              </div>
+              <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
+                <motion.div
+                  className={`h-full rounded-full ${allDone ? 'bg-emerald-400' : 'bg-amber-400'}`}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.4 }}
+                />
+              </div>
             </div>
-          </div>
-          <svg className="w-4 h-4 text-stone-300 shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" /></svg>
-        </button>
+            <svg className="w-4 h-4 text-stone-300 shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" /></svg>
+          </button>
         </div>
       )}
 
@@ -125,70 +161,113 @@ export function ReplyQueuePanel({ queue, onRetry, expanded, onToggleExpand }: Re
 
               {/* Queue list */}
               <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-2">
-                {queue.map((item) => {
-                  const recommended = item.replies?.find(r => r.recommended) ?? item.replies?.[0];
-                  return (
-                    <div key={item.tweet.id} className="rounded-xl border border-stone-200 bg-white overflow-hidden">
-                      {/* Tweet summary row */}
-                      <div className="flex items-center gap-3 px-4 py-3">
-                        <StatusIcon status={item.status} />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-semibold text-stone-600 truncate">{item.tweet.author}</p>
-                          <p className="text-[11px] text-stone-400 truncate">{item.tweet.text}</p>
-                        </div>
-                        {item.status === 'error' && (
-                          <button
-                            onClick={() => onRetry(item.tweet.id)}
-                            className="text-[11px] font-medium text-rose-500 hover:text-rose-600 px-2 py-1 rounded-lg hover:bg-rose-50 transition-colors shrink-0"
-                          >
-                            重试
-                          </button>
-                        )}
-                      </div>
+                <AnimatePresence mode="popLayout">
+                  {queue.map((item) => {
+                    const activeIdx = getActiveIdx(item);
+                    const activeReply = item.replies?.[activeIdx];
+                    const actions = actionState[item.tweet.id];
 
-                      {/* Generated reply (when done) */}
-                      {item.status === 'done' && recommended && (
-                        <div className="px-4 pb-3 pt-0 space-y-2 border-t border-stone-100">
-                          <div className="pt-2">
-                            <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">
-                              {ANGLE_LABELS[recommended.angle] || recommended.angle}
-                            </span>
+                    return (
+                      <motion.div
+                        key={item.tweet.id}
+                        layout
+                        exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.25 } }}
+                        className="rounded-xl border border-stone-200 bg-white overflow-hidden"
+                      >
+                        {/* Tweet summary row */}
+                        <div className="flex items-center gap-3 px-4 py-3">
+                          <StatusIcon status={item.status} />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-semibold text-stone-600 truncate">{item.tweet.author}</p>
+                            <p className="text-[11px] text-stone-400 truncate">{item.tweet.text}</p>
                           </div>
-                          <p className="text-[13px] text-stone-700 leading-relaxed">{recommended.comment}</p>
-                          {recommended.comment_zh && (
-                            <p className="text-[11px] text-stone-400 leading-relaxed">{recommended.comment_zh}</p>
+                          {actions?.copied && !actions?.visited && (
+                            <span className="text-[10px] font-medium text-emerald-500 bg-emerald-50 px-1.5 py-0.5 rounded-full shrink-0">已复制</span>
                           )}
-                          <div className="flex items-center gap-2">
+                          {item.status === 'error' && (
                             <button
-                              onClick={() => handleCopy(recommended.comment, item.tweet.id)}
-                              className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-stone-50 border border-stone-200 text-xs font-medium text-stone-600 hover:bg-stone-100 transition-colors active:scale-[0.98]"
+                              onClick={() => onRetry(item.tweet.id)}
+                              className="text-[11px] font-medium text-rose-500 hover:text-rose-600 px-2 py-1 rounded-lg hover:bg-rose-50 transition-colors shrink-0"
                             >
-                              {copiedKey === item.tweet.id ? (
-                                <><svg className="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>已复制</>
-                              ) : (
-                                <><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>复制</>
-                              )}
+                              重试
                             </button>
-                            <button
-                              onClick={() => openExternalLink(item.tweet.intentUrl || item.tweet.url)}
-                              className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-blue-50 border border-blue-200 text-xs font-medium text-blue-600 hover:bg-blue-100 transition-colors active:scale-[0.98]"
-                            >
-                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                              去回复
-                            </button>
-                          </div>
+                          )}
                         </div>
-                      )}
 
-                      {/* Error message */}
-                      {item.status === 'error' && item.error && (
-                        <div className="px-4 pb-3 border-t border-stone-100">
-                          <p className="text-[11px] text-rose-500 pt-2">{item.error}</p>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+                        {/* Generated replies with tab switching (when done) */}
+                        {item.status === 'done' && item.replies && item.replies.length > 0 && (
+                          <div className="px-4 pb-3 pt-0 space-y-2 border-t border-stone-100">
+                            {/* Angle tabs */}
+                            <div className="flex gap-1.5 pt-2">
+                              {item.replies.map((reply, idx) => (
+                                <button
+                                  key={reply.angle}
+                                  onClick={() => setSelectedTab(prev => ({ ...prev, [item.tweet.id]: idx }))}
+                                  className={`px-2.5 py-1 rounded-full text-[11px] font-semibold transition-colors ${
+                                    activeIdx === idx
+                                      ? 'bg-amber-100 text-amber-700'
+                                      : 'bg-stone-100 text-stone-400 hover:text-stone-600'
+                                  }`}
+                                >
+                                  {ANGLE_LABELS[reply.angle] || reply.angle}
+                                  {reply.recommended && ' ★'}
+                                </button>
+                              ))}
+                            </div>
+
+                            {/* Active reply content */}
+                            {activeReply && (
+                              <>
+                                <p className="text-[13px] text-stone-700 leading-relaxed">{activeReply.comment}</p>
+                                {activeReply.comment_zh && (
+                                  <p className="text-[11px] text-stone-400 leading-relaxed">{activeReply.comment_zh}</p>
+                                )}
+                              </>
+                            )}
+
+                            {/* Copy + Visit buttons */}
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => activeReply && handleCopy(activeReply.comment, item.tweet.id, activeReply.angle)}
+                                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg border text-xs font-medium transition-colors active:scale-[0.98] ${
+                                  actions?.copied
+                                    ? 'bg-emerald-50 border-emerald-200 text-emerald-600'
+                                    : 'bg-stone-50 border-stone-200 text-stone-600 hover:bg-stone-100'
+                                }`}
+                              >
+                                {copiedKey === item.tweet.id ? (
+                                  <><svg className="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>已复制</>
+                                ) : actions?.copied ? (
+                                  <><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>已复制</>
+                                ) : (
+                                  <><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>复制</>
+                                )}
+                              </button>
+                              <button
+                                onClick={() => handleVisit(item.tweet.id, item.tweet.intentUrl || item.tweet.url)}
+                                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg border text-xs font-medium transition-colors active:scale-[0.98] ${
+                                  actions?.visited
+                                    ? 'bg-blue-100 border-blue-300 text-blue-700'
+                                    : 'bg-blue-50 border-blue-200 text-blue-600 hover:bg-blue-100'
+                                }`}
+                              >
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                {actions?.visited ? '已跳转' : '去回复'}
+                              </button>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Error message */}
+                        {item.status === 'error' && item.error && (
+                          <div className="px-4 pb-3 border-t border-stone-100">
+                            <p className="text-[11px] text-rose-500 pt-2">{item.error}</p>
+                          </div>
+                        )}
+                      </motion.div>
+                    );
+                  })}
+                </AnimatePresence>
               </div>
             </motion.div>
           </motion.div>
