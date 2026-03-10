@@ -213,6 +213,7 @@ export default function ReviewPage() {
     });
     if (lastEntry.action === 'confirmed') {
       setReplyQueue(prev => prev.filter(item => item.tweet.id !== lastEntry.tweet.id));
+      setCompletedItems(prev => prev.filter(item => item.tweet.id !== lastEntry.tweet.id));
     }
     try {
       await fetch(`/api/decisions?tweet_id=${lastEntry.tweet.id}&user_id=${userId}`, { method: 'DELETE' });
@@ -231,7 +232,15 @@ export default function ReviewPage() {
     setReplyQueue(prev => {
       const item = prev.find(i => i.tweet.id === tweetId);
       if (item) {
-        setCompletedItems(old => [...old, { ...item, chosenAngle }]);
+        setCompletedItems(old => {
+          const completedItem = { ...item, chosenAngle };
+          const existingIdx = old.findIndex(entry => entry.tweet.id === tweetId);
+          if (existingIdx === -1) return [...old, completedItem];
+
+          const next = [...old];
+          next[existingIdx] = completedItem;
+          return next;
+        });
       }
       return prev.filter(i => i.tweet.id !== tweetId);
     });
