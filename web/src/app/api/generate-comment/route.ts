@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCachedComments, saveCachedComments } from '@/lib/supabase';
 import { TweetComments, ReplyOption } from '@/lib/types';
+import { getPreferredReplyLanguage, normalizeLanguageTag } from '@/lib/language';
 
 // ============ System Prompt (from commenter.mjs) ============
 
@@ -121,7 +122,7 @@ D) 写作与回复
 interface GenerateCommentRequest {
   tweetUrl: string;
   tweetText: string;
-  language: string;
+  language?: string | null;
 }
 
 // ============ Helper Functions ============
@@ -256,6 +257,7 @@ ${tweetText}
 export async function POST(request: NextRequest) {
   try {
     const body: GenerateCommentRequest = await request.json();
+    const requestLanguage = getPreferredReplyLanguage(body.language, body.tweetText);
     
     // Validate request
     if (!body.tweetUrl || !body.tweetText) {
@@ -266,20 +268,21 @@ export async function POST(request: NextRequest) {
     }
     
     // Check cache first
-    const cached = await getCachedComments(body.tweetUrl);
+    const cached = await getCachedComments(body.tweetUrl, requestLanguage);
     if (cached) {
       return NextResponse.json({
         success: true,
         cached: true,
-        comments: cached
+        comments: cached.comments
       });
     }
     
     // Generate new comments
-    const comments = await callClaudeAPI(body.tweetText, body.language || 'other');
+    const comments = await callClaudeAPI(body.tweetText, requestLanguage);
+    comments.language = normalizeLanguageTag(comments.language || requestLanguage);
     
     // Save to cache (don't await, fire and forget)
-    saveCachedComments(body.tweetUrl, body.tweetText, body.language || 'other', comments)
+    saveCachedComments(body.tweetUrl, body.tweetText, requestLanguage, comments)
       .catch(err => console.error('Failed to cache comments:', err));
     
     return NextResponse.json({

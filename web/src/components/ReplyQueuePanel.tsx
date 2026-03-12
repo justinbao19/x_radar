@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ReplyQueueItem } from '@/lib/types';
 import { openExternalLink, hapticFeedback } from '@/lib/telegram';
+import { normalizeLanguageTag, shouldShowChineseTranslation } from '@/lib/language';
 
 const ANGLE_LABELS: Record<string, string> = { witty: '机智', practical: '务实', subtle_product: '产品' };
 
@@ -19,6 +20,7 @@ export function ReplyQueuePanel({ queue, onRetry, onComplete, expanded, onToggle
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState<Record<string, number>>({});
   const [actionState, setActionState] = useState<Record<string, { copied: boolean; visited: boolean; angle?: string }>>({});
+  const [expandedPreview, setExpandedPreview] = useState<Record<string, boolean>>({});
 
   const doneCount = queue.filter(i => i.status === 'done').length;
   const errorCount = queue.filter(i => i.status === 'error').length;
@@ -45,8 +47,10 @@ export function ReplyQueuePanel({ queue, onRetry, onComplete, expanded, onToggle
     } catch { /* clipboard may not be available */ }
   }
 
-  function handleVisit(tweetId: string, url: string) {
+  function handleVisit(tweetId: string, url: string, markVisited = true) {
     openExternalLink(url);
+    if (!markVisited) return;
+
     setActionState(prev => ({
       ...prev,
       [tweetId]: { ...prev[tweetId], visited: true },
@@ -166,6 +170,10 @@ export function ReplyQueuePanel({ queue, onRetry, onComplete, expanded, onToggle
                     const activeIdx = getActiveIdx(item);
                     const activeReply = item.replies?.[activeIdx];
                     const actions = actionState[item.tweet.id];
+                    const showTranslation = shouldShowChineseTranslation(item.tweet.language, item.tweet.translationZh);
+                    const isExpanded = expandedPreview[item.tweet.id] ?? false;
+                    const textClampClass = isExpanded ? '' : 'line-clamp-3';
+                    const translationClampClass = isExpanded ? '' : 'line-clamp-2';
 
                     return (
                       <motion.div
@@ -174,24 +182,56 @@ export function ReplyQueuePanel({ queue, onRetry, onComplete, expanded, onToggle
                         exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.25 } }}
                         className="rounded-xl border border-stone-200 bg-white overflow-hidden"
                       >
-                        {/* Tweet summary row */}
-                        <div className="flex items-center gap-3 px-4 py-3">
-                          <StatusIcon status={item.status} />
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs font-semibold text-stone-600 truncate">{item.tweet.author}</p>
-                            <p className="text-[11px] text-stone-400 truncate">{item.tweet.text}</p>
+                        {/* Tweet preview */}
+                        <div className="px-4 py-3 space-y-2.5">
+                          <div className="flex items-start gap-3">
+                            <StatusIcon status={item.status} />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <p className="text-xs font-semibold text-stone-600 truncate">{item.tweet.author}</p>
+                                {item.tweet.language && (
+                                  <span className="shrink-0 rounded-full bg-stone-100 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-stone-500">
+                                    {normalizeLanguageTag(item.tweet.language).toUpperCase()}
+                                  </span>
+                                )}
+                              </div>
+                              <p className={`mt-1 text-[12px] leading-relaxed text-stone-700 ${textClampClass}`}>{item.tweet.text}</p>
+                              {showTranslation && (
+                                <div className="mt-2 rounded-lg bg-amber-50/70 px-2.5 py-2">
+                                  <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-amber-700">中文理解</p>
+                                  <p className={`text-[11px] leading-relaxed text-stone-500 ${translationClampClass}`}>{item.tweet.translationZh}</p>
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex flex-col items-end gap-1 shrink-0">
+                              {actions?.copied && !actions?.visited && (
+                                <span className="text-[10px] font-medium text-emerald-500 bg-emerald-50 px-1.5 py-0.5 rounded-full">已复制</span>
+                              )}
+                              {item.status === 'error' && (
+                                <button
+                                  onClick={() => onRetry(item.tweet.id)}
+                                  className="text-[11px] font-medium text-rose-500 hover:text-rose-600 px-2 py-1 rounded-lg hover:bg-rose-50 transition-colors"
+                                >
+                                  重试
+                                </button>
+                              )}
+                            </div>
                           </div>
-                          {actions?.copied && !actions?.visited && (
-                            <span className="text-[10px] font-medium text-emerald-500 bg-emerald-50 px-1.5 py-0.5 rounded-full shrink-0">已复制</span>
-                          )}
-                          {item.status === 'error' && (
+
+                          <div className="flex items-center justify-between gap-2">
                             <button
-                              onClick={() => onRetry(item.tweet.id)}
-                              className="text-[11px] font-medium text-rose-500 hover:text-rose-600 px-2 py-1 rounded-lg hover:bg-rose-50 transition-colors shrink-0"
+                              onClick={() => setExpandedPreview(prev => ({ ...prev, [item.tweet.id]: !isExpanded }))}
+                              className="text-[11px] font-medium text-stone-500 hover:text-stone-700 transition-colors"
                             >
-                              重试
+                              {isExpanded ? '收起预览' : '展开预览'}
                             </button>
-                          )}
+                            <button
+                              onClick={() => handleVisit(item.tweet.id, item.tweet.url, false)}
+                              className="text-[11px] font-medium text-blue-500 hover:text-blue-600 px-2 py-1 rounded-lg hover:bg-blue-50 transition-colors"
+                            >
+                              查看原文
+                            </button>
+                          </div>
                         </div>
 
                         {/* Generated replies with tab switching (when done) */}

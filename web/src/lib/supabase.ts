@@ -1,4 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { normalizeLanguageTag } from './language';
 
 // ============ Supabase Client (Browser / Anon) ============
 
@@ -235,7 +236,10 @@ export interface CachedComment {
  * Get cached comments for a tweet
  * Returns null if not found or expired
  */
-export async function getCachedComments(tweetUrl: string): Promise<object | null> {
+export async function getCachedComments(
+  tweetUrl: string,
+  language?: string
+): Promise<{ comments: object; language: string | null } | null> {
   if (!supabase) {
     return null;
   }
@@ -243,7 +247,7 @@ export async function getCachedComments(tweetUrl: string): Promise<object | null
   try {
     const { data, error } = await supabase
       .from('tweet_comments')
-      .select('comments, expires_at')
+      .select('comments, expires_at, language')
       .eq('tweet_url', tweetUrl)
       .single();
 
@@ -258,7 +262,17 @@ export async function getCachedComments(tweetUrl: string): Promise<object | null
       return null;
     }
 
-    return data.comments;
+    const requestedLanguage = normalizeLanguageTag(language);
+    const cachedLanguage = normalizeLanguageTag(data.language);
+
+    if (requestedLanguage !== 'other' && cachedLanguage !== 'other' && cachedLanguage !== requestedLanguage) {
+      return null;
+    }
+
+    return {
+      comments: data.comments,
+      language: data.language ?? null,
+    };
   } catch (err) {
     console.error('Failed to fetch cached comments:', err);
     return null;
@@ -288,7 +302,7 @@ export async function saveCachedComments(
       .upsert({
         tweet_url: tweetUrl,
         tweet_text: tweetText,
-        language: language,
+        language: normalizeLanguageTag(language),
         comments: comments,
         created_at: new Date().toISOString(),
         expires_at: expiresAt.toISOString()

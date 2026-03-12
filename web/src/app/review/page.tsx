@@ -10,6 +10,7 @@ import { ReplyQueuePanel } from '@/components/ReplyQueuePanel';
 import { useTelegram } from '@/lib/TelegramContext';
 import { SwipeTweet, SkipReason, CardsResponse, DecisionRequest, ReplyQueueItem } from '@/lib/types';
 import { hapticFeedback, openExternalLink } from '@/lib/telegram';
+import { getPreferredReplyLanguage, normalizeLanguageTag, shouldShowChineseTranslation } from '@/lib/language';
 
 const ANGLE_LABELS: Record<string, string> = { witty: '机智', practical: '务实', subtle_product: '产品' };
 
@@ -127,13 +128,14 @@ export default function ReviewPage() {
 
     (async () => {
       try {
+        const replyLanguage = getPreferredReplyLanguage(pendingItem.tweet.language, pendingItem.tweet.text);
         const res = await fetch('/api/generate-comment', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             tweetUrl: pendingItem.tweet.url,
             tweetText: pendingItem.tweet.text,
-            language: pendingItem.tweet.language || 'en',
+            language: replyLanguage,
           }),
         });
         const data = await res.json();
@@ -456,22 +458,46 @@ export default function ReviewPage() {
               <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-2">
                 {completedItems.map((item) => {
                   const chosenReply = item.replies?.find(r => r.angle === item.chosenAngle) ?? item.replies?.[0];
+                  const showTranslation = shouldShowChineseTranslation(item.tweet.language, item.tweet.translationZh);
+                  const tweetLanguage = getPreferredReplyLanguage(item.tweet.language, item.tweet.text);
                   return (
                     <div key={item.tweet.id} className="rounded-xl border border-emerald-100 bg-emerald-50/30 overflow-hidden">
-                      <div className="flex items-center gap-3 px-4 py-3">
-                        <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
-                          <svg className="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                      <div className="px-4 py-3 space-y-2.5">
+                        <div className="flex items-start gap-3">
+                          <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+                            <svg className="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <p className="text-xs font-semibold text-stone-600 truncate">{item.tweet.author}</p>
+                              <span className="shrink-0 rounded-full bg-white/80 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-stone-500">
+                                {normalizeLanguageTag(tweetLanguage).toUpperCase()}
+                              </span>
+                            </div>
+                            <p className="mt-1 text-[12px] leading-relaxed text-stone-700">{item.tweet.text}</p>
+                            {showTranslation && (
+                              <div className="mt-2 rounded-lg bg-white/80 px-2.5 py-2">
+                                <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-700">中文理解</p>
+                                <p className="text-[11px] leading-relaxed text-stone-500">{item.tweet.translationZh}</p>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-semibold text-stone-600 truncate">{item.tweet.author}</p>
-                          <p className="text-[11px] text-stone-400 truncate">{item.tweet.text}</p>
+
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => openExternalLink(item.tweet.url)}
+                            className="text-[11px] font-medium text-blue-500 px-2 py-1 rounded-lg hover:bg-blue-50 transition-colors shrink-0"
+                          >
+                            查看原文
+                          </button>
+                          <button
+                            onClick={() => openExternalLink(item.tweet.intentUrl || item.tweet.url)}
+                            className="text-[11px] font-medium text-emerald-600 px-2 py-1 rounded-lg hover:bg-emerald-100/70 transition-colors shrink-0"
+                          >
+                            去回复
+                          </button>
                         </div>
-                        <button
-                          onClick={() => openExternalLink(item.tweet.intentUrl || item.tweet.url)}
-                          className="text-[11px] font-medium text-blue-500 px-2 py-1 rounded-lg hover:bg-blue-50 transition-colors shrink-0"
-                        >
-                          原文
-                        </button>
                       </div>
                       {chosenReply && (
                         <div className="px-4 pb-3 border-t border-emerald-100/60">
