@@ -1,6 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { formatSkipReasonFeedback } from './skipReasons';
+import { SkipReason } from './types';
 import { submitVote, submitDownvoteFeedback, removeVote, getAllVotes, getVoteStats, isSupabaseConfigured } from './supabase';
 
 // ============ Types ============
@@ -45,7 +47,7 @@ interface VoteContextValue {
   
   // Downvote with feedback
   initiateDownvote: (url: string, meta?: TweetMeta) => void;
-  confirmDownvote: (feedback: string | null) => Promise<void>;
+  confirmDownvote: (reason: SkipReason | null, note?: string) => Promise<void>;
   cancelDownvote: () => void;
 }
 
@@ -235,7 +237,7 @@ export function VoteProvider({ children }: VoteProviderProps) {
   }, []);
 
   // Confirm downvote with optional feedback
-  const confirmDownvote = useCallback(async (feedback: string | null) => {
+  const confirmDownvote = useCallback(async (reason: SkipReason | null, note?: string) => {
     if (!pendingDownvote) return;
     
     const { url, meta } = pendingDownvote;
@@ -255,8 +257,8 @@ export function VoteProvider({ children }: VoteProviderProps) {
     await vote(url, 'down', meta);
     
     // Submit feedback if provided
-    if (feedback) {
-      await submitDownvoteFeedback(url, feedback);
+    if (reason) {
+      await submitDownvoteFeedback(url, formatSkipReasonFeedback(reason, note));
     }
   }, [pendingDownvote, vote]);
 

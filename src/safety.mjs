@@ -236,7 +236,7 @@ export function checkLowSignalDenylist(text) {
  */
 export function countFiloFitKeywords(text) {
   if (!text) return 0;
-  const lowerText = text.toLowerCase();
+  const lowerText = stripUrls(text).toLowerCase();
   
   let count = 0;
   const matched = new Set();
@@ -251,6 +251,13 @@ export function countFiloFitKeywords(text) {
   return count;
 }
 
+function stripUrls(text) {
+  return text
+    .replace(/https?:\/\/\s*[\w.-]+\.[\w]{2,}[^\n\u2026]*/gi, ' ')
+    .replace(/http:\/\/\s*[\w.-]+\.[\w]{2,}[^\n\u2026]*/gi, ' ')
+    .replace(/\S*[?&]\w+=\S*/g, ' ');
+}
+
 /**
  * Check Pain group relevance
  * @param {string} text - Text to check
@@ -258,7 +265,7 @@ export function countFiloFitKeywords(text) {
  */
 export function checkPainRelevance(text) {
   if (!text) return { relevant: false, matchCount: 0, keywords: [] };
-  const lowerText = text.toLowerCase();
+  const lowerText = stripUrls(text).toLowerCase();
   
   const matched = [];
   for (const kw of PAIN_KEYWORDS) {
@@ -281,7 +288,7 @@ export function checkPainRelevance(text) {
  */
 export function checkReachRelevance(text) {
   if (!text) return { relevant: false, hasAI: false, hasProductivity: false, keywords: [] };
-  const lowerText = text.toLowerCase();
+  const lowerText = stripUrls(text).toLowerCase();
   
   const matched = [];
   let hasAI = false;
@@ -436,10 +443,10 @@ export function isEmailActionOnly(text) {
   
   for (const pattern of actionPatterns) {
     if (pattern.test(text)) {
-      // Check if there's also a pain word - if so, it might be legitimate
-      const hasPainWord = PAIN_EMOTION_WORDS.some(w => lowerText.includes(w.toLowerCase()));
-      if (!hasPainWord) {
-        return true; // Just an action, no pain context
+      const stripped = stripUrls(text.replace(pattern, ' ')).toLowerCase();
+      const hasOtherEmailRef = PAIN_KEYWORDS.some(kw => stripped.includes(kw.toLowerCase()));
+      if (!hasOtherEmailRef) {
+        return true;
       }
     }
   }
@@ -480,9 +487,10 @@ export function isCustomerServiceNotice(text) {
   if (!text) return { isNotice: false };
   
   const customerServicePatterns = [
-    // ============ Customer Service REPLY patterns (new) ============
+    // ============ Customer Service REPLY patterns ============
     // These detect when a company/support account is replying to users
-    { pattern: /^(hi|hello|hey),?\s+(sorry|apologies|thank you)/i, name: 'cs_reply_greeting' },
+    { pattern: /^(hi|hello|hey)\b.{0,20}(sorry|apologies|apologize)/i, name: 'cs_reply_greeting' },
+    { pattern: /so\s+sorry\s+about\s+that/i, name: 'cs_so_sorry' },
     { pattern: /sorry\s+for\s+(the|any)\s+(inconvenience|trouble|delay)/i, name: 'cs_sorry_inconvenience' },
     { pattern: /thank\s+you\s+for\s+(reaching\s+out|contacting|raising|your\s+(patience|feedback|query))/i, name: 'cs_thank_reaching' },
     { pattern: /dear\s+(customer|user|valued|sir|madam)/i, name: 'cs_dear_customer' },
@@ -497,10 +505,17 @@ export function isCustomerServiceNotice(text) {
     { pattern: /(dm|message)\s+(us|me)\s+(the|your|with)/i, name: 'cs_dm_us' },
     { pattern: /we('re|\s+are)\s+(here\s+to|happy\s+to)\s+(help|assist)/i, name: 'cs_here_to_help' },
     { pattern: /looking\s+forward\s+to\s+(hearing|assisting|helping)/i, name: 'cs_looking_forward' },
+    { pattern: /support\s+ticket\s+(number|id|#)/i, name: 'cs_support_ticket' },
+    { pattern: /what'?s\s+your\s+(support|ticket|case|order)\s*(number|id|#)/i, name: 'cs_whats_your_ticket' },
+    { pattern: /we('ll|\s+will)\s+look\s+into\s+(it|this|that)/i, name: 'cs_well_look_into' },
+    { pattern: /please\s+try\s+(the\s+)?(steps|solutions?|suggestions?)\s+(outlined|described|listed|in|on|from|below)/i, name: 'cs_try_steps' },
+    { pattern: /if\s+the\s+(issue|problem)\s+persists/i, name: 'cs_issue_persists' },
+    { pattern: /do\s+you\s+mind\s+checking\s+(your\s+)?(spam|junk|inbox)/i, name: 'cs_mind_checking_spam' },
     
-    // ============ Service notification patterns (existing) ============
+    // ============ Service notification patterns (existing + expanded) ============
     // English patterns - service provider asking user to check email
-    { pattern: /please\s+(check|see|verify)\s+(your\s+)?(inbox|spam|email|junk)/i, name: 'please_check_inbox' },
+    { pattern: /please\s+(check|see|verify)\s+(\w+\s+){0,3}(inbox|spam|email|junk)/i, name: 'please_check_inbox' },
+    { pattern: /check\s+(\w+\s+){0,3}(inbox|spam|junk|archive)\s*(,|\s+or\s+|\s+and\s+|\s+folder)/i, name: 'check_inbox_list' },
     { pattern: /sent\s+to\s+(your\s+)?(registered\s+)?(email|inbox)/i, name: 'sent_to_email' },
     { pattern: /if\s+you\s+haven'?t\s+received/i, name: 'havent_received' },
     { pattern: /check\s+(your\s+)?(junk|spam)\s+(folder|mail)/i, name: 'check_junk' },
@@ -512,6 +527,15 @@ export function isCustomerServiceNotice(text) {
     { pattern: /if\s+you.*can'?t\s+find.*please\s+email/i, name: 'cant_find_please_email' },
     { pattern: /(inbox|spam)\s+(folder|folders).*please\s+email/i, name: 'folder_please_email' },
     { pattern: /can'?t\s+find\s+(the\s+)?(message|email|file).*email\s+\S+@/i, name: 'cant_find_email_support' },
+    // Help Center / support article referral patterns
+    { pattern: /please\s+refer\s+to\s+(the|this|our)\s+(help|support)/i, name: 'cs_refer_help' },
+    { pattern: /help\s+center\s+article/i, name: 'cs_help_center_article' },
+    { pattern: /follow\s+the\s+(instructions|steps)\s+(in|on|from)/i, name: 'cs_follow_instructions' },
+    { pattern: /subject\s+line\s+["""].+["""]\s+and\s+follow/i, name: 'cs_subject_line_follow' },
+    { pattern: /if\s+the\s+situation\s+(does\s+not|doesn'?t)\s+improve/i, name: 'cs_situation_not_improve' },
+    { pattern: /please\s+reply\s+(to\s+this|with\s+your|here)/i, name: 'cs_please_reply' },
+    { pattern: /social\s+media\s+(team|inquiry|department)/i, name: 'cs_social_media_team' },
+    { pattern: /including\s+(spam|junk|archive)\s*(,|\s+or\s+|\s+and\s+|\s+folder)/i, name: 'cs_including_spam_junk' },
     
     // Japanese patterns - service notification style
     { pattern: /ご確認(ください|を|いただけ)/i, name: 'jp_please_check' },
@@ -522,7 +546,16 @@ export function isCustomerServiceNotice(text) {
     // Chinese patterns - service notification style
     { pattern: /请(查收|检查).*(邮件|邮箱|收件箱)/i, name: 'cn_please_check' },
     { pattern: /如.*没.*收到/i, name: 'cn_not_received' },
-    { pattern: /已发送至.*邮/i, name: 'cn_sent_to' }
+    { pattern: /已发送至.*邮/i, name: 'cn_sent_to' },
+    // Chinese CS reply patterns
+    { pattern: /感谢您的(反馈|来信|联系|咨询|耐心)/i, name: 'cn_cs_thank_feedback' },
+    { pattern: /建议.*(参考|查看|联系).*(客服|帮助|支持|排查)/i, name: 'cn_cs_suggest_contact' },
+    { pattern: /联系我们的.*(客服|支持|团队)/i, name: 'cn_cs_contact_our_team' },
+    { pattern: /(检查|查看).*(垃圾邮箱|垃圾箱|垃圾邮件|过滤规则)/i, name: 'cn_cs_check_spam' },
+    { pattern: /若(问题|情况).*(仍|持续|依然).*(存在|没有解决)/i, name: 'cn_cs_if_persists' },
+    { pattern: /请(参考|查看|参阅).*(帮助|支持|常见问题|排查)/i, name: 'cn_cs_refer_help' },
+    { pattern: /请(提供|回复|告知).*(详细|具体|更多).*(信息|情况|内容)/i, name: 'cn_cs_provide_details' },
+    { pattern: /在线客服/i, name: 'cn_cs_online_support' }
   ];
   
   for (const { pattern, name } of customerServicePatterns) {

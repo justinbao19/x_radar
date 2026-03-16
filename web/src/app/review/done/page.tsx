@@ -1,20 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { SKIP_REASON_CONFIG } from '@/lib/skipReasons';
 import { useTelegram } from '@/lib/TelegramContext';
 import { closeMiniApp } from '@/lib/telegram';
 import { SummaryResponse, SkipReason } from '@/lib/types';
 
 const DEFAULT_USER_ID = '5134454816';
-
-const SKIP_REASON_LABELS: Record<SkipReason, { label: string; icon: string }> = {
-  is_ad: { label: '广告', icon: '🎯' },
-  customer_service: { label: '售后', icon: '🛒' },
-  too_old: { label: '过期', icon: '⏰' },
-  no_angle: { label: '无切入', icon: '🤷' },
-  not_relevant: { label: '不相关', icon: '❌' },
-  other: { label: '其他', icon: '💬' },
-};
 
 export default function ReviewDonePage() {
   const { userId: tgUserId } = useTelegram();
@@ -50,7 +42,7 @@ export default function ReviewDonePage() {
   const stats = summary?.stats;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-stone-100 via-stone-50 to-amber-50/30 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-linear-to-br from-stone-100 via-stone-50 to-amber-50/30 flex items-center justify-center p-6">
       <div className="max-w-md w-full space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
@@ -82,7 +74,7 @@ export default function ReviewDonePage() {
               {Object.entries(stats.skipReasons)
                 .sort(([, a], [, b]) => b - a)
                 .map(([reason, count]) => {
-                  const config = SKIP_REASON_LABELS[reason as SkipReason];
+                  const config = SKIP_REASON_CONFIG[reason as SkipReason];
                   return (
                     <div key={reason} className="flex items-center justify-between text-sm">
                       <span className="text-stone-600">

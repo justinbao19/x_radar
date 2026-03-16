@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Tweet, ReplyOption, TweetComments } from '@/lib/types';
 import { formatNumber, formatDateTime, formatRelativeTime } from '@/lib/data';
+import { SKIP_REASON_LABELS } from '@/lib/skipReasons';
 import { VoteButtons } from './VoteButtons';
 import { useToast } from '@/lib/ToastContext';
 import { getGroupLabel, getGroupColor, getSentimentStyle, getInsightStyle, getScoreStyle, languageMap } from '@/lib/styles';
@@ -116,11 +117,6 @@ function ReplyOptionCard({
     </div>
   );
 }
-
-const SKIP_REASON_LABELS: Record<string, string> = {
-  is_ad: '广告', customer_service: '售后', too_old: '过期',
-  no_angle: '无切入', not_relevant: '不相关', other: '其他',
-};
 
 export function TweetCard({ tweet, index, showComments = true, collapsible = false, isNew = false, reviewStatus }: TweetCardProps) {
   const [activeTab, setActiveTab] = useState<number>(0);

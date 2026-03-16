@@ -128,20 +128,18 @@ if (existsSync(INFLUENCERS_FILE)) {
 // ============ Load URL Denylist from User Feedback ============
 const DENYLIST_FILE = 'denylist.json';
 let FEEDBACK_URL_DENYLIST = new Set();
-let LEARNED_KEYWORDS = [];
+let LEARNED_RULES = [];
 
 if (existsSync(DENYLIST_FILE)) {
   try {
     const denylist = JSON.parse(readFileSync(DENYLIST_FILE, 'utf-8'));
-    // Load URL denylist
     if (denylist.feedback?.urls?.length > 0) {
       FEEDBACK_URL_DENYLIST = new Set(denylist.feedback.urls);
       log('INFO', `Loaded ${FEEDBACK_URL_DENYLIST.size} URLs from feedback denylist`);
     }
-    // Load learned keywords from LLM analysis
-    if (denylist.learned?.keywords?.length > 0) {
-      LEARNED_KEYWORDS = denylist.learned.keywords;
-      log('INFO', `Loaded ${LEARNED_KEYWORDS.length} learned keywords from LLM analysis`);
+    if (denylist.learned?.rules?.length > 0) {
+      LEARNED_RULES = denylist.learned.rules;
+      log('INFO', `Loaded ${LEARNED_RULES.length} learned penalty rules from LLM analysis`);
     }
   } catch (e) {
     log('WARN', 'Failed to load feedback denylist', { error: e.message });
@@ -149,17 +147,39 @@ if (existsSync(DENYLIST_FILE)) {
 }
 
 /**
- * Check if text contains any learned keywords
+ * Apply learned penalty rules to a tweet.
+ * Returns the worst (lowest) penalty among all matched rules, or 1.0 if no match.
+ * Each rule has:
+ *   phrases: string[]   - multi-word phrases to look for
+ *   match: 'any'|'all'  - any=one phrase suffices, all=every phrase must appear
+ *   penalty: number      - score multiplier (0.2 = heavy, 0.7 = light)
  */
-function containsLearnedKeyword(text) {
-  if (!text || LEARNED_KEYWORDS.length === 0) return { match: false };
+function applyLearnedPenalty(text) {
+  if (!text || LEARNED_RULES.length === 0) return { penalty: 1.0, matchedRules: [] };
   const lowerText = text.toLowerCase();
-  for (const keyword of LEARNED_KEYWORDS) {
-    if (lowerText.includes(keyword)) {
-      return { match: true, keyword };
+  let worstPenalty = 1.0;
+  const matchedRules = [];
+
+  for (const rule of LEARNED_RULES) {
+    if (!rule.phrases || rule.phrases.length === 0) continue;
+
+    const hits = rule.phrases.filter(p => lowerText.includes(p.toLowerCase()));
+
+    let triggered = false;
+    if (rule.match === 'all') {
+      triggered = hits.length === rule.phrases.length;
+    } else {
+      triggered = hits.length > 0;
+    }
+
+    if (triggered) {
+      const pen = rule.penalty ?? 0.3;
+      matchedRules.push({ category: rule.category, phrases: hits, penalty: pen });
+      if (pen < worstPenalty) worstPenalty = pen;
     }
   }
-  return { match: false };
+
+  return { penalty: worstPenalty, matchedRules };
 }
 import { 
   checkBrandSafety,
@@ -610,27 +630,31 @@ function selectTop10(rawData) {
     log('INFO', `Feedback URL denylist: ${feedbackCleanTweets.length} kept, ${feedbackUrlFiltered} filtered`);
   }
   
-  // ============ Learned Keywords Filter (from LLM analysis) ============
-  let learnedKeywordFiltered = 0;
-  const learnedCleanTweets = feedbackCleanTweets.filter(t => {
-    const check = containsLearnedKeyword(t.text);
-    if (check.match) {
-      learnedKeywordFiltered++;
-      log('DEBUG', `Learned keyword filtered: ${t.url}`, { keyword: check.keyword });
-      return false;
+  // ============ Learned Rules Penalty (from LLM analysis) ============
+  let learnedRulePenalized = 0;
+  const learnedCleanTweets = feedbackCleanTweets;
+  for (const t of learnedCleanTweets) {
+    const { penalty, matchedRules } = applyLearnedPenalty(t.text);
+    if (penalty < 1.0) {
+      t.learnedPenalty = penalty;
+      t.learnedRuleMatches = matchedRules;
+      learnedRulePenalized++;
+      log('DEBUG', `Learned rule penalized: ${t.url}`, {
+        penalty,
+        rules: matchedRules.map(r => `${r.category}(${r.phrases.join('+')})`).join(', ')
+      });
     }
-    return true;
-  });
+  }
   
-  if (learnedKeywordFiltered > 0) {
-    log('INFO', `Learned keywords filter: ${learnedCleanTweets.length} kept, ${learnedKeywordFiltered} filtered`);
+  if (learnedRulePenalized > 0) {
+    log('INFO', `Learned rules penalty: ${learnedRulePenalized} tweets penalized (none hard-filtered)`);
   }
   
   // ============ Three-Tier Brand Safety Gate ============
   const filterStats = {
     tooOldFiltered,
     feedbackUrlFiltered,
-    learnedKeywordFiltered,
+    learnedRulePenalized,
     hardFiltered: 0,
     hardReasons: {},
     softFiltered: 0,
@@ -649,11 +673,13 @@ function selectTop10(rawData) {
   };
   
   // First pass: score all tweets (needed for soft tier decisions)
-  // Pass group for pain bonus calculation
-  const scoredTweets = learnedCleanTweets.map(t => ({
-    ...t,
-    ...scoreTweet(t, t.group)
-  }));
+  const scoredTweets = learnedCleanTweets.map(t => {
+    const scored = { ...t, ...scoreTweet(t, t.group) };
+    if (t.learnedPenalty && t.learnedPenalty < 1.0) {
+      scored.finalScore = Math.round(scored.finalScore * t.learnedPenalty * 10) / 10;
+    }
+    return scored;
+  });
   
   // Apply three-tier filtering
   const filteredTweets = [];
@@ -858,30 +884,41 @@ function selectTop10(rawData) {
   log('INFO', `After context check: ${contextQualifiedTweets.length} (emailActionOnly: ${filterStats.emailActionOnlyFiltered}, noEmotionPenalized: ${filterStats.noEmotionPenalized})`);
   
   // ============ Customer Service Notice Check ============
-  // Detect service providers telling users to check email (not user pain points)
+  // For pain/reach: hard filter (CS replies have zero value as pain signals)
+  // For sentiment/insight: penalty only (might contain brand mentions worth tracking)
+  filterStats.customerServiceFiltered = 0;
   filterStats.customerServicePenalized = 0;
   
-  for (const tweet of contextQualifiedTweets) {
+  const csFilteredTweets = contextQualifiedTweets.filter(tweet => {
     const csCheck = isCustomerServiceNotice(tweet.text);
-    if (csCheck.isNotice) {
-      tweet.finalScore = Math.round(tweet.finalScore * CUSTOMER_SERVICE_PENALTY * 10) / 10;
-      tweet.customerServicePenalty = true;
-      tweet.customerServicePattern = csCheck.pattern;
-      filterStats.customerServicePenalized++;
-      log('DEBUG', `Customer service notice penalized: ${tweet.url}`, {
-        pattern: csCheck.pattern,
-        newScore: tweet.finalScore
+    if (!csCheck.isNotice) return true;
+    
+    if (tweet.group === 'pain' || tweet.group === 'reach') {
+      filterStats.customerServiceFiltered++;
+      log('DEBUG', `Customer service FILTERED (${tweet.group}): ${tweet.url}`, {
+        pattern: csCheck.pattern
       });
+      return false;
     }
-  }
+    
+    tweet.finalScore = Math.round(tweet.finalScore * CUSTOMER_SERVICE_PENALTY * 10) / 10;
+    tweet.customerServicePenalty = true;
+    tweet.customerServicePattern = csCheck.pattern;
+    filterStats.customerServicePenalized++;
+    log('DEBUG', `Customer service penalized (${tweet.group}): ${tweet.url}`, {
+      pattern: csCheck.pattern,
+      newScore: tweet.finalScore
+    });
+    return true;
+  });
   
-  log('INFO', `Customer service notices penalized: ${filterStats.customerServicePenalized}`);
+  log('INFO', `Customer service: ${filterStats.customerServiceFiltered} filtered, ${filterStats.customerServicePenalized} penalized`);
   
   // ============ Competitor Product Check ============
   // Detect competitor email/productivity product promotions
   filterStats.competitorPenalized = 0;
   
-  for (const tweet of contextQualifiedTweets) {
+  for (const tweet of csFilteredTweets) {
     const compCheck = isCompetitorPromotion(tweet.text);
     if (compCheck.isPromotion) {
       tweet.finalScore = Math.round(tweet.finalScore * COMPETITOR_PENALTY * 10) / 10;
@@ -902,7 +939,7 @@ function selectTop10(rawData) {
   // Filter out viral copypasta that contains email keywords but is off-topic
   filterStats.viralTemplateFiltered = 0;
   
-  const nonViralTweets = contextQualifiedTweets.filter(tweet => {
+  const nonViralTweets = csFilteredTweets.filter(tweet => {
     const viralCheck = isViralTemplate(tweet.text);
     if (viralCheck.isViral) {
       // Heavy penalty instead of hard filter - allows very high engagement viral content through with penalty

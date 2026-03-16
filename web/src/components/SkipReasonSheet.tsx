@@ -2,21 +2,13 @@
 
 import { useState } from 'react';
 import { SkipReason } from '@/lib/types';
+import { SKIP_REASON_OPTIONS } from '@/lib/skipReasons';
 
 interface SkipReasonSheetProps {
   open: boolean;
   onClose: () => void;
   onSubmit: (reason: SkipReason, note?: string) => void;
 }
-
-const SKIP_REASONS: { value: SkipReason; label: string; icon: string }[] = [
-  { value: 'is_ad', label: '是广告/推广', icon: '🎯' },
-  { value: 'customer_service', label: '售后/客服问题', icon: '🛒' },
-  { value: 'too_old', label: '时效过了', icon: '⏰' },
-  { value: 'no_angle', label: '不好切入', icon: '🤷' },
-  { value: 'not_relevant', label: '不相关', icon: '❌' },
-  { value: 'other', label: '其他', icon: '💬' },
-];
 
 export function SkipReasonSheet({ open, onClose, onSubmit }: SkipReasonSheetProps) {
   const [showOtherInput, setShowOtherInput] = useState(false);
@@ -63,7 +55,7 @@ export function SkipReasonSheet({ open, onClose, onSubmit }: SkipReasonSheetProp
         </div>
 
         <div className="px-4 pb-6 overflow-y-auto flex-1 space-y-2">
-          {SKIP_REASONS.map((reason) => (
+          {SKIP_REASON_OPTIONS.map((reason) => (
             <button
               key={reason.value}
               onClick={() => handleReasonClick(reason.value)}

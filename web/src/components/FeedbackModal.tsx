@@ -1,45 +1,31 @@
 'use client';
 
 import { useState } from 'react';
+import { SKIP_REASON_OPTIONS } from '@/lib/skipReasons';
+import { SkipReason } from '@/lib/types';
 
 interface FeedbackModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (feedback: string | null) => void;
+  onSubmit: (reason: SkipReason | null, note?: string) => void;
   tweetText?: string;
 }
 
-const FEEDBACK_OPTIONS = [
-  { id: 'irrelevant', label: '与我的业务无关' },
-  { id: 'spam', label: '垃圾/广告内容' },
-  { id: 'duplicate', label: '重复内容' },
-  { id: 'low_quality', label: '质量太低' },
-  { id: 'wrong_category', label: '分类错误' },
-  { id: 'other', label: '其他原因' },
-];
-
 export function FeedbackModal({ isOpen, onClose, onSubmit, tweetText }: FeedbackModalProps) {
-  const [selectedReason, setSelectedReason] = useState<string | null>(null);
+  const [selectedReason, setSelectedReason] = useState<SkipReason | null>(null);
   const [customReason, setCustomReason] = useState('');
 
   if (!isOpen) return null;
 
   const handleSubmit = () => {
-    let feedback: string | null = null;
-    if (selectedReason === 'other' && customReason.trim()) {
-      feedback = customReason.trim();
-    } else if (selectedReason) {
-      feedback = selectedReason;
-    }
-    onSubmit(feedback);
-    // Reset state
+    const note = selectedReason === 'other' ? customReason.trim() : undefined;
+    onSubmit(selectedReason, note);
     setSelectedReason(null);
     setCustomReason('');
   };
 
   const handleSkip = () => {
     onSubmit(null);
-    // Reset state
     setSelectedReason(null);
     setCustomReason('');
   };
@@ -68,8 +54,8 @@ export function FeedbackModal({ isOpen, onClose, onSubmit, tweetText }: Feedback
               </svg>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-stone-800">移除这条推文</h3>
-              <p className="text-sm text-stone-500">帮助我们改进推荐质量</p>
+              <h3 className="text-lg font-semibold text-stone-800">点踩这条推文</h3>
+              <p className="text-sm text-stone-500">理由与滑卡跳过保持一致</p>
             </div>
           </div>
         </div>
@@ -85,30 +71,20 @@ export function FeedbackModal({ isOpen, onClose, onSubmit, tweetText }: Feedback
 
         {/* Feedback Options */}
         <div className="px-6 py-4">
-          <p className="text-sm font-medium text-stone-600 mb-3">为什么不符合预期？（可选）</p>
+          <p className="text-sm font-medium text-stone-600 mb-3">为什么跳过？（可选）</p>
           <div className="space-y-2">
-            {FEEDBACK_OPTIONS.map(option => (
+            {SKIP_REASON_OPTIONS.map(option => (
               <button
-                key={option.id}
-                onClick={() => setSelectedReason(option.id)}
+                key={option.value}
+                onClick={() => setSelectedReason(option.value)}
                 className={`w-full text-left px-4 py-3 rounded-xl border transition-all duration-200 ${
-                  selectedReason === option.id
+                  selectedReason === option.value
                     ? 'border-red-300 bg-red-50 text-red-700'
                     : 'border-stone-200 hover:border-stone-300 hover:bg-stone-50 text-stone-700'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${
-                    selectedReason === option.id
-                      ? 'border-red-500 bg-red-500'
-                      : 'border-stone-300'
-                  }`}>
-                    {selectedReason === option.id && (
-                      <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                    )}
-                  </div>
+                  <span className="text-lg">{option.icon}</span>
                   <span className="text-sm font-medium">{option.label}</span>
                 </div>
               </button>
@@ -135,13 +111,13 @@ export function FeedbackModal({ isOpen, onClose, onSubmit, tweetText }: Feedback
             onClick={handleSkip}
             className="flex-1 px-4 py-2.5 text-sm font-medium text-stone-600 hover:text-stone-800 hover:bg-stone-100 rounded-xl transition-colors"
           >
-            跳过
+            直接点踩
           </button>
           <button
             onClick={handleSubmit}
-            className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-xl shadow-lg shadow-red-500/25 transition-all"
+            className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-linear-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-xl shadow-lg shadow-red-500/25 transition-all"
           >
-            确认移除
+            确认点踩
           </button>
         </div>
       </div>

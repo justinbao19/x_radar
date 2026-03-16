@@ -117,35 +117,47 @@ async function analyzeWithLLM(downvotes) {
   }).join('\n\n');
 
   const systemPrompt = `你是一个推文质量分析专家。用户会给你一组被标记为"收录错误"的推文。
-你的任务是分析这些推文的共同特征，找出它们为什么不应该被收录的规律。
+你的任务是分析这些推文的共同特征，提取出精准的过滤规则。
 
-**重要：部分推文包含"用户反馈原因"，这是用户明确告诉我们为什么这条推文不应该被收录。
-请重点参考这些反馈原因来理解误收录的模式。常见的反馈原因包括：
-- irrelevant: 与业务无关
-- spam: 垃圾/广告内容  
-- duplicate: 重复内容
-- low_quality: 质量太低
-- wrong_category: 分类错误
+**重要：部分推文包含"用户反馈原因"，请重点参考。常见原因：
+- is_ad: 是广告/推广
+- customer_service: 售后/客服问题
+- too_old: 时效过了
+- no_angle: 不好切入
+- not_relevant: 不相关
 - other: 其他原因（会有自定义描述）**
 
 请输出 JSON 格式的分析结果，包含：
-1. keywords: 应该加入黑名单的关键词（数组，小写，每个词2-4个字）
-2. patterns: 应该过滤的模式描述（数组，用自然语言描述）
-3. categories: 这些错误推文属于哪些类别（如：营销、招聘、客服、无关话题等）
-4. summary: 一句话总结这些推文被误收录的原因
-5. prompt_suggestions: 基于用户反馈，给出优化推文筛选提示词的建议（数组，具体可操作的建议）
 
-注意：
-- 只提取有明确共同特征的模式，不要过度泛化
-- 关键词应该是具体的、可操作的
-- 如果样本太少或没有明显规律，可以返回空数组
-- prompt_suggestions 应该基于用户反馈原因，给出具体的提示词优化建议`;
+1. rules: 过滤规则数组，每条规则是一个对象：
+   {
+     "phrases": ["短语1", "短语2"],  // 2-5个词的短语，必须同时或任一出现才触发
+     "match": "any" | "all",          // any=任一短语命中即触发, all=所有短语都命中才触发
+     "penalty": 0.3,                  // 扣分系数(0-1)，0.3=得分乘以0.3，越小惩罚越重
+     "category": "分类名",
+     "reason": "为什么这条规则有效"
+   }
+   
+2. categories: 这些错误推文属于哪些类别
+3. summary: 一句话总结
+4. prompt_suggestions: 优化建议
 
-  const userPrompt = `以下是被用户标记为"收录错误"的推文，请分析它们的共同特征：
+**规则设计原则（极其重要）：**
+- 绝对禁止输出单个常见词如 "email", "help", "问题", "send" 等作为规则，这些词在正常痛点推文中也大量出现
+- phrases 必须是 2 个词以上的短语，或者是非常特定的专有名词（如 "gmail" 只在明确是 Gmail 官方账号发帖时才用）
+- 优先使用 match:"all" 组合规则（如 phrases:["contact","support"] + match:"all" 表示同时出现 contact 和 support 才触发）
+- penalty 不要设为 0，保留被惩罚推文出现的可能性：
+  - 0.2-0.3: 非常可能是噪音（如纯广告推广）
+  - 0.4-0.5: 大概率噪音但偶尔有价值（如客服问题中可能包含痛点）
+  - 0.6-0.7: 轻度降权（如不太相关但也不完全无用）
+- 如果某个模式已经被项目的 brand safety 三层过滤覆盖（promotional, politics, customer_service 等），就不要重复提取
+- 宁可少出规则也不要出宽泛规则，5条精准规则胜过20条宽泛规则`;
+
+  const userPrompt = `以下是被用户标记为"收录错误"的推文，请分析共同特征并提取精准过滤规则：
 
 ${samples}
 
-请以 JSON 格式输出分析结果：`;
+请以 JSON 格式输出分析结果（rules 数组中每条规则的 phrases 必须是 2 词以上的短语或组合）：`;
 
   try {
     const response = await fetch(LLM_API_URL, {
@@ -200,55 +212,69 @@ ${samples}
 }
 
 /**
- * Apply LLM-extracted patterns to denylist
+ * Apply LLM-extracted rules to denylist
  */
 function applyLearnedPatterns(denylist, analysis) {
-  if (!analysis) return { keywordsAdded: 0, patternsAdded: 0 };
+  if (!analysis) return { rulesAdded: 0 };
 
-  // Ensure learned section exists
   if (!denylist.learned) {
     denylist.learned = {
       keywords: [],
+      rules: [],
       patterns: [],
       history: []
     };
   }
+  if (!denylist.learned.rules) {
+    denylist.learned.rules = [];
+  }
 
-  const existingKeywords = new Set(denylist.learned.keywords.map(k => k.toLowerCase()));
-  let keywordsAdded = 0;
-  let patternsAdded = 0;
+  let rulesAdded = 0;
 
-  // Add new keywords
-  if (analysis.keywords?.length > 0) {
-    for (const keyword of analysis.keywords) {
-      const normalized = keyword.toLowerCase().trim();
-      if (normalized && normalized.length >= 2 && !existingKeywords.has(normalized)) {
-        denylist.learned.keywords.push(normalized);
-        existingKeywords.add(normalized);
-        keywordsAdded++;
-        log('DEBUG', `Added learned keyword: "${normalized}"`);
-      }
+  if (analysis.rules?.length > 0) {
+    const existingFingerprints = new Set(
+      denylist.learned.rules.map(r => JSON.stringify(r.phrases?.sort()))
+    );
+
+    for (const rule of analysis.rules) {
+      if (!rule.phrases || !Array.isArray(rule.phrases) || rule.phrases.length === 0) continue;
+
+      const normalized = {
+        phrases: rule.phrases.map(p => p.toLowerCase().trim()).filter(p => p.length >= 2),
+        match: rule.match === 'all' ? 'all' : 'any',
+        penalty: Math.max(0.1, Math.min(1, rule.penalty ?? 0.3)),
+        category: rule.category || 'unknown',
+        reason: rule.reason || '',
+        addedAt: new Date().toISOString()
+      };
+
+      if (normalized.phrases.length === 0) continue;
+
+      const fp = JSON.stringify(normalized.phrases.sort());
+      if (existingFingerprints.has(fp)) continue;
+
+      denylist.learned.rules.push(normalized);
+      existingFingerprints.add(fp);
+      rulesAdded++;
+      log('DEBUG', `Added learned rule: [${normalized.match}] "${normalized.phrases.join('" + "')}" → penalty ${normalized.penalty}`);
     }
   }
 
-  // Record analysis history (include prompt suggestions from user feedback)
   denylist.learned.history.push({
     analyzedAt: new Date().toISOString(),
     sampleCount: analysis.sampleCount || 0,
     summary: analysis.summary || '',
     categories: analysis.categories || [],
-    keywordsExtracted: analysis.keywords || [],
-    patternsExtracted: analysis.patterns || [],
+    rulesExtracted: analysis.rules?.length || 0,
     promptSuggestions: analysis.prompt_suggestions || []
   });
 
-  // Keep only last 20 history entries
   if (denylist.learned.history.length > 20) {
     denylist.learned.history = denylist.learned.history.slice(-20);
   }
 
-  log('INFO', `Applied learned patterns: ${keywordsAdded} keywords, ${patternsAdded} patterns`);
-  return { keywordsAdded, patternsAdded };
+  log('INFO', `Applied learned rules: ${rulesAdded} new rules (total: ${denylist.learned.rules.length})`);
+  return { rulesAdded };
 }
 
 // ============ Main Functions ============
@@ -369,17 +395,16 @@ async function main() {
     
     if (analysis) {
       analysis.sampleCount = tweetsWithText.length;
-      const { keywordsAdded, patternsAdded } = applyLearnedPatterns(denylist, analysis);
+      const { rulesAdded } = applyLearnedPatterns(denylist, analysis);
       
-      if (keywordsAdded > 0 || patternsAdded > 0 || analysis.prompt_suggestions?.length > 0) {
+      if (rulesAdded > 0 || analysis.prompt_suggestions?.length > 0) {
         log('INFO', 'LLM learning applied', { 
           summary: analysis.summary,
           categories: analysis.categories,
-          newKeywords: keywordsAdded,
+          newRules: rulesAdded,
           promptSuggestions: analysis.prompt_suggestions?.length || 0
         });
         
-        // Log prompt suggestions for review
         if (analysis.prompt_suggestions?.length > 0) {
           log('INFO', 'Prompt optimization suggestions based on user feedback:');
           analysis.prompt_suggestions.forEach((suggestion, i) => {

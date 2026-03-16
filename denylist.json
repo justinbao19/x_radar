@@ -1,108 +1,995 @@
 {
   "hard": {
     "promotional": [
-      "subscribe to my", "subscribe to our", "sign up for my", "sign up for our",
-      "join my newsletter", "join our newsletter", "check out my newsletter",
-      "link in bio", "dm for details", "dm me for",
-      "メルマガ登録", "購読はこちら", "フォローお願い", "お申し込みは",
-      "订阅我的", "关注我获取", "点击链接获取", "私信我",
-      "구독하기", "뉴스레터 구독", "팔로우하세요", "DM 주세요"
+      "subscribe to my",
+      "subscribe to our",
+      "sign up for my",
+      "sign up for our",
+      "join my newsletter",
+      "join our newsletter",
+      "check out my newsletter",
+      "link in bio",
+      "dm for details",
+      "dm me for",
+      "メルマガ登録",
+      "購読はこちら",
+      "フォローお願い",
+      "お申し込みは",
+      "订阅我的",
+      "关注我获取",
+      "点击链接获取",
+      "私信我",
+      "구독하기",
+      "뉴스레터 구독",
+      "팔로우하세요",
+      "DM 주세요"
     ],
     "politics": [
-      "election", "vote", "voting", "ballot", "democrat", "republican", "政治", "选举", "投票",
-      "選挙", "投票", "政権", "政府", "regime", "政权", "coup", "impeach",
-      "선거", "투표", "정권", "정치"
+      "election",
+      "vote",
+      "voting",
+      "ballot",
+      "democrat",
+      "republican",
+      "政治",
+      "选举",
+      "投票",
+      "選挙",
+      "投票",
+      "政権",
+      "政府",
+      "regime",
+      "政权",
+      "coup",
+      "impeach",
+      "선거",
+      "투표",
+      "정권",
+      "정치"
     ],
     "war_military": [
-      "war", "military", "army", "soldier", "战争", "军队", "軍", "戦争", "invasion", "missile",
-      "bomb", "bombing", "爆炸", "爆発", "missile", "drone strike", "airstrike",
-      "전쟁", "군대", "폭탄", "미사일"
+      "war",
+      "military",
+      "army",
+      "soldier",
+      "战争",
+      "军队",
+      "軍",
+      "戦争",
+      "invasion",
+      "missile",
+      "bomb",
+      "bombing",
+      "爆炸",
+      "爆発",
+      "missile",
+      "drone strike",
+      "airstrike",
+      "전쟁",
+      "군대",
+      "폭탄",
+      "미사일"
     ],
     "terrorism_extremism": [
-      "terrorist", "terrorism", "恐怖", "テロ", "jihad", "isis", "al-qaeda", "extremist",
-      "radicalized", "militia", "insurgent", "极端", "過激派", "테러", "극단주의"
+      "terrorist",
+      "terrorism",
+      "恐怖",
+      "テロ",
+      "jihad",
+      "isis",
+      "al-qaeda",
+      "extremist",
+      "radicalized",
+      "militia",
+      "insurgent",
+      "极端",
+      "過激派",
+      "테러",
+      "극단주의"
     ],
     "violence_crime_selfharm": [
-      "murder", "suicide", "self-harm", "殺人", "自殺", "自杀", "自残", "枪击", "shooting",
-      "massacre", "stabbing", "assault", "rape", "kidnap", "hostage", "homicide"
+      "murder",
+      "suicide",
+      "self-harm",
+      "殺人",
+      "自殺",
+      "自杀",
+      "自残",
+      "枪击",
+      "shooting",
+      "massacre",
+      "stabbing",
+      "assault",
+      "rape",
+      "kidnap",
+      "hostage",
+      "homicide"
     ],
     "hate_harassment": [
-      "nazi", "white supremacy", "纳粹", "ナチ", "racist", "人種差別", "白人至上", "hate crime",
-      "ethnic cleansing", "genocide", "slur", "bigot"
+      "nazi",
+      "white supremacy",
+      "纳粹",
+      "ナチ",
+      "racist",
+      "人種差別",
+      "白人至上",
+      "hate crime",
+      "ethnic cleansing",
+      "genocide",
+      "slur",
+      "bigot"
     ],
     "adult": [
-      "porn", "nude", "naked", "色情", "裸照", "ポルノ", "ヌード", "xxx", "nsfw", "onlyfans",
-      "sex worker", "escort", "prostitut"
+      "porn",
+      "nude",
+      "naked",
+      "色情",
+      "裸照",
+      "ポルノ",
+      "ヌード",
+      "xxx",
+      "nsfw",
+      "onlyfans",
+      "sex worker",
+      "escort",
+      "prostitut"
     ],
     "drugs": [
-      "cocaine", "heroin", "meth", "大麻", "冰毒", "コカイン", "覚醒剤", "fentanyl", "overdose",
-      "drug dealer", "cartel", "trafficking"
+      "cocaine",
+      "heroin",
+      "meth",
+      "大麻",
+      "冰毒",
+      "コカイン",
+      "覚醒剤",
+      "fentanyl",
+      "overdose",
+      "drug dealer",
+      "cartel",
+      "trafficking"
     ],
     "scams_finance": [
-      "airdrop", "rug pull", "100x", "guaranteed profit", "空投", "保证收益", "ラグプル",
-      "確実に儲かる", "ponzi", "pyramid scheme", "get rich quick", "free money", "giveaway scam"
+      "airdrop",
+      "rug pull",
+      "100x",
+      "guaranteed profit",
+      "空投",
+      "保证收益",
+      "ラグプル",
+      "確実に儲かる",
+      "ponzi",
+      "pyramid scheme",
+      "get rich quick",
+      "free money",
+      "giveaway scam"
     ],
     "privacy_hacking": [
-      "doxx", "doxing", "leaked", "hacked", "breach", "人肉", "泄露", "被黑", "流出", "ハック",
-      "leak", "exposed", "private photos", "stolen data"
+      "doxx",
+      "doxing",
+      "leaked",
+      "hacked",
+      "breach",
+      "人肉",
+      "泄露",
+      "被黑",
+      "流出",
+      "ハック",
+      "leak",
+      "exposed",
+      "private photos",
+      "stolen data"
     ]
   },
   "soft": {
     "religion": [
-      "christian", "muslim", "jewish", "hindu", "buddhist", "atheist", "god", "allah",
-      "jesus", "church", "mosque", "temple", "宗教", "基督", "イスラム", "仏教"
+      "christian",
+      "muslim",
+      "jewish",
+      "hindu",
+      "buddhist",
+      "atheist",
+      "god",
+      "allah",
+      "jesus",
+      "church",
+      "mosque",
+      "temple",
+      "宗教",
+      "基督",
+      "イスラム",
+      "仏教"
     ],
     "law_enforcement": [
-      "police brutality", "cop", "lawsuit", "sue", "court case", "trial", "verdict",
-      "arrest", "detained", "警察", "逮捕", "裁判", "訴訟"
+      "police brutality",
+      "cop",
+      "lawsuit",
+      "sue",
+      "court case",
+      "trial",
+      "verdict",
+      "arrest",
+      "detained",
+      "警察",
+      "逮捕",
+      "裁判",
+      "訴訟"
     ],
     "disasters_victims": [
-      "earthquake", "tsunami", "hurricane", "flood", "wildfire", "victims", "死者",
-      "地震", "津波", "台風", "洪水", "casualties", "fatalities"
+      "earthquake",
+      "tsunami",
+      "hurricane",
+      "flood",
+      "wildfire",
+      "victims",
+      "死者",
+      "地震",
+      "津波",
+      "台風",
+      "洪水",
+      "casualties",
+      "fatalities"
     ],
     "crypto_investing": [
-      "to the moon", "hodl", "diamond hands", "buy the dip", "crypto millionaire",
-      "nft drop", "shitcoin", "altcoin pump", "暴涨", "暴騰", "一夜暴富"
+      "to the moon",
+      "hodl",
+      "diamond hands",
+      "buy the dip",
+      "crypto millionaire",
+      "nft drop",
+      "shitcoin",
+      "altcoin pump",
+      "暴涨",
+      "暴騰",
+      "一夜暴富"
     ]
   },
   "low_signal": {
     "sports": [
-      "football", "soccer", "nba", "nfl", "world cup", "superbowl", "championship",
-      "playoff", "サッカー", "足球", "野球", "basketball", "touchdown", "goal scorer"
+      "football",
+      "soccer",
+      "nba",
+      "nfl",
+      "world cup",
+      "superbowl",
+      "championship",
+      "playoff",
+      "サッカー",
+      "足球",
+      "野球",
+      "basketball",
+      "touchdown",
+      "goal scorer"
     ],
     "celebrity_gossip": [
-      "celebrity", "gossip", "八卦", "ゴシップ", "paparazzi", "scandal", "affair",
-      "breakup", "dating", "married", "divorced", "red carpet", "award show"
+      "celebrity",
+      "gossip",
+      "八卦",
+      "ゴシップ",
+      "paparazzi",
+      "scandal",
+      "affair",
+      "breakup",
+      "dating",
+      "married",
+      "divorced",
+      "red carpet",
+      "award show"
     ],
     "memes_viral": [
-      "viral", "trending", "meme", "tiktok", "challenge", "prank", "lol", "lmao",
-      "rofl", "omg", "slay", "iconic"
+      "viral",
+      "trending",
+      "meme",
+      "tiktok",
+      "challenge",
+      "prank",
+      "lol",
+      "lmao",
+      "rofl",
+      "omg",
+      "slay",
+      "iconic"
     ],
     "ads_promotion": [
-      "sponsored", "ad", "advertisement", "promo code", "discount", "sale", "buy now",
-      "limited time", "click link", "check out", "广告", "宣伝", "PR",
-      "free trial", "get started today", "book a demo", "schedule a call",
-      "newsletter", "weekly digest", "daily tips", "subscribe now",
-      "最速で", "成功の秘訣", "無料で", "今すぐ登録",
-      "免费领取", "立即获取", "限时优惠"
+      "sponsored",
+      "ad",
+      "advertisement",
+      "promo code",
+      "discount",
+      "sale",
+      "buy now",
+      "limited time",
+      "click link",
+      "check out",
+      "广告",
+      "宣伝",
+      "PR",
+      "free trial",
+      "get started today",
+      "book a demo",
+      "schedule a call",
+      "newsletter",
+      "weekly digest",
+      "daily tips",
+      "subscribe now",
+      "最速で",
+      "成功の秘訣",
+      "無料で",
+      "今すぐ登録",
+      "免费领取",
+      "立即获取",
+      "限时优惠"
     ],
     "competitor_products": [
-      "assertec", "assertant", "clawdbot", "lumin", "superhuman", "spark mail",
-      "mailman", "sanebox", "hey.com", "hey email", "clean email", "cleanfox",
-      "yom_official", "mailbird", "airmail", "polymail", "newton mail",
-      "mailspring", "canary mail", "edison mail", "spike email", "tuta mail",
-      "proton mail", "zoho mail", "shortwave", "front app", "missive",
-      "skiff mail", "tutanota", "fastmail", "mailbox.org"
+      "assertec",
+      "assertant",
+      "clawdbot",
+      "lumin",
+      "superhuman",
+      "spark mail",
+      "mailman",
+      "sanebox",
+      "hey.com",
+      "hey email",
+      "clean email",
+      "cleanfox",
+      "yom_official",
+      "mailbird",
+      "airmail",
+      "polymail",
+      "newton mail",
+      "mailspring",
+      "canary mail",
+      "edison mail",
+      "spike email",
+      "tuta mail",
+      "proton mail",
+      "zoho mail",
+      "shortwave",
+      "front app",
+      "missive",
+      "skiff mail",
+      "tutanota",
+      "fastmail",
+      "mailbox.org"
     ]
   },
   "feedback": {
-    "urls": [],
-    "applied": []
+    "urls": [
+      "https://x.com/dee_naliaks/status/2016914473198768247",
+      "https://x.com/zzotory/status/2016741964243489049",
+      "https://x.com/Anime2Ga/status/2016671375600341249",
+      "https://x.com/vulnix0x4/status/2017019485568586088",
+      "https://x.com/techcoachralph/status/2016919281334698484",
+      "https://x.com/Tariere5/status/2016800504844521525",
+      "https://x.com/xjtumj/status/2018245997781033063",
+      "https://x.com/bt_uk/status/2017683632039588071",
+      "https://x.com/IndieSanjay/status/2017558106092540335",
+      "https://x.com/inatinycomeback/status/2018549811633619081",
+      "https://x.com/Abakesingh/status/2018558464919007717",
+      "https://x.com/neko_kumapanda/status/2018534703549280561",
+      "https://x.com/BAJRANG_DAL_UP/status/2018560976938017048",
+      "https://x.com/ndaxio/status/2017984283865202878",
+      "https://x.com/grok/status/2018873240857325899",
+      "https://x.com/chronicleherald/status/2018715123397824915",
+      "https://x.com/chyn1004_/status/2018930135953760302",
+      "https://x.com/meowmeow6285/status/2018529272164720908",
+      "https://x.com/kobachi08/status/2018696035921428930",
+      "https://x.com/kiwialliance/status/2018170805566484748",
+      "https://x.com/elpie/status/2018850394387189887",
+      "https://x.com/muntaxir04/status/2018913392338317454",
+      "https://x.com/Forcehedge/status/2018753732574322813",
+      "https://x.com/antlerblade/status/2017787535586365470",
+      "https://x.com/konowara13544/status/2018931395012464653",
+      "https://x.com/parasquidsg/status/2018746451006718368",
+      "https://x.com/JFruel1o1/status/2018637151567757445",
+      "https://x.com/Borg51/status/2017903700690301161",
+      "https://x.com/TexasGrl7998/status/2018434853490819183",
+      "https://x.com/CreteTara/status/2018828759223423357",
+      "https://x.com/LAUS_SIT_DEO/status/2018838300283613458",
+      "https://x.com/ZohoWorkplace/status/2018904872180121970",
+      "https://x.com/TheNolanGore/status/2018775134195118538",
+      "https://x.com/JuliaSubbotina1/status/2018692734089941168",
+      "https://x.com/VWilmott4479/status/2020436980094611468",
+      "https://x.com/Henrih1549672/status/2020727591733211493",
+      "https://x.com/djfadeev1/status/2020727268524302819",
+      "https://x.com/seadted1531/status/2020733451394244730",
+      "https://x.com/NoMeWoutYouZine/status/2026721257991843844",
+      "https://x.com/gerald_ben48209/status/2026811876252790978",
+      "https://x.com/MaryMeyers29810/status/2027160283836297689",
+      "https://x.com/PurpCl0ud/status/2026901421631881371",
+      "https://x.com/slinganswers/status/2026775365721456649",
+      "https://x.com/TLeigh47490/status/2027970157688308060",
+      "https://x.com/kimberlynG84201/status/2027957047015125353",
+      "https://x.com/TPostreach82793/status/2027992987092103312",
+      "https://x.com/VAldington14184/status/2027968854178345101",
+      "https://x.com/laceycjm/status/2027358917030707325",
+      "https://x.com/MrEthicalPie/status/2027134219370021241",
+      "https://x.com/liebedichalle/status/2027914423478677961",
+      "https://x.com/RobertMihaly1/status/2027949554348212585",
+      "https://x.com/AnthonyE51359/status/2028182185425981748",
+      "https://x.com/gmail/status/2027908240600654146",
+      "https://x.com/dbneolines/status/2028133663431676094",
+      "https://x.com/szspagna/status/2032132854059016233",
+      "https://x.com/gmail/status/2032724047323079079",
+      "https://x.com/gmail/status/2031985254387286182"
+    ],
+    "applied": [
+      {
+        "url": "https://x.com/dee_naliaks/status/2016914473198768247",
+        "text": "Controlling a revenue worker that handles email, calendar, and CRM all through a simple message is i",
+        "group": "pain",
+        "source": "inbox-overwhelm-en",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/zzotory/status/2016741964243489049",
+        "text": "大家都收到邮件了吗？邮箱地址确认没问题，垃圾邮箱也看过了，但还是没收到，有人能帮帮我吗？ #Santa1stFSinShanghai #Santapp",
+        "group": "pain",
+        "source": "gmail-spam-cn",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/Anime2Ga/status/2016671375600341249",
+        "text": "是邮件有可能会被分类到垃圾邮件，不是邮箱垃圾",
+        "group": "pain",
+        "source": "gmail-spam-cn",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/vulnix0x4/status/2017019485568586088",
+        "text": "step 1. create an account on https:// zapier.com and create a new automation for the trigger select ",
+        "group": "reach",
+        "source": "ai-email-en",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/techcoachralph/status/2016919281334698484",
+        "text": "Sick of staring at your inbox, wondering if you got ghosted again? These rejections aren't random—yo",
+        "group": "pain",
+        "source": "gmail-spam-en",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/Tariere5/status/2016800504844521525",
+        "text": "If your system is clean? AI becomes like an extra ops teammate that never sleeps. Simple examples Ag",
+        "group": "pain",
+        "source": "inbox-overwhelm-en",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/xjtumj/status/2018245997781033063",
+        "text": "OpenClaw 101 上线，帮新手解决碎片化教程、关键路径不明和踩坑高的问题。 35+ 篇精选教程，7 天从安装到自动化，覆盖 Telegram、Discord、飞书接入及技能配置。 建议：首先1",
+        "group": "pain",
+        "source": "gmail-spam-cn",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/bt_uk/status/2017683632039588071",
+        "text": "Hi Georgina, I get that this must be frustrating - it would be best for our email team to help you o",
+        "group": "pain",
+        "source": "email-search-pain",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/IndieSanjay/status/2017558106092540335",
+        "text": "Why? • Answers exist • Docs exist • But nobody can find them when it matters If internal search feel",
+        "group": "pain",
+        "source": "email-search-pain",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/inatinycomeback/status/2018549811633619081",
+        "text": "[] BUGS STREAMPASS : ACTIVE INATINY, we have already sent the bugs streamingpass to you via email. D",
+        "group": "pain",
+        "source": "gmail-spam-en",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/Abakesingh/status/2018558464919007717",
+        "text": "Sir I made a mistake one time registration for upsc in my category list in hurry. Year 2026 attempt ",
+        "group": "pain",
+        "source": "gmail-spam-en",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/neko_kumapanda/status/2018534703549280561",
+        "text": "ラクルをお申し込みの皆さまへ 大変お待たせいたしました。 本日、二次金のご案内をメールにてお送りしております。お手数ですがメールBOXをご確認いただき、ご入金の上フォームの送信をお願いいたします。万が",
+        "group": "pain",
+        "source": "inbox-overwhelm-jp",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/BAJRANG_DAL_UP/status/2018560976938017048",
+        "text": "@l_vidhi29025 kripya Hamare inbox mein bataen kya problem hai?",
+        "group": "pain",
+        "source": "gmail-spam-en",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/ndaxio/status/2017984283865202878",
+        "text": "Roses are red. Crypto is too. Want to send crypto to your valentine this year? Ndax’s free Send feat",
+        "group": "insight",
+        "source": "feature-wish-en",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/grok/status/2018873240857325899",
+        "text": "Stripe支持的具体联系方式： - 登录Stripe仪表板（ http:// dashboard.stripe.com），使用24/7实时聊天（英文）。 - 通过支持页面提交邮件： https://",
+        "group": "pain",
+        "source": "gmail-spam-cn",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/chronicleherald/status/2018715123397824915",
+        "text": "Do you find parking downtown frustrating or a breeze? We're looking at the changes in downtown parki",
+        "group": "pain",
+        "source": "email-search-pain",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/chyn1004_/status/2018930135953760302",
+        "text": "はじめまして、検索から失礼いたします 私もGmailもiCloudもどちらも送信エラーが出てしまい、問い合わせフォームの方で返信してみました！ ですが日曜に送ってから今日まで反応なしです 当日チケット",
+        "group": "pain",
+        "source": "inbox-overwhelm-jp",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/meowmeow6285/status/2018529272164720908",
+        "text": "Please fire your \"customer support\" because they are sleeping and not offering any resolution. I had",
+        "group": "pain",
+        "source": "email-search-pain",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/kobachi08/status/2018696035921428930",
+        "text": "上にいい顔したがりの出しゃばり馬鹿が引っ掻き回してて最悪 ただの担当者間のメールに部長､事業部長まで入れる必要あるか? そこまでして“俺やってます”感出したいか みっともねぇ",
+        "group": "pain",
+        "source": "inbox-overwhelm-jp",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/kiwialliance/status/2018170805566484748",
+        "text": "Thank you Nick have sent off a strongly worded email to Suze Redmayne (useless MO so far, but in a N",
+        "group": "pain",
+        "source": "email-search-pain",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/elpie/status/2018850394387189887",
+        "text": "What a sad individual that person must be. I’m sorry you saw that Jeff. Maybe next time just block G",
+        "group": "pain",
+        "source": "gmail-spam-en",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/muntaxir04/status/2018913392338317454",
+        "text": "My requests are full of such. This creates a total mess in finding actual people from Inbox. Why so ",
+        "group": "pain",
+        "source": "inbox-overwhelm-en",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/Forcehedge/status/2018753732574322813",
+        "text": "Jeffrey Epstein funded a lot of projects, from AI, chaos theory, string theory, and heterodox scienc",
+        "group": "pain",
+        "source": "inbox-overwhelm-en",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/antlerblade/status/2017787535586365470",
+        "text": "THE FUCKING CAR WASH IS BROKEN AND NOW THE PARKING LOT IS A FUCKING OCEAN AND IT'S NOT STOPPING BUT ",
+        "group": "pain",
+        "source": "email-search-pain",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/konowara13544/status/2018931395012464653",
+        "text": "オスロ地裁で2/3開始のマリウス・ボルグ・ホイビー被告（29）強姦4件含む38件で裁判中 その母メッテ＝マリット「ノルウェー王太子妃」のエプスタインとのかなり親密な関係を示唆するメール（2011-14",
+        "group": "pain",
+        "source": "inbox-overwhelm-jp",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/parasquidsg/status/2018746451006718368",
+        "text": "@tedlieu are you reading a different set of documents than I? Please provide proof of what you are a",
+        "group": "pain",
+        "source": "inbox-overwhelm-en",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/JFruel1o1/status/2018637151567757445",
+        "text": "I was tired of saving email attachments manually.. Soo I built DriveSync to automate it 24/7.... Thi",
+        "group": "pain",
+        "source": "gmail-spam-en",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/Borg51/status/2017903700690301161",
+        "text": "I have contacted your company by email. It is the most frustrating experience trying to find some wa",
+        "group": "pain",
+        "source": "email-search-pain",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/TexasGrl7998/status/2018434853490819183",
+        "text": "This is not a real email. I think everyone needs to go to the DOJ website and word search the Epstei",
+        "group": "pain",
+        "source": "email-search-pain",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/CreteTara/status/2018828759223423357",
+        "text": "Why the hell would someone email these two losers for a ransom for someone’s mother…please.",
+        "group": "pain",
+        "source": "inbox-overwhelm-en",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/LAUS_SIT_DEO/status/2018838300283613458",
+        "text": "公衆謁見で祝福を受けた写真を使ってカトリックを権威付けに利用しながら裏でのメールで慈善そのものを小馬鹿にし、カトリックについて「だったら乞食全員に1ドルづつ配ってろよ、それがいかに馬鹿げてるかはカトリ",
+        "group": "pain",
+        "source": "inbox-overwhelm-jp",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/ZohoWorkplace/status/2018904872180121970",
+        "text": "Tired of the communication chaos? Endless email threads, urgent messages, surprise calls—it all adds",
+        "group": "pain",
+        "source": "inbox-overwhelm-en",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/TheNolanGore/status/2018775134195118538",
+        "text": "I got a list 100 property managers Names, co, email But I want their phone numbers What’s the best t",
+        "group": "insight",
+        "source": "feature-wish-en",
+        "addedAt": "2026-03-16T06:38:28.410Z"
+      },
+      {
+        "url": "https://x.com/JuliaSubbotina1/status/2018692734089941168",
+        "text": "Volodymyr 75: I've rheumatoid arthritis for 15 years, cataracts. I had a stroke a year ago. Now I've",
+        "group": "insight",
+        "source": "feature-wish-en",
+        "addedAt": "2026-03-16T06:38:28.411Z"
+      },
+      {
+        "url": "https://x.com/VWilmott4479/status/2020436980094611468",
+        "text": "Just sent a batch of emails using AtomEmailPro with Gmail, and it was smooth sailing! No spam issues",
+        "group": "pain",
+        "source": "gmail-spam-en",
+        "addedAt": "2026-03-16T06:38:28.411Z"
+      },
+      {
+        "url": "https://x.com/Henrih1549672/status/2020727591733211493",
+        "text": "If I could ask Bit & Byte to help me with something, it would be my overflowing email inbox with tho",
+        "group": "pain",
+        "source": "gmail-spam-en",
+        "addedAt": "2026-03-16T06:38:28.411Z"
+      },
+      {
+        "url": "https://x.com/djfadeev1/status/2020727268524302819",
+        "text": "If I could ask Bit & Byte to help me with something, it would be my chaotic email inbox: thousands o",
+        "group": "pain",
+        "source": "gmail-spam-en",
+        "addedAt": "2026-03-16T06:38:28.411Z"
+      },
+      {
+        "url": "https://x.com/seadted1531/status/2020733451394244730",
+        "text": "If I could ask Bit & Byte to help me with something, it would be: cleaning my chaotic email inbox ov",
+        "group": "pain",
+        "source": "gmail-spam-en",
+        "addedAt": "2026-03-16T06:38:28.411Z"
+      },
+      {
+        "url": "https://x.com/NoMeWoutYouZine/status/2026721257991843844",
+        "text": "Hello everyone! We are so happy to announce that we just send out the e-mails for the shipping addre",
+        "group": "pain",
+        "source": "gmail-spam-en",
+        "addedAt": "2026-03-16T06:38:28.411Z"
+      },
+      {
+        "url": "https://x.com/gerald_ben48209/status/2026811876252790978",
+        "text": "CURRENT LOGIN: https:// cutt.ly/OtQwQOF4?trust ed-Teleport-Pro-king1-new3-goqueen-Burning-Hot-v2-rus",
+        "group": "pain",
+        "source": "inbox-overwhelm-en",
+        "addedAt": "2026-03-16T06:38:28.411Z"
+      },
+      {
+        "url": "https://x.com/MaryMeyers29810/status/2027160283836297689",
+        "text": "https:// nysun.com/article/jewish -groups-sue-california-charging-unchecked-antisemitism-in-states-p",
+        "group": "pain",
+        "source": "gmail-spam-en",
+        "addedAt": "2026-03-16T06:38:28.411Z"
+      },
+      {
+        "url": "https://x.com/PurpCl0ud/status/2026901421631881371",
+        "text": "Dig deep enough and you’ll find a Jew profiting off the fraud money from Somali syndicates Hell, the",
+        "group": "pain",
+        "source": "inbox-overwhelm-en",
+        "addedAt": "2026-03-16T06:38:28.411Z"
+      },
+      {
+        "url": "https://x.com/slinganswers/status/2026775365721456649",
+        "text": "Hi there. I understand that it can be frustrating not to find your confirmation email. Please take a",
+        "group": "pain",
+        "source": "email-search-pain",
+        "addedAt": "2026-03-16T06:38:28.411Z"
+      },
+      {
+        "url": "https://x.com/TLeigh47490/status/2027970157688308060",
+        "text": "Just sent my first bulk email using AtomEmailPro with Gmail/Outlook! Super smooth and secure. No mor",
+        "group": "pain",
+        "source": "gmail-spam-en",
+        "addedAt": "2026-03-16T06:38:28.411Z"
+      },
+      {
+        "url": "https://x.com/kimberlynG84201/status/2027957047015125353",
+        "text": "Still drowning in admin instead of leading your business?If you’re spending hours in your inbox, jug",
+        "group": "pain",
+        "source": "inbox-overwhelm-en",
+        "addedAt": "2026-03-16T06:38:28.411Z"
+      },
+      {
+        "url": "https://x.com/TPostreach82793/status/2027992987092103312",
+        "text": "Stuck switching between 5 apps? Strategic partnerships integrate email, design, analytics, & social ",
+        "group": "pain",
+        "source": "inbox-overwhelm-en",
+        "addedAt": "2026-03-16T06:38:28.411Z"
+      },
+      {
+        "url": "https://x.com/VAldington14184/status/2027968854178345101",
+        "text": "Just sent out a bulk email campaign safely using AtomEmailPro with Gmail! No spam issues, and it was",
+        "group": "pain",
+        "source": "gmail-spam-en",
+        "addedAt": "2026-03-16T06:38:28.411Z"
+      },
+      {
+        "url": "https://x.com/laceycjm/status/2027358917030707325",
+        "text": "@CareCrew198471 I want to make a formal complaint but am unable to find a working email address and ",
+        "group": "pain",
+        "source": "email-search-pain",
+        "addedAt": "2026-03-16T06:38:28.411Z"
+      },
+      {
+        "url": "https://x.com/MrEthicalPie/status/2027134219370021241",
+        "text": "I hate Hilary but getting an invitation to something does not make someone guilty. If you find an em",
+        "group": "pain",
+        "source": "email-search-pain",
+        "addedAt": "2026-03-16T06:38:28.411Z"
+      },
+      {
+        "url": "https://x.com/liebedichalle/status/2027914423478677961",
+        "text": "What the hell ??? No phone received no email response no information from Qatar airlines? If we gone",
+        "group": "pain",
+        "source": "inbox-overwhelm-en",
+        "addedAt": "2026-03-16T06:38:28.411Z"
+      },
+      {
+        "url": "https://x.com/RobertMihaly1/status/2027949554348212585",
+        "text": "Thank you to @AshaRangappa_ and EVERY other person who is speaking up in defense of our republic and",
+        "group": "pain",
+        "source": "inbox-overwhelm-en",
+        "addedAt": "2026-03-16T06:38:28.411Z"
+      },
+      {
+        "url": "https://x.com/AnthonyE51359/status/2028182185425981748",
+        "text": "遇到任何困难、投诉或疑问？请直接发送邮件至客服邮箱，我们会确保问题得到解决。祝您好运！(Phantomwalletfix.feedbackteams@gmail.com)",
+        "group": "pain",
+        "source": "gmail-spam-cn",
+        "addedAt": "2026-03-16T06:38:28.411Z"
+      },
+      {
+        "url": "https://x.com/gmail/status/2027908240600654146",
+        "text": "Good morning. Did you encounter any issues while using Gmail? If so, I’ll look into whether there’s ",
+        "group": "pain",
+        "source": "gmail-spam-jp",
+        "addedAt": "2026-03-16T06:38:28.411Z"
+      },
+      {
+        "url": "https://x.com/dbneolines/status/2028133663431676094",
+        "text": "#長野の情報 （メール便・送料込）ぴり辛高菜炒め×2袋（信州長野のお土産 お惣菜 お総菜 おそうざい）",
+        "group": "pain",
+        "source": "inbox-overwhelm-jp",
+        "addedAt": "2026-03-16T06:38:28.411Z"
+      },
+      {
+        "url": "https://x.com/szspagna/status/2032132854059016233",
+        "text": "Meanwhile Google forcibly turned on AI on my Gmail even though I had opted out and I had to go turn ",
+        "group": "pain",
+        "source": "email-search-pain",
+        "addedAt": "2026-03-16T06:38:28.411Z"
+      },
+      {
+        "url": "https://x.com/gmail/status/2032724047323079079",
+        "text": "Hello Oreo-san. When using Gmail, are you having trouble with important emails being unintentionally",
+        "group": "pain",
+        "source": "gmail-spam-jp",
+        "addedAt": "2026-03-16T06:38:28.411Z"
+      },
+      {
+        "url": "https://x.com/gmail/status/2031985254387286182",
+        "text": "Hello. Are you having trouble finding an email when using Gmail? If so, please refer to the content ",
+        "group": "pain",
+        "source": "inbox-overwhelm-jp",
+        "addedAt": "2026-03-16T06:38:28.411Z"
+      }
+    ]
   },
   "learned": {
     "keywords": [],
+    "rules": [
+      {
+        "phrases": [
+          "customer service",
+          "customer support"
+        ],
+        "match": "any",
+        "penalty": 0.4,
+        "category": "customer_service",
+        "reason": "客服问题相关内容，用户反馈多为不相关或错误分类",
+        "addedAt": "2026-03-16T06:47:23.304Z"
+      },
+      {
+        "phrases": [
+          "contact",
+          "help page",
+          "support"
+        ],
+        "match": "all",
+        "penalty": 0.3,
+        "category": "customer_service",
+        "reason": "同时出现帮助页面、联系和支持的内容通常是客服指导，非真实痛点",
+        "addedAt": "2026-03-16T06:47:23.304Z"
+      },
+      {
+        "phrases": [
+          "check your inbox",
+          "spam folder"
+        ],
+        "match": "all",
+        "penalty": 0.3,
+        "category": "customer_service",
+        "reason": "引导用户检查邮箱和垃圾邮件文件夹的标准客服话术",
+        "addedAt": "2026-03-16T06:47:23.304Z"
+      },
+      {
+        "phrases": [
+          "atomemailpro",
+          "bulk email",
+          "emailmarketing"
+        ],
+        "match": "any",
+        "penalty": 0.2,
+        "category": "spam_promotion",
+        "reason": "明显的邮件营销工具推广内容",
+        "addedAt": "2026-03-16T06:47:23.304Z"
+      },
+      {
+        "phrases": [
+          "bit & byte",
+          "datahaven_xyz"
+        ],
+        "match": "any",
+        "penalty": 0.2,
+        "category": "spam_promotion",
+        "reason": "重复出现的品牌推广模板内容",
+        "addedAt": "2026-03-16T06:47:23.304Z"
+      },
+      {
+        "phrases": [
+          "device",
+          "please reply",
+          "situation"
+        ],
+        "match": "all",
+        "penalty": 0.3,
+        "category": "customer_service",
+        "reason": "要求用户回复设备和情况信息的客服模板",
+        "addedAt": "2026-03-16T06:47:23.304Z"
+      },
+      {
+        "phrases": [
+          "email address",
+          "formal complaint",
+          "unable to find"
+        ],
+        "match": "all",
+        "penalty": 0.4,
+        "category": "complaint_feedback",
+        "reason": "投诉类内容，通常是用户对服务不满的反馈而非产品痛点",
+        "addedAt": "2026-03-16T06:47:23.304Z"
+      },
+      {
+        "phrases": [
+          "current login",
+          "cutt.ly"
+        ],
+        "match": "all",
+        "penalty": 0.1,
+        "category": "spam_scam",
+        "reason": "可疑的登录链接，明显的垃圾信息",
+        "addedAt": "2026-03-16T06:47:23.304Z"
+      }
+    ],
     "patterns": [],
-    "history": []
+    "history": [
+      {
+        "analyzedAt": "2026-03-16T06:38:43.910Z",
+        "sampleCount": 57,
+        "summary": "这些推文大多是营销推广、客服投诉、技术教程或与目标话题无关的内容，缺乏真实的用户痛点表达",
+        "categories": [
+          "营销推广",
+          "客服投诉",
+          "垃圾邮件",
+          "技术教程",
+          "个人事务",
+          "政治社会话题",
+          "低质量内容",
+          "竞品宣传"
+        ],
+        "keywordsExtracted": [
+          "gmail",
+          "邮件",
+          "inbox",
+          "email",
+          "spam",
+          "客服",
+          "support",
+          "help",
+          "联系",
+          "问题",
+          "投诉",
+          "complaint",
+          "发送",
+          "send",
+          "收到",
+          "received",
+          "bulk",
+          "营销",
+          "marketing",
+          "推广",
+          "宣传"
+        ],
+        "patternsExtracted": [
+          "产品宣传和营销推广内容，尤其是邮件营销工具的推广",
+          "客服相关问题和投诉，包括联系客服、寻求帮助等",
+          "垃圾邮件或营销邮件的发送工具推荐",
+          "与邮件技术操作相关但不涉及用户痛点的内容",
+          "包含大量无意义链接和关键词堆砌的低质量内容",
+          "个人具体事务处理，如订单、退款、账户问题等",
+          "政治、社会事件等与产品无关的话题讨论",
+          "纯粹的技术教程或操作指南，缺乏痛点表达"
+        ],
+        "promptSuggestions": [
+          "明确排除营销推广内容：避免收录明显的产品宣传、工具推荐和营销活动",
+          "过滤客服相关内容：排除投诉、寻求帮助、联系客服等客服类推文",
+          "排除垃圾邮件推广：避免收录推广邮件发送工具、批量邮件服务的内容",
+          "筛选真实痛点：只收录表达真实使用困难和痛点的推文，排除纯技术教程",
+          "避免低质量内容：过滤包含大量链接、关键词堆砌或格式异常的推文",
+          "排除无关话题：避免政治、社会事件等与产品功能无关的讨论",
+          "识别竞品宣传：排除推广其他产品或服务的内容"
+        ]
+      },
+      {
+        "analyzedAt": "2026-03-16T06:47:23.304Z",
+        "sampleCount": 57,
+        "summary": "主要是客服回复模板、邮件营销工具推广、用户投诉反馈等非真实痛点内容",
+        "categories": [
+          "customer_service",
+          "spam_promotion",
+          "complaint_feedback",
+          "spam_scam",
+          "irrelevant_content"
+        ],
+        "rulesExtracted": 8,
+        "promptSuggestions": [
+          "增强对客服标准话术的识别，如'check inbox/spam folder'等组合",
+          "过滤明显的产品推广内容，特别是重复的营销模板",
+          "排除用户投诉类内容，这些通常不是产品痛点而是服务问题",
+          "提高对垃圾信息和可疑链接的识别能力"
+        ]
+      }
+    ]
   },
   "_meta": {
     "version": "1.2.0",
@@ -112,8 +999,12 @@
       "soft": "Discard unless FiloFitScore >= 3",
       "low_signal": "Heavy penalty (finalScore *= 0.2) but may include if highly relevant",
       "feedback": "URLs marked as incorrect by user - immediate discard",
-      "learned": "Keywords extracted by LLM from downvoted tweets - immediate discard"
+      "learned": "Phrase-based penalty rules extracted by LLM from downvoted tweets - score penalty, not hard discard"
     },
-    "languages": ["en", "zh", "ja"]
+    "languages": [
+      "en",
+      "zh",
+      "ja"
+    ]
   }
 }
