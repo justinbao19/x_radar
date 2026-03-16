@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Tweet, ReplyOption, TweetComments } from '@/lib/types';
 import { formatNumber, formatDateTime, formatRelativeTime } from '@/lib/data';
 import { SKIP_REASON_LABELS } from '@/lib/skipReasons';
+import { SkipReason } from '@/lib/types';
 import { VoteButtons } from './VoteButtons';
 import { useToast } from '@/lib/ToastContext';
 import { getGroupLabel, getGroupColor, getSentimentStyle, getInsightStyle, getScoreStyle, languageMap } from '@/lib/styles';
@@ -231,7 +232,7 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
       {isSkipped && (
         <div className="absolute top-3 right-3 z-20 flex items-center gap-1 px-2 py-1 rounded-full bg-stone-100 border border-stone-200 text-stone-500 text-[10px] font-semibold">
           <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-          已跳过{reviewStatus?.skipReason ? `·${SKIP_REASON_LABELS[reviewStatus.skipReason] || reviewStatus.skipReason}` : ''}
+          已跳过{reviewStatus?.skipReason ? `·${SKIP_REASON_LABELS[reviewStatus.skipReason as SkipReason] || reviewStatus.skipReason}` : ''}
         </div>
       )}
       {/* Header */}
