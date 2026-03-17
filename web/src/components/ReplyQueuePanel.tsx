@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ReplyQueueItem } from '@/lib/types';
+import { ReplyQueueItem, ReplyOption } from '@/lib/types';
 import { openExternalLink, hapticFeedback } from '@/lib/telegram';
 import { normalizeLanguageTag, shouldShowChineseTranslation } from '@/lib/language';
 
-const ANGLE_LABELS: Record<string, string> = { witty: '机智', practical: '务实', subtle_product: '产品' };
+const ANGLE_LABELS: Record<string, string> = { witty: '机智', practical: '务实', subtle_product: '产品', custom: '自定义' };
 
 interface ReplyQueuePanelProps {
   queue: ReplyQueueItem[];
@@ -21,6 +21,11 @@ export function ReplyQueuePanel({ queue, onRetry, onComplete, expanded, onToggle
   const [selectedTab, setSelectedTab] = useState<Record<string, number>>({});
   const [actionState, setActionState] = useState<Record<string, { copied: boolean; visited: boolean; angle?: string }>>({});
   const [expandedPreview, setExpandedPreview] = useState<Record<string, boolean>>({});
+  const [customPrompts, setCustomPrompts] = useState<Record<string, string>>({});
+  const [customReplies, setCustomReplies] = useState<Record<string, ReplyOption>>({});
+  const [customReplyLoading, setCustomReplyLoading] = useState<Record<string, boolean>>({});
+  const [customReplyErrors, setCustomReplyErrors] = useState<Record<string, string>>({});
+  const [showCustomInput, setShowCustomInput] = useState<Record<string, boolean>>({});
 
   const doneCount = queue.filter(i => i.status === 'done').length;
   const errorCount = queue.filter(i => i.status === 'error').length;
@@ -55,6 +60,43 @@ export function ReplyQueuePanel({ queue, onRetry, onComplete, expanded, onToggle
       ...prev,
       [tweetId]: { ...prev[tweetId], visited: true },
     }));
+  }
+
+  async function handleCustomGenerate(item: ReplyQueueItem) {
+    const tweetId = item.tweet.id;
+    const prompt = customPrompts[tweetId]?.trim();
+    if (!prompt || customReplyLoading[tweetId]) return;
+
+    setCustomReplyLoading(prev => ({ ...prev, [tweetId]: true }));
+    setCustomReplyErrors(prev => { const n = { ...prev }; delete n[tweetId]; return n; });
+
+    try {
+      const response = await fetch('/api/generate-comment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tweetUrl: item.tweet.url,
+          tweetText: item.tweet.text,
+          language: item.tweet.language || 'other',
+          customPrompt: prompt,
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.success) throw new Error(data.error || 'Failed');
+
+      const option = data.comments?.options?.[0];
+      if (option) {
+        setCustomReplies(prev => ({ ...prev, [tweetId]: option }));
+      }
+    } catch (err) {
+      setCustomReplyErrors(prev => ({
+        ...prev,
+        [tweetId]: err instanceof Error ? err.message : 'Unknown error',
+      }));
+    } finally {
+      setCustomReplyLoading(prev => ({ ...prev, [tweetId]: false }));
+    }
   }
 
   useEffect(() => {
@@ -265,10 +307,61 @@ export function ReplyQueuePanel({ queue, onRetry, onComplete, expanded, onToggle
                               </>
                             )}
 
+                            {/* Custom AI Reply */}
+                            <div className="pt-1">
+                              <button
+                                onClick={() => setShowCustomInput(prev => ({ ...prev, [item.tweet.id]: !prev[item.tweet.id] }))}
+                                className="flex items-center gap-1 text-[11px] font-medium text-stone-400 hover:text-amber-600 transition-colors"
+                              >
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                {showCustomInput[item.tweet.id] ? '收起' : '自定义'}
+                              </button>
+
+                              {showCustomInput[item.tweet.id] && (
+                                <div className="mt-2 space-y-2">
+                                  <textarea
+                                    value={customPrompts[item.tweet.id] || ''}
+                                    onChange={(e) => setCustomPrompts(prev => ({ ...prev, [item.tweet.id]: e.target.value }))}
+                                    placeholder="描述你想要的回复..."
+                                    rows={2}
+                                    className="w-full px-2.5 py-2 text-[12px] text-stone-700 bg-stone-50 border border-stone-200 rounded-lg resize-none placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-300 transition-all"
+                                  />
+                                  <button
+                                    onClick={() => handleCustomGenerate(item)}
+                                    disabled={customReplyLoading[item.tweet.id] || !customPrompts[item.tweet.id]?.trim()}
+                                    className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-semibold text-white bg-linear-to-r from-amber-500 to-orange-500 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                  >
+                                    {customReplyLoading[item.tweet.id] ? (
+                                      <><div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />生成中...</>
+                                    ) : (
+                                      <><svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>AI 生成</>
+                                    )}
+                                  </button>
+                                  {customReplyErrors[item.tweet.id] && (
+                                    <p className="text-[11px] text-rose-500">{customReplyErrors[item.tweet.id]}</p>
+                                  )}
+                                  {customReplies[item.tweet.id] && (
+                                    <div className="rounded-lg border border-amber-200 bg-amber-50/50 p-2.5 space-y-1.5">
+                                      <p className="text-[12px] text-stone-700 leading-relaxed">{customReplies[item.tweet.id].comment}</p>
+                                      {customReplies[item.tweet.id].comment_zh && (
+                                        <p className="text-[11px] text-stone-400 leading-relaxed">{customReplies[item.tweet.id].comment_zh}</p>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+
                             {/* Copy + Visit buttons */}
                             <div className="flex items-center gap-2">
                               <button
-                                onClick={() => activeReply && handleCopy(activeReply.comment, item.tweet.id, activeReply.angle)}
+                                onClick={() => {
+                                  const textToCopy = customReplies[item.tweet.id]?.comment || activeReply?.comment;
+                                  const angleToCopy = customReplies[item.tweet.id] ? 'custom' : activeReply?.angle;
+                                  if (textToCopy && angleToCopy) handleCopy(textToCopy, item.tweet.id, angleToCopy);
+                                }}
                                 className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg border text-xs font-medium transition-colors active:scale-[0.98] ${
                                   actions?.copied
                                     ? 'bg-emerald-50 border-emerald-200 text-emerald-600'
@@ -280,7 +373,7 @@ export function ReplyQueuePanel({ queue, onRetry, onComplete, expanded, onToggle
                                 ) : actions?.copied ? (
                                   <><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>已复制</>
                                 ) : (
-                                  <><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>复制</>
+                                  <><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>{customReplies[item.tweet.id] ? '复制自定义' : '复制'}</>
                                 )}
                               </button>
                               <button

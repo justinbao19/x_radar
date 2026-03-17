@@ -24,6 +24,7 @@ interface TweetCardProps {
 }
 
 type CommentState = 'idle' | 'loading' | 'success' | 'error';
+type CustomReplyState = 'idle' | 'loading' | 'success' | 'error';
 
 function ReplyOptionCard({ 
   option, 
@@ -128,6 +129,12 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
   const [generatedComments, setGeneratedComments] = useState<TweetComments | null>(null);
   const [commentError, setCommentError] = useState<string | null>(null);
 
+  const [customPrompt, setCustomPrompt] = useState('');
+  const [customReplyState, setCustomReplyState] = useState<CustomReplyState>('idle');
+  const [customReply, setCustomReply] = useState<ReplyOption | null>(null);
+  const [customReplyError, setCustomReplyError] = useState<string | null>(null);
+  const [showCustomInput, setShowCustomInput] = useState(false);
+
   useEffect(() => {
     setCommentsExpanded(!collapsible && showComments);
   }, [collapsible, showComments]);
@@ -168,6 +175,45 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
     }
   };
 
+  const handleCustomGenerate = async () => {
+    if (customReplyState === 'loading' || !customPrompt.trim()) return;
+
+    setCustomReplyState('loading');
+    setCustomReplyError(null);
+    setCustomReply(null);
+
+    try {
+      const response = await fetch('/api/generate-comment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tweetUrl: tweet.url,
+          tweetText: tweet.text,
+          language: tweet.detectedLanguage || 'other',
+          customPrompt: customPrompt.trim(),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to generate custom reply');
+      }
+
+      const option = data.comments?.options?.[0];
+      if (option) {
+        setCustomReply(option);
+        setCustomReplyState('success');
+      } else {
+        throw new Error('No reply generated');
+      }
+    } catch (err) {
+      console.error('Custom reply generation error:', err);
+      setCustomReplyError(err instanceof Error ? err.message : 'Unknown error');
+      setCustomReplyState('error');
+    }
+  };
+
   const groupLabel = getGroupLabel(tweet);
   const groupColor = getGroupColor(tweet);
   const sentimentStyle = getSentimentStyle(tweet.sentimentLabel);
@@ -203,6 +249,7 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
     witty: '机智风格',
     practical: '务实风格',
     subtle_product: '产品植入',
+    custom: '自定义',
   };
   const detectedLang = (tweet.detectedLanguage || 'unknown').toLowerCase();
   const languageInfo = languageMap[detectedLang] || { flag: '❔', label: '未知' };
@@ -548,6 +595,81 @@ export function TweetCard({ tweet, index, showComments = true, collapsible = fal
                       onCopy={handleCopy}
                     />
                   )}
+
+                  {/* Custom AI Reply Section */}
+                  <div className="mt-4 pt-4 border-t border-stone-200/60">
+                    <button
+                      onClick={() => setShowCustomInput(!showCustomInput)}
+                      className="flex items-center gap-2 text-xs font-medium text-stone-500 hover:text-amber-600 transition-colors"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                      {showCustomInput ? '收起自定义' : '都不满意？自定义 AI 回复'}
+                      <svg 
+                        className={`w-3 h-3 transition-transform duration-200 ${showCustomInput ? 'rotate-180' : ''}`}
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+
+                    {showCustomInput && (
+                      <div className="mt-3 space-y-3 animate-fade-in">
+                        <textarea
+                          value={customPrompt}
+                          onChange={(e) => setCustomPrompt(e.target.value)}
+                          placeholder="描述你想要的回复风格和内容，例如：&#10;• 用更专业的语气回复，突出我们对这个问题的技术理解&#10;• 简短幽默，加一点 emoji&#10;• 用日语回复，表达共鸣"
+                          rows={3}
+                          className="w-full px-3 py-2.5 text-sm text-stone-700 bg-white border border-stone-200 rounded-xl resize-none placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-300 transition-all"
+                        />
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={handleCustomGenerate}
+                            disabled={customReplyState === 'loading' || !customPrompt.trim()}
+                            className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-linear-to-r from-amber-500 to-orange-500 rounded-lg hover:from-amber-600 hover:to-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm shadow-amber-500/20"
+                          >
+                            {customReplyState === 'loading' ? (
+                              <>
+                                <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                生成中...
+                              </>
+                            ) : (
+                              <>
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                                AI 生成
+                              </>
+                            )}
+                          </button>
+                          {customReply && (
+                            <span className="text-[11px] text-emerald-500 font-medium">已生成自定义回复</span>
+                          )}
+                        </div>
+
+                        {customReplyState === 'error' && (
+                          <div className="bg-red-50 border border-red-200/80 rounded-lg p-3 text-red-700 text-xs">
+                            {customReplyError || '生成失败'}
+                            <button
+                              onClick={handleCustomGenerate}
+                              className="ml-2 text-red-600 hover:text-red-800 underline"
+                            >
+                              重试
+                            </button>
+                          </div>
+                        )}
+
+                        {customReply && (
+                          <ReplyOptionCard
+                            option={customReply}
+                            isRecommended={false}
+                            onCopy={handleCopy}
+                          />
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </>
               ) : (
                 <div className="text-center text-stone-400 text-sm py-6">

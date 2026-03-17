@@ -14,7 +14,7 @@ export interface ReplyOption {
   comment: string;
   comment_zh?: string;
   zh_explain: string;
-  angle: 'witty' | 'practical' | 'subtle_product';
+  angle: 'witty' | 'practical' | 'subtle_product' | 'custom';
   charCount: number;
   risk: 'low' | 'medium' | 'high';
   recommended: boolean;

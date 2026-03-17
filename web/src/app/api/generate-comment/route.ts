@@ -117,12 +117,42 @@ D) 写作与回复
   ]
 }`;
 
+// ============ Custom Reply System Prompt ============
+
+const CUSTOM_REPLY_SYSTEM_PROMPT = `你是一个帮助产品人员撰写 X (Twitter) 回复的助手。
+
+用户对预设的 3 种回复不满意，正在提供自己的需求来定制回复。
+
+规则：
+1. 用推文的原始语言回复（除非用户明确要求其他语言）
+2. 严格按照用户的自定义要求来生成回复
+3. 生成 1 个回复选项
+4. 严格禁止：任何链接或 URL、"下载"/"试试"/"查看" 等 CTA 用语
+5. 长度控制：每条回复尽量 <= 280 字符（除非用户要求更长）
+6. 每个选项必须包含中文解释 (zh_explain)，说明回复的意图
+
+输出严格的 JSON 格式，不要有任何其他文字：
+{
+  "language": "en|ja|zh|other",
+  "options": [
+    {
+      "comment": "回复内容（用推文原始语言，除非用户要求其他语言）",
+      "comment_zh": "回复内容的中文翻译（仅非中文回复需要，中文回复留空）",
+      "zh_explain": "中文解释这条回复的意图和效果",
+      "angle": "custom",
+      "risk": "low|medium|high",
+      "recommended": true
+    }
+  ]
+}`;
+
 // ============ API Request Types ============
 
 interface GenerateCommentRequest {
   tweetUrl: string;
   tweetText: string;
   language?: string | null;
+  customPrompt?: string;
 }
 
 // ============ Helper Functions ============
@@ -252,6 +282,98 @@ ${tweetText}
   };
 }
 
+async function callCustomReplyAPI(tweetText: string, language: string, customPrompt: string): Promise<TweetComments> {
+  const apiKey = process.env.LLM_API_KEY;
+  const apiUrl = process.env.LLM_API_URL || 'https://api.anthropic.com/v1/messages';
+  const model = process.env.LLM_MODEL || 'claude-sonnet-4-20250514';
+
+  if (!apiKey) {
+    throw new Error('LLM_API_KEY not configured');
+  }
+
+  const userPrompt = `推文内容 (检测到的语言: ${language}):
+"""
+${tweetText}
+"""
+
+用户的自定义要求：
+"""
+${customPrompt}
+"""
+
+请根据用户的自定义要求，为这条推文生成 1 个回复。`;
+
+  const isAnthropicAPI = apiUrl.includes('anthropic.com');
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+
+  let body: Record<string, unknown>;
+
+  if (isAnthropicAPI) {
+    headers['x-api-key'] = apiKey;
+    headers['anthropic-version'] = '2023-06-01';
+    body = {
+      model,
+      max_tokens: 1024,
+      system: CUSTOM_REPLY_SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: userPrompt }],
+    };
+  } else {
+    headers['Authorization'] = `Bearer ${apiKey}`;
+    body = {
+      model,
+      max_tokens: 1024,
+      messages: [
+        { role: 'system', content: CUSTOM_REPLY_SYSTEM_PROMPT },
+        { role: 'user', content: userPrompt },
+      ],
+    };
+  }
+
+  const response = await fetch(apiUrl, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Claude API error ${response.status}: ${errorText}`);
+  }
+
+  const data = await response.json();
+  const content = data.content?.[0]?.text
+    || data.choices?.[0]?.message?.content;
+
+  if (!content) {
+    throw new Error(`No content in API response`);
+  }
+
+  const parsed = extractJSON(content);
+
+  if (!parsed || !parsed.options || !Array.isArray(parsed.options)) {
+    throw new Error(`Invalid response format from API`);
+  }
+
+  const options: ReplyOption[] = (parsed.options as Array<Record<string, unknown>>).map((opt) => ({
+    comment: String(opt.comment || ''),
+    comment_zh: opt.comment_zh ? String(opt.comment_zh) : undefined,
+    zh_explain: String(opt.zh_explain || ''),
+    angle: 'custom' as ReplyOption['angle'],
+    charCount: String(opt.comment || '').length,
+    risk: (opt.risk as 'low' | 'medium' | 'high') || 'low',
+    recommended: true,
+  }));
+
+  return {
+    language: String(parsed.language || 'other'),
+    generatedAt: new Date().toISOString(),
+    options,
+  };
+}
+
 // ============ API Route Handler ============
 
 export async function POST(request: NextRequest) {
@@ -265,6 +387,18 @@ export async function POST(request: NextRequest) {
         { success: false, error: 'Missing required fields: tweetUrl, tweetText' },
         { status: 400 }
       );
+    }
+    
+    // Custom prompt mode: generate a single custom reply, no caching
+    if (body.customPrompt) {
+      const comments = await callCustomReplyAPI(body.tweetText, requestLanguage, body.customPrompt);
+      comments.language = normalizeLanguageTag(comments.language || requestLanguage);
+      return NextResponse.json({
+        success: true,
+        cached: false,
+        custom: true,
+        comments,
+      });
     }
     
     // Check cache first
