@@ -1,6 +1,12 @@
 {
-  "lastUpdated": "2026-03-28T02:24:24.928Z",
+  "lastUpdated": "2026-03-28T07:19:53.339Z",
   "files": [
+    {
+      "filename": "2026-03-28T06-57.json",
+      "timestamp": "2026-03-28T06:57:38.973Z",
+      "date": "2026-03-28",
+      "tweetCount": 55
+    },
     {
       "filename": "2026-03-28T02-01.json",
       "timestamp": "2026-03-28T02:01:35.211Z",
@@ -162,16 +168,10 @@
       "timestamp": "2026-03-21T12:44:04.921Z",
       "date": "2026-03-21",
       "tweetCount": 68
-    },
-    {
-      "filename": "2026-03-21T06-40.json",
-      "timestamp": "2026-03-21T06:40:24.291Z",
-      "date": "2026-03-21",
-      "tweetCount": 57
     }
   ],
   "authStatus": {
     "valid": true,
-    "lastCheck": "2026-03-28T02:24:24.928Z"
+    "lastCheck": "2026-03-28T07:19:53.339Z"
   }
 }
