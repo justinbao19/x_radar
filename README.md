@@ -9,7 +9,7 @@
 - **KOL 追踪**: 监控指定 KOL 的相关推文（带主题过滤）
 - **Brand Safety**: 三级过滤系统确保内容安全
 - **智能评分**: 基于互动量和关键词匹配度进行排序
-- **评论生成**: 使用 Claude API 为每条推文生成 3 个回复选项
+- **评论生成**: 使用 LLM API 为每条推文生成 3 个回复选项
 
 ## 设计原则
 
@@ -37,7 +37,7 @@ x-radar/
 │   ├── scrape.mjs         # Playwright 抓取（低风险模式）
 │   ├── select.mjs         # Top10 筛选 + Brand Safety Gate
 │   ├── format.mjs         # Markdown 格式化
-│   ├── commenter.mjs      # Claude 评论生成 + SKIP 机制
+│   ├── commenter.mjs      # LLM 评论生成 + SKIP 机制
 │   ├── safety.mjs         # 品牌安全检查模块
 │   ├── login.mjs          # 登录助手
 │   └── utils.mjs          # 工具函数
@@ -50,9 +50,9 @@ x-radar/
 
 | 变量 | 必需 | 默认值 | 说明 |
 |------|------|--------|------|
-| `LLM_API_KEY` | ✅ | - | Claude API Key |
-| `LLM_API_URL` | ❌ | `https://api.anthropic.com/v1/messages` | LLM API 端点 |
-| `LLM_MODEL` | ❌ | `claude-sonnet-4-20250514` | 模型名称 |
+| `LLM_API_KEY` | ✅ | - | LLM API Key |
+| `LLM_API_URL` | ❌ | `https://llm-proxy.tapsvc.com/v1/chat/completions` | LLM API 端点 |
+| `LLM_MODEL` | ❌ | `claude-sonnet-4-6` | 模型名称（Sonnet 4.6） |
 | `MAX_SOURCES` | ❌ | `8` | 每次运行抓取的源数量 |
 | `SAMPLING_MODE` | ❌ | `random` | 抽样模式：`random` 或 `all` |
 | `MIN_FILO_FIT` | ❌ | `2` | 最低 FiloFit 关键词匹配数 |
@@ -161,7 +161,7 @@ npm run dev
 
 | Secret | 必需 | 说明 |
 |--------|------|------|
-| `LLM_API_KEY` | ✅ | Claude API Key |
+| `LLM_API_KEY` | ✅ | LLM API Key |
 | `LLM_API_URL` | ❌ | API 端点 |
 | `LLM_MODEL` | ❌ | 模型名称 |
 | `X_STORAGE_STATE_B64` | ✅ | X 登录状态 Base64 |
@@ -221,7 +221,7 @@ base64 -w 0 auth/state.json | gh secret set X_STORAGE_STATE_B64
 npm run login  # 重新登录
 ```
 
-### Claude API 错误
+### LLM API 错误
 
 1. 检查 `LLM_API_KEY` 是否正确
 2. 检查 API 配额

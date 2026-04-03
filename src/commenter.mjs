@@ -147,12 +147,12 @@ D) 写作与回复 → AI Drafts（上下文理解 + 语气选择 + 多语言）
 // ============ API Functions ============
 
 /**
- * Call Claude API to generate comments
+ * Call LLM API to generate comments
  */
 async function callClaudeAPI(tweetText, detectedLang) {
-  const apiUrl = process.env.LLM_API_URL || 'https://api.anthropic.com/v1/messages';
+  const apiUrl = process.env.LLM_API_URL || 'https://llm-proxy.tapsvc.com/v1/chat/completions';
   const apiKey = process.env.LLM_API_KEY;
-  const model = process.env.LLM_MODEL || 'claude-sonnet-4-20250514';
+  const model = process.env.LLM_MODEL || 'claude-sonnet-4-6';
   
   if (!apiKey) {
     throw new Error('LLM_API_KEY not set');
@@ -165,21 +165,39 @@ ${tweetText}
 
 请为这条推文生成 3 个回复选项。记住用推文的原始语言回复，并且绝对不要有任何推销或广告味道。`;
 
-  const response = await fetch(apiUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01'
-    },
-    body: JSON.stringify({
+  const isAnthropicAPI = apiUrl.includes('/v1/messages') || apiUrl.includes('anthropic');
+  const headers = {
+    'Content-Type': 'application/json'
+  };
+  let body;
+
+  if (isAnthropicAPI) {
+    headers['x-api-key'] = apiKey;
+    headers['anthropic-version'] = '2023-06-01';
+    body = {
       model,
       max_tokens: 1024,
       system: SYSTEM_PROMPT,
       messages: [
         { role: 'user', content: userPrompt }
       ]
-    })
+    };
+  } else {
+    headers['Authorization'] = `Bearer ${apiKey}`;
+    body = {
+      model,
+      max_tokens: 1024,
+      messages: [
+        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'user', content: userPrompt }
+      ]
+    };
+  }
+
+  const response = await fetch(apiUrl, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body)
   });
   
   if (!response.ok) {
@@ -188,7 +206,7 @@ ${tweetText}
   }
   
   const data = await response.json();
-  const content = data.content?.[0]?.text;
+  const content = data.content?.[0]?.text || data.choices?.[0]?.message?.content;
   if (!content) {
     throw new Error('No content in API response');
   }

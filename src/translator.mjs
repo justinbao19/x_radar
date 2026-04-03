@@ -47,12 +47,12 @@ const TRANSLATION_SYSTEM_PROMPT = `你是一个专业的社交媒体内容翻译
 // ============ API Functions ============
 
 /**
- * Call Claude API to translate tweet
+ * Call LLM API to translate tweet
  */
 async function callTranslationAPI(tweetText, detectedLang) {
-  const apiUrl = process.env.LLM_API_URL || 'https://api.anthropic.com/v1/messages';
+  const apiUrl = process.env.LLM_API_URL || 'https://llm-proxy.tapsvc.com/v1/chat/completions';
   const apiKey = process.env.LLM_API_KEY;
-  const model = process.env.LLM_MODEL || 'claude-sonnet-4-20250514';
+  const model = process.env.LLM_MODEL || 'claude-sonnet-4-6';
   
   if (!apiKey) {
     throw new Error('LLM_API_KEY not set');
@@ -75,21 +75,39 @@ async function callTranslationAPI(tweetText, detectedLang) {
 
 ${tweetText}`;
 
-  const response = await fetch(apiUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01'
-    },
-    body: JSON.stringify({
+  const isAnthropicAPI = apiUrl.includes('/v1/messages') || apiUrl.includes('anthropic');
+  const headers = {
+    'Content-Type': 'application/json'
+  };
+  let body;
+
+  if (isAnthropicAPI) {
+    headers['x-api-key'] = apiKey;
+    headers['anthropic-version'] = '2023-06-01';
+    body = {
       model,
       max_tokens: 512,
       system: TRANSLATION_SYSTEM_PROMPT,
       messages: [
         { role: 'user', content: userPrompt }
       ]
-    })
+    };
+  } else {
+    headers['Authorization'] = `Bearer ${apiKey}`;
+    body = {
+      model,
+      max_tokens: 512,
+      messages: [
+        { role: 'system', content: TRANSLATION_SYSTEM_PROMPT },
+        { role: 'user', content: userPrompt }
+      ]
+    };
+  }
+
+  const response = await fetch(apiUrl, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body)
   });
   
   if (!response.ok) {
@@ -98,7 +116,7 @@ ${tweetText}`;
   }
   
   const data = await response.json();
-  const content = data.content?.[0]?.text;
+  const content = data.content?.[0]?.text || data.choices?.[0]?.message?.content;
   if (!content) {
     throw new Error('No content in API response');
   }

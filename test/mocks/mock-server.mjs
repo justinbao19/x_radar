@@ -39,7 +39,7 @@ const mockResponses = {
         }
       })
     }],
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-4-6',
     stop_reason: 'end_turn',
     usage: {
       input_tokens: 500,

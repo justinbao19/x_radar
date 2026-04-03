@@ -189,8 +189,8 @@ function extractJSON(text: string): Record<string, unknown> | null {
 
 async function callClaudeAPI(tweetText: string, language: string): Promise<TweetComments> {
   const apiKey = process.env.LLM_API_KEY;
-  const apiUrl = process.env.LLM_API_URL || 'https://api.anthropic.com/v1/messages';
-  const model = process.env.LLM_MODEL || 'claude-sonnet-4-20250514';
+  const apiUrl = process.env.LLM_API_URL || 'https://llm-proxy.tapsvc.com/v1/chat/completions';
+  const model = process.env.LLM_MODEL || 'claude-sonnet-4-6';
   
   if (!apiKey) {
     throw new Error('LLM_API_KEY not configured');
@@ -203,7 +203,7 @@ ${tweetText}
 
 请为这条推文生成 3 个回复选项。记住用推文的原始语言回复，并且绝对不要有任何推销或广告味道。`;
 
-  const isAnthropicAPI = apiUrl.includes('anthropic.com');
+  const isAnthropicAPI = apiUrl.includes('/v1/messages') || apiUrl.includes('anthropic');
   
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -241,7 +241,7 @@ ${tweetText}
   
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(`Claude API error ${response.status}: ${errorText}`);
+    throw new Error(`LLM API error ${response.status}: ${errorText}`);
   }
   
   const data = await response.json();
@@ -258,9 +258,9 @@ ${tweetText}
   const parsed = extractJSON(content);
   
   if (!parsed || !parsed.options || !Array.isArray(parsed.options)) {
-    console.error('Failed to parse Claude response. Raw content:', content.slice(0, 500));
+    console.error('Failed to parse LLM response. Raw content:', content.slice(0, 500));
     console.error('Parsed result:', JSON.stringify(parsed).slice(0, 300));
-    throw new Error(`Invalid response format from Claude API. Content preview: ${content.slice(0, 100)}...`);
+    throw new Error(`Invalid response format from LLM API. Content preview: ${content.slice(0, 100)}...`);
   }
   
   // Transform to TweetComments format
@@ -284,8 +284,8 @@ ${tweetText}
 
 async function callCustomReplyAPI(tweetText: string, language: string, customPrompt: string): Promise<TweetComments> {
   const apiKey = process.env.LLM_API_KEY;
-  const apiUrl = process.env.LLM_API_URL || 'https://api.anthropic.com/v1/messages';
-  const model = process.env.LLM_MODEL || 'claude-sonnet-4-20250514';
+  const apiUrl = process.env.LLM_API_URL || 'https://llm-proxy.tapsvc.com/v1/chat/completions';
+  const model = process.env.LLM_MODEL || 'claude-sonnet-4-6';
 
   if (!apiKey) {
     throw new Error('LLM_API_KEY not configured');
@@ -303,7 +303,7 @@ ${customPrompt}
 
 请根据用户的自定义要求，为这条推文生成 1 个回复。`;
 
-  const isAnthropicAPI = apiUrl.includes('anthropic.com');
+  const isAnthropicAPI = apiUrl.includes('/v1/messages') || apiUrl.includes('anthropic');
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -340,7 +340,7 @@ ${customPrompt}
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(`Claude API error ${response.status}: ${errorText}`);
+    throw new Error(`LLM API error ${response.status}: ${errorText}`);
   }
 
   const data = await response.json();
@@ -438,7 +438,7 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    if (errorMessage.includes('Claude API error')) {
+    if (errorMessage.includes('LLM API error')) {
       return NextResponse.json(
         { success: false, error: 'AI service temporarily unavailable' },
         { status: 502 }

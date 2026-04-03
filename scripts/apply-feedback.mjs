@@ -17,7 +17,7 @@
  * Environment variables required:
  *   SUPABASE_URL - Supabase project URL
  *   SUPABASE_SERVICE_KEY - Supabase service role key (with write access)
- *   LLM_API_KEY - Claude API key (for pattern analysis)
+ *   LLM_API_KEY - LLM API key (for pattern analysis)
  */
 
 import { createClient } from '@supabase/supabase-js';
@@ -30,9 +30,9 @@ const DENYLIST_FILE = 'denylist.json';
 const MIN_SAMPLES_FOR_ANALYSIS = 3;  // Minimum downvotes needed for LLM analysis
 
 // LLM Configuration
-const LLM_API_URL = process.env.LLM_API_URL || 'https://api.anthropic.com/v1/messages';
+const LLM_API_URL = process.env.LLM_API_URL || 'https://llm-proxy.tapsvc.com/v1/chat/completions';
 const LLM_API_KEY = process.env.LLM_API_KEY;
-const LLM_MODEL = process.env.LLM_MODEL || 'claude-sonnet-4-20250514';
+const LLM_MODEL = process.env.LLM_MODEL || 'claude-sonnet-4-6';
 
 // Supabase client with service key for full access
 const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -94,7 +94,7 @@ function saveDenylist(denylist) {
 // ============ LLM Analysis Functions ============
 
 /**
- * Call Claude API to analyze downvoted tweets and extract patterns
+ * Call LLM API to analyze downvoted tweets and extract patterns
  */
 async function analyzeWithLLM(downvotes) {
   if (!LLM_API_KEY) {
@@ -160,20 +160,38 @@ ${samples}
 请以 JSON 格式输出分析结果（rules 数组中每条规则的 phrases 必须是 2 词以上的短语或组合）：`;
 
   try {
-    const response = await fetch(LLM_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': LLM_API_KEY,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
+    const isAnthropicAPI = LLM_API_URL.includes('/v1/messages') || LLM_API_URL.includes('anthropic');
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    let requestBody;
+
+    if (isAnthropicAPI) {
+      headers['x-api-key'] = LLM_API_KEY;
+      headers['anthropic-version'] = '2023-06-01';
+      requestBody = {
         model: LLM_MODEL,
         max_tokens: 1024,
         messages: [
           { role: 'user', content: `${systemPrompt}\n\n${userPrompt}` }
         ]
-      })
+      };
+    } else {
+      headers['Authorization'] = `Bearer ${LLM_API_KEY}`;
+      requestBody = {
+        model: LLM_MODEL,
+        max_tokens: 1024,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ]
+      };
+    }
+
+    const response = await fetch(LLM_API_URL, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(requestBody)
     });
 
     if (!response.ok) {
@@ -183,7 +201,7 @@ ${samples}
     }
 
     const result = await response.json();
-    const content = result.content?.[0]?.text;
+    const content = result.content?.[0]?.text || result.choices?.[0]?.message?.content;
 
     if (!content) {
       log('WARN', 'Empty response from LLM');
