@@ -29,10 +29,18 @@ import 'dotenv/config';
 const DENYLIST_FILE = 'denylist.json';
 const MIN_SAMPLES_FOR_ANALYSIS = 3;  // Minimum downvotes needed for LLM analysis
 
+function resolveModel(apiUrl, model) {
+  const normalized = String(model || '').trim().toLowerCase();
+  if (apiUrl.includes('llm-proxy.tapsvc.com') && (normalized === 'sonnet-4.6' || normalized === 'sonnet 4.6')) {
+    return 'claude-sonnet-4-6';
+  }
+  return model;
+}
+
 // LLM Configuration
 const LLM_API_URL = process.env.LLM_API_URL || 'https://llm-proxy.tapsvc.com/v1/chat/completions';
 const LLM_API_KEY = process.env.LLM_API_KEY;
-const LLM_MODEL = process.env.LLM_MODEL || 'claude-sonnet-4-6';
+const LLM_MODEL = resolveModel(LLM_API_URL, process.env.LLM_MODEL || 'claude-sonnet-4-6');
 
 // Supabase client with service key for full access
 const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;

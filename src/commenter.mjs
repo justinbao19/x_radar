@@ -7,6 +7,14 @@ import 'dotenv/config';
 const MAX_RETRIES = 3;
 const RETRY_DELAY_BASE = 2000;
 
+function resolveModel(apiUrl, model) {
+  const normalized = String(model || '').trim().toLowerCase();
+  if (apiUrl.includes('llm-proxy.tapsvc.com') && (normalized === 'sonnet-4.6' || normalized === 'sonnet 4.6')) {
+    return 'claude-sonnet-4-6';
+  }
+  return model;
+}
+
 // ============ Safety Check for Comment Generation ============
 
 /**
@@ -152,7 +160,7 @@ D) 写作与回复 → AI Drafts（上下文理解 + 语气选择 + 多语言）
 async function callClaudeAPI(tweetText, detectedLang) {
   const apiUrl = process.env.LLM_API_URL || 'https://llm-proxy.tapsvc.com/v1/chat/completions';
   const apiKey = process.env.LLM_API_KEY;
-  const model = process.env.LLM_MODEL || 'claude-sonnet-4-6';
+  const model = resolveModel(apiUrl, process.env.LLM_MODEL || 'claude-sonnet-4-6');
   
   if (!apiKey) {
     throw new Error('LLM_API_KEY not set');

@@ -5,6 +5,14 @@ import 'dotenv/config';
 const MAX_RETRIES = 3;
 const RETRY_DELAY_BASE = 2000;
 
+function resolveModel(apiUrl, model) {
+  const normalized = String(model || '').trim().toLowerCase();
+  if (apiUrl.includes('llm-proxy.tapsvc.com') && (normalized === 'sonnet-4.6' || normalized === 'sonnet 4.6')) {
+    return 'claude-sonnet-4-6';
+  }
+  return model;
+}
+
 // ============ Translation Prompt ============
 
 const TRANSLATION_SYSTEM_PROMPT = `你是一个专业的社交媒体内容翻译专家，擅长将推文翻译成自然流畅的中文。
@@ -52,7 +60,7 @@ const TRANSLATION_SYSTEM_PROMPT = `你是一个专业的社交媒体内容翻译
 async function callTranslationAPI(tweetText, detectedLang) {
   const apiUrl = process.env.LLM_API_URL || 'https://llm-proxy.tapsvc.com/v1/chat/completions';
   const apiKey = process.env.LLM_API_KEY;
-  const model = process.env.LLM_MODEL || 'claude-sonnet-4-6';
+  const model = resolveModel(apiUrl, process.env.LLM_MODEL || 'claude-sonnet-4-6');
   
   if (!apiKey) {
     throw new Error('LLM_API_KEY not set');

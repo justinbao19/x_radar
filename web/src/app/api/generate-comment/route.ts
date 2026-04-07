@@ -156,6 +156,17 @@ interface GenerateCommentRequest {
 }
 
 // ============ Helper Functions ============
+function resolveModel(apiUrl: string, model: string): string {
+  const aliasMap: Record<string, string> = {
+    'sonnet-4.6': 'claude-sonnet-4-6',
+    'sonnet 4.6': 'claude-sonnet-4-6',
+  };
+  const normalized = model.trim().toLowerCase();
+  if (apiUrl.includes('llm-proxy.tapsvc.com') && aliasMap[normalized]) {
+    return aliasMap[normalized];
+  }
+  return model;
+}
 
 function extractJSON(text: string): Record<string, unknown> | null {
   if (!text) return null;
@@ -190,7 +201,7 @@ function extractJSON(text: string): Record<string, unknown> | null {
 async function callClaudeAPI(tweetText: string, language: string): Promise<TweetComments> {
   const apiKey = process.env.LLM_API_KEY;
   const apiUrl = process.env.LLM_API_URL || 'https://llm-proxy.tapsvc.com/v1/chat/completions';
-  const model = process.env.LLM_MODEL || 'claude-sonnet-4-6';
+  const model = resolveModel(apiUrl, process.env.LLM_MODEL || 'claude-sonnet-4-6');
   
   if (!apiKey) {
     throw new Error('LLM_API_KEY not configured');
@@ -285,7 +296,7 @@ ${tweetText}
 async function callCustomReplyAPI(tweetText: string, language: string, customPrompt: string): Promise<TweetComments> {
   const apiKey = process.env.LLM_API_KEY;
   const apiUrl = process.env.LLM_API_URL || 'https://llm-proxy.tapsvc.com/v1/chat/completions';
-  const model = process.env.LLM_MODEL || 'claude-sonnet-4-6';
+  const model = resolveModel(apiUrl, process.env.LLM_MODEL || 'claude-sonnet-4-6');
 
   if (!apiKey) {
     throw new Error('LLM_API_KEY not configured');
