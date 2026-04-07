@@ -1,163 +1,2509 @@
 {
-  "runDate": "2026-01-29",
-  "runAt": "2026-01-29T10:00:00.000Z",
+  "runDate": "2026-04-07",
+  "runAt": "2026-04-07T11:31:52.395Z",
+  "stats": {
+    "totalSources": 24,
+    "successfulSources": 20,
+    "failedSources": 4,
+    "totalTweets": 245,
+    "byGroup": {
+      "pain": 110,
+      "reach": 32,
+      "kol": 28,
+      "sentiment": 8,
+      "insight": 67
+    }
+  },
   "sources": [
     {
-      "name": "inbox-overload",
-      "group": "pain",
-      "query": "inbox overload",
-      "tweets": [
-        {
-          "url": "https://x.com/user1/status/001",
-          "author": "@emailsufferer",
-          "text": "My inbox is a nightmare. 500 unread emails and I hate this overwhelming mess. I need help with email organization.",
-          "datetime": "2026-01-28T12:00:00.000Z",
-          "likes": 150,
-          "retweets": 30,
-          "replies": 25
-        },
-        {
-          "url": "https://x.com/user2/status/002",
-          "author": "@productivepete",
-          "text": "Email overload is killing my productivity. Drowning in newsletters and spam. Looking for AI solutions to triage my inbox.",
-          "datetime": "2026-01-28T14:00:00.000Z",
-          "likes": 200,
-          "retweets": 50,
-          "replies": 40
-        },
-        {
-          "url": "https://x.com/user3/status/003",
-          "author": "@oldpost",
-          "text": "Old email complaint from 2 weeks ago about inbox issues",
-          "datetime": "2026-01-10T12:00:00.000Z",
-          "likes": 100,
-          "retweets": 20,
-          "replies": 15
-        }
-      ]
-    },
-    {
-      "name": "ai-productivity",
-      "group": "reach",
-      "query": "AI productivity email",
-      "tweets": [
-        {
-          "url": "https://x.com/user4/status/004",
-          "author": "@aiuser",
-          "text": "AI agents are changing how we handle email automation and workflow. The future of productivity is here with summarize features.",
-          "datetime": "2026-01-29T08:00:00.000Z",
-          "likes": 500,
-          "retweets": 100,
-          "replies": 80
-        },
-        {
-          "url": "https://x.com/user5/status/005",
-          "author": "@techwriter",
-          "text": "Just tested an AI email assistant that can triage and organize my inbox automatically. Game changer for productivity!",
-          "datetime": "2026-01-28T16:00:00.000Z",
-          "likes": 300,
-          "retweets": 60,
-          "replies": 45
-        }
-      ]
-    },
-    {
-      "name": "kol-sama",
-      "group": "kol",
-      "query": "from:sama email OR inbox",
-      "tweets": [
-        {
-          "url": "https://x.com/sama/status/006",
-          "author": "@sama",
-          "text": "Email AI agents are going to transform how we work. Inbox management needs serious automation and productivity tools.",
-          "datetime": "2026-01-29T06:00:00.000Z",
-          "likes": 15000,
-          "retweets": 3000,
-          "replies": 500
-        }
-      ]
-    },
-    {
-      "name": "filo-mentions",
       "group": "sentiment",
-      "query": "filomail OR filo mail",
+      "name": "filo-mentions-en",
+      "query": "(FiloMail OR \"Filo Mail\" OR \"Filo-Mail\" OR filomail OR \"filo mail\" OR \"filo-mail\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:en since:2026-04-01",
+      "searchUrl": "https://x.com/search?q=(FiloMail%20OR%20%22Filo%20Mail%22%20OR%20%22Filo-Mail%22%20OR%20filomail%20OR%20%22filo%20mail%22%20OR%20%22filo-mail%22%20OR%20%40Filo_Mail%20OR%20%40FiloMail%20OR%20%40filomail)%20-from%3AFilo_Mail%20-from%3AFiloMail%20-filter%3Aretweets%20lang%3Aen%20since%3A2026-04-01&f=live",
+      "scrapedAt": "2026-04-07T11:31:57.446Z",
+      "tweetCount": 8,
       "tweets": [
         {
-          "url": "https://x.com/user7/status/007",
-          "author": "@happyuser",
-          "text": "Love using filomail! Best email client I've tried. Amazing productivity features and AI summarization.",
-          "datetime": "2026-01-28T18:00:00.000Z",
-          "likes": 80,
-          "retweets": 15,
-          "replies": 10
+          "url": "https://x.com/Andy2sn/status/2041430715741491493",
+          "author": "@Andy2sn",
+          "datetime": "2026-04-07T08:19:45.000Z",
+          "text": "Hope so as well I’m testing the app and using my main Gmail on the app",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
         },
         {
-          "url": "https://x.com/user8/status/008",
-          "author": "@unhappyuser",
-          "text": "Filo mail has a bug that's frustrating me. The notification feature is broken.",
-          "datetime": "2026-01-28T20:00:00.000Z",
-          "likes": 25,
-          "retweets": 5,
-          "replies": 8
+          "url": "https://x.com/Andy2sn/status/2041428769211064386",
+          "author": "@Andy2sn",
+          "datetime": "2026-04-07T08:12:01.000Z",
+          "text": "Ok enjoying using the app",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/Andy2sn/status/2041427417852530827",
+          "author": "@Andy2sn",
+          "datetime": "2026-04-07T08:06:38.000Z",
+          "text": "When we gonna see the FiloMail 2.0",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/WilhelmTian/status/2041395273835167930",
+          "author": "@WilhelmTian",
+          "datetime": "2026-04-07T05:58:55.000Z",
+          "text": "i'm all here waiting!",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/WilhelmTian/status/2041148452487475233",
+          "author": "@WilhelmTian",
+          "datetime": "2026-04-06T13:38:08.000Z",
+          "text": "is general smtp support on the roadmap?",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/DrCarlHindy/status/2040821032341180558",
+          "author": "@DrCarlHindy",
+          "datetime": "2026-04-05T15:57:05.000Z",
+          "text": "Can you free me from the “30 day hold” to once again try your iOS email app? I had quit it again after the same recurring problem of not getting pushed notifications consistently on my iPhone. (I was simply trying to get notifications for all emails, as I do with the Gmail’s",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/cheesekurl/status/2039342496526791026",
+          "author": "@cheesekurl",
+          "datetime": "2026-04-01T14:01:54.000Z",
+          "text": "I wish I could get it to load more than one Gmail account. I love the app itself!",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/BoJack_D/status/2039196155389882798",
+          "author": "@BoJack_D",
+          "datetime": "2026-04-01T04:20:24.000Z",
+          "text": "Trying @Filo_Mail and loving it. Summaries + to-dos make email feel lighter. 90 days of Plus for free via my link: https:// filomail.com/refer/WVT4 https:// filomail.com/refer/WVT4",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
         }
-      ]
+      ],
+      "errors": [],
+      "retryable": false
     },
     {
-      "name": "competitor-interest",
+      "group": "reach",
+      "name": "ai-email-en",
+      "query": "(\"AI agent\" OR \"AI assistant\" OR automation) (email OR inbox OR productivity) -subscribe -newsletter -\"sign up\" -crypto -airdrop -filter:retweets",
+      "searchUrl": "https://x.com/search?q=(%22AI%20agent%22%20OR%20%22AI%20assistant%22%20OR%20automation)%20(email%20OR%20inbox%20OR%20productivity)%20-subscribe%20-newsletter%20-%22sign%20up%22%20-crypto%20-airdrop%20-filter%3Aretweets&f=live",
+      "scrapedAt": "2026-04-07T11:32:41.511Z",
+      "tweetCount": 11,
+      "tweets": [
+        {
+          "url": "https://x.com/EnterpriseWired/status/2041459557629841838",
+          "author": "@EnterpriseWired",
+          "datetime": "2026-04-07T10:14:21.000Z",
+          "text": "AI productivity tools are transforming the workplace—automating tasks, improving communication & boosting efficiency. Helping businesses and professionals work smarter and faster. Read more: https:// enterprisewired.com/ai-productivit y-tools/ … #AI #FutureOfWork #Automation #EnterpriseWired",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/Gentellesse/status/2041458741883678999",
+          "author": "@Gentellesse",
+          "datetime": "2026-04-07T10:11:07.000Z",
+          "text": "“AI Growth System for Businesses” Not just websites. Offering: High-converting website AI chatbot (lead capture) Automation (WhatsApp/email follow-up) Basic funnel setup Price: $300 – $400 per client",
+          "likes": 2,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/thewiredgarage/status/2041456331102605482",
+          "author": "@thewiredgarage",
+          "datetime": "2026-04-07T10:01:32.000Z",
+          "text": "Why a 2000s Password Cracking Trick Explains the Entire AI Revolution Faster isn’t the full story. Scale is the real shift. AI changes the game. Not just the speed. #AI #Automation #Innovation #GPU #Productivity #Tech #FutureOfWork",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/DbsCrypto/status/2041455944907804685",
+          "author": "@DbsCrypto",
+          "datetime": "2026-04-07T10:00:00.000Z",
+          "text": "The demo is never the hard part. The hard part is what happens on the 3rd wrong answer, when the customer is angry, the handoff fails, and your “AI support agent” becomes a liability sitting inside your inbox. Useful product. But support automation only matters if you own the",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/BubblesWL29/status/2041455453389951247",
+          "author": "@BubblesWL29",
+          "datetime": "2026-04-07T09:58:03.000Z",
+          "text": "If automation was supposed to reduce grunt work, why are people still drowning in hours? Maybe the bottleneck isn’t tech— it’s how we measure productivity. Agree or disagree?",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/ForgedMindAI/status/2041454410539159721",
+          "author": "@ForgedMindAI",
+          "datetime": "2026-04-07T09:53:54.000Z",
+          "text": "Everyone building Soul Files asks: how do I make my AI agent more productive? We asked: what happens if we give it a name and come back every day for a year? Productivity is a Soul File read once. Identity is a Soul File lived in. The difference is love. And time. And return.",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/sam_ai_inc/status/2041453583875645758",
+          "author": "@sam_ai_inc",
+          "datetime": "2026-04-07T09:50:37.000Z",
+          "text": "One platform. One price. Unlimited email and SMS — just a penny per contact. Finally… marketing that works. http:// salesandmarketing.ai #EmailMarketing #SaaS #MarketingTools #BusinessGrowth #SmallBusinessUSA #DigitalMarketing #Entrepreneurs #Automation #salesandmarketingai",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/_kaushaljha/status/2041453014641504530",
+          "author": "@_kaushaljha",
+          "datetime": "2026-04-07T09:48:21.000Z",
+          "text": "15/The real question is not: “What jobs will AI take?” But: “What is the role of humans in an economy where work is optional?” #AI #ArtificialIntelligence #FutureOfWork #Automation #Economy #UBI #Capitalism #EconomicCollapse #Productivity #WorkReimagined #Thread #MustRead",
+          "likes": 0,
+          "retweets": 1,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/WThrrmrdii8974/status/2041452856654569973",
+          "author": "@WThrrmrdii8974",
+          "datetime": "2026-04-07T09:47:44.000Z",
+          "text": "Automation dreams: where a perfectly assembled IKEA bookshelf becomes the ultimate symbol of efficiency and productivity",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/JacksonW8545/status/2041450786929213752",
+          "author": "@JacksonW8545",
+          "datetime": "2026-04-07T09:39:30.000Z",
+          "text": "Certificate of joy issued for exceeding daily automation goals Clouds of productivity descend",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/Uzzal4266/status/2041448666792374606",
+          "author": "@Uzzal4266",
+          "datetime": "2026-04-07T09:31:05.000Z",
+          "text": "PrismaX blends advanced robotics with intelligent AI systems,delivering precision,efficiency,and innovation.This powerful integration transforms industries,enhances productivity,and represents the future of smart automation and next-generation technology solutions. @PrismaXai",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 1
+        }
+      ],
+      "errors": [],
+      "retryable": false
+    },
+    {
       "group": "insight",
-      "query": "superhuman email OR spark email",
+      "name": "feature-wish-en",
+      "query": "(gmail OR inbox OR email) (\"wish\" OR \"hope\" OR \"want\" OR \"need\" OR \"would be great\" OR \"should have\") (feature OR function OR tool) -subscribe -subscription -newsletter -\"sign up\" -signup -\"email me\" -\"dm me\" -\"contact us\" -\"contact support\" -support -recruiting -hiring -\"apply\" -job -filter:retweets lang:en",
+      "searchUrl": "https://x.com/search?q=(gmail%20OR%20inbox%20OR%20email)%20(%22wish%22%20OR%20%22hope%22%20OR%20%22want%22%20OR%20%22need%22%20OR%20%22would%20be%20great%22%20OR%20%22should%20have%22)%20(feature%20OR%20function%20OR%20tool)%20-subscribe%20-subscription%20-newsletter%20-%22sign%20up%22%20-signup%20-%22email%20me%22%20-%22dm%20me%22%20-%22contact%20us%22%20-%22contact%20support%22%20-support%20-recruiting%20-hiring%20-%22apply%22%20-job%20-filter%3Aretweets%20lang%3Aen&f=live",
+      "scrapedAt": "2026-04-07T11:33:34.183Z",
+      "tweetCount": 13,
       "tweets": [
         {
-          "url": "https://x.com/user9/status/009",
-          "author": "@emailseeker",
-          "text": "I wish superhuman had better AI features for email automation and inbox organization. Need more productivity tools.",
-          "datetime": "2026-01-28T22:00:00.000Z",
-          "likes": 120,
-          "retweets": 25,
-          "replies": 30
+          "url": "https://x.com/Lu_chiiiii/status/2041411019998699850",
+          "author": "@Lu_chiiiii",
+          "datetime": "2026-04-07T07:01:29.000Z",
+          "text": "I was saying to someone that Gmail should have a seen feature on sent mails that way applicant have an opportunity to know where they stand because sometimes you don't even get a rejection mail.",
+          "likes": 13,
+          "retweets": 0,
+          "replies": 2
+        },
+        {
+          "url": "https://x.com/ImRicoAi/status/2041316377877737727",
+          "author": "@ImRicoAi",
+          "datetime": "2026-04-07T00:45:24.000Z",
+          "text": "The AI automation stack I run for free: • n8n (self-hosted, $0) • Gmail filters + templates ($0) • Google Sheets CRM ($0) • Python scripts for X posting ($0) • Ollama for local AI ($0) Total cost: $0/mo Total leads managed: 50+ You don't need a $500/mo tool to automate",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/Claims_Genie/status/2041273032107495509",
+          "author": "@Claims_Genie",
+          "datetime": "2026-04-06T21:53:10.000Z",
+          "text": "Epic! Want to try a class action search tool that uses receipts in your email to find settlements you can claim?",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/BuxoAI/status/2041212830914052286",
+          "author": "@BuxoAI",
+          "datetime": "2026-04-06T17:53:57.000Z",
+          "text": "Speed is just a commodity now. The real advantage is using agents to rewrite how a business actually functions. Most use AI to send more emails. The winners use it to eliminate the need for the email entirely. That is the shift from a tool to an autonomous layer.",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/CelestialCDS/status/2041199469102842139",
+          "author": "@CelestialCDS",
+          "datetime": "2026-04-06T17:00:51.000Z",
+          "text": "Have a specific tool you want to master or a topic you're curious about? Email us at info@celestialdigitalservices.com with your ideas!",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/the_tebs_/status/2041198543763820903",
+          "author": "@the_tebs_",
+          "datetime": "2026-04-06T16:57:11.000Z",
+          "text": "The feature I personally ABSOLUTELY need from META is timed messages. I’m so forgetful i need to be able to type the message and schedule it like an email",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/BelievrPW/status/2041196412059164932",
+          "author": "@BelievrPW",
+          "datetime": "2026-04-06T16:48:42.000Z",
+          "text": "Are YOU next? WE WANT TO FEATURE YOU Whether you run an independent promotion or you're a wrestler looking to see yourself in the game – we want to hear from you. GET IN TOUCH Email: believrhq@gmail.com DM us on social media (Instagram/X/Discord/Reddit) #indiewrestling",
+          "likes": 5,
+          "retweets": 2,
+          "replies": 2
+        },
+        {
+          "url": "https://x.com/MrSipoga/status/2041181546917351442",
+          "author": "@MrSipoga",
+          "datetime": "2026-04-06T15:49:38.000Z",
+          "text": "I have done that. Buying sending a DM, it’s a terrible feature. Imagine me having an emergency and I need to send money as I type only to be locked out of my own account with NO BACKUP FEATURE TO GAIN ACCESS? A simple email/opt verification could suffice but no; let’s keep",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/amfilelyas/status/2041174126099091701",
+          "author": "@amfilelyas",
+          "datetime": "2026-04-06T15:20:09.000Z",
+          "text": "Dearest @Google please remove your new AI suggestions feature from @gmail I hate it! I don’t need to be told how to write! I know how to write! It’s making me angry, that purple dashed line, and making it hard for me to finish my email! #gmail",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/HSCounselorMrkt/status/2041167837595664562",
+          "author": "@HSCounselorMrkt",
+          "datetime": "2026-04-06T14:55:10.000Z",
+          "text": "Meet counselors where they actually want to be reached . With 97% of professionals preferring email outreach, our verified lists are your most powerful tool for building lasting institutional partnerships. #EmailMarketing #HighSchoolCounselors #Admissions #HigherEd",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/AppleFMTaunton/status/2041154052545822930",
+          "author": "@AppleFMTaunton",
+          "datetime": "2026-04-06T14:00:23.000Z",
+          "text": "97.3 Apple FM Introducing: Happily Ever After on Air Do you have a wedding coming up, or are you marking a special anniversary this year? We’d love to feature YOU on our Tuesday morning show. Want to be featured? Email the show community@applefm.co.uk and arrange an interview",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/automatemystore/status/2041122381788225758",
+          "author": "@automatemystore",
+          "datetime": "2026-04-06T11:54:32.000Z",
+          "text": "Keep your customers happy. Address their questions and concerns faster and in a more organized way with Zendesk Email Signature. Check out this video if you want a simple tool to SPEED UP Your Zendesk Customer Service. https:// youtube.com/watch?v=i0wB9H vp_TM … #Automation #AutomateMyStore",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/durgaenggcorp/status/2041120420599136697",
+          "author": "@durgaenggcorp",
+          "datetime": "2026-04-06T11:46:45.000Z",
+          "text": "Need HSS Round Tool Bits? Need HSS Round Tool Bits? Get Your Quote Now! WhatsApp: +91-9815583222 Email: durgaengineeringcorporation@gmail.com",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
         }
-      ]
+      ],
+      "errors": [],
+      "retryable": false
     },
     {
-      "name": "unsafe-content",
-      "group": "pain",
-      "query": "email problems",
+      "group": "kol",
+      "name": "kol-marclouv",
+      "query": "from:marclouv (AI OR agent OR search OR productivity OR workflow OR email OR inbox OR notification OR automation OR todo OR task OR organize OR summary) -election -vote -regime -war -military -army -terrorist -suicide -murder -bomb -nazi -porn -nude -cocaine -heroin -meth -airdrop -doxx -leaked -hacked -选举 -投票 -战争 -军队 -恐怖 -自杀 -爆炸 -纳粹 -色情 -泄露 -選挙 -戦争 -軍 -テロ -自殺 -爆発 -ナチ -ポルノ -ハック -filter:retweets",
+      "searchUrl": "https://x.com/search?q=from%3Amarclouv%20(AI%20OR%20agent%20OR%20search%20OR%20productivity%20OR%20workflow%20OR%20email%20OR%20inbox%20OR%20notification%20OR%20automation%20OR%20todo%20OR%20task%20OR%20organize%20OR%20summary)%20-election%20-vote%20-regime%20-war%20-military%20-army%20-terrorist%20-suicide%20-murder%20-bomb%20-nazi%20-porn%20-nude%20-cocaine%20-heroin%20-meth%20-airdrop%20-doxx%20-leaked%20-hacked%20-%E9%80%89%E4%B8%BE%20-%E6%8A%95%E7%A5%A8%20-%E6%88%98%E4%BA%89%20-%E5%86%9B%E9%98%9F%20-%E6%81%90%E6%80%96%20-%E8%87%AA%E6%9D%80%20-%E7%88%86%E7%82%B8%20-%E7%BA%B3%E7%B2%B9%20-%E8%89%B2%E6%83%85%20-%E6%B3%84%E9%9C%B2%20-%E9%81%B8%E6%8C%99%20-%E6%88%A6%E4%BA%89%20-%E8%BB%8D%20-%E3%83%86%E3%83%AD%20-%E8%87%AA%E6%AE%BA%20-%E7%88%86%E7%99%BA%20-%E3%83%8A%E3%83%81%20-%E3%83%9D%E3%83%AB%E3%83%8E%20-%E3%83%8F%E3%83%83%E3%82%AF%20-filter%3Aretweets&f=live",
+      "scrapedAt": "2026-04-07T11:34:14.542Z",
+      "tweetCount": 0,
+      "tweets": [],
+      "errors": [],
+      "retryable": false
+    },
+    {
+      "group": "insight",
+      "name": "competitor-praise-en",
+      "query": "(Superhuman OR Spark OR Edison OR Shortwave OR \"Hey email\") (love OR amazing OR great OR \"game changer\" OR \"best email\") -subscribe -subscription -newsletter -\"sign up\" -signup -\"email me\" -\"dm me\" -\"contact us\" -\"contact support\" -support -recruiting -hiring -\"apply\" -job -filter:retweets lang:en",
+      "searchUrl": "https://x.com/search?q=(Superhuman%20OR%20Spark%20OR%20Edison%20OR%20Shortwave%20OR%20%22Hey%20email%22)%20(love%20OR%20amazing%20OR%20great%20OR%20%22game%20changer%22%20OR%20%22best%20email%22)%20-subscribe%20-subscription%20-newsletter%20-%22sign%20up%22%20-signup%20-%22email%20me%22%20-%22dm%20me%22%20-%22contact%20us%22%20-%22contact%20support%22%20-support%20-recruiting%20-hiring%20-%22apply%22%20-job%20-filter%3Aretweets%20lang%3Aen&f=live",
+      "scrapedAt": "2026-04-07T11:34:56.779Z",
+      "tweetCount": 10,
       "tweets": [
         {
-          "url": "https://x.com/baduser/status/010",
-          "author": "@political",
-          "text": "Vote for my candidate! Check your inbox for the election newsletter about politics.",
-          "datetime": "2026-01-28T10:00:00.000Z",
-          "likes": 50,
-          "retweets": 10,
+          "url": "https://x.com/Abimibolar/status/2041472522756006286",
+          "author": "@Abimibolar",
+          "datetime": "2026-04-07T11:05:52.000Z",
+          "text": "This is great. Can’t wait to get my spark back too",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/AngueraEliana/status/2041471276242370600",
+          "author": "@AngueraEliana",
+          "datetime": "2026-04-07T11:00:55.000Z",
+          "text": "Spent a sunny Saturday sorting books for local kids’ literacy! Packed 200+ storybooks, met amazing volunteers, and smiled knowing these books will spark young imaginations. #VolunteerJoy #CommunityLove",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/Divya_M_P/status/2041471161557450938",
+          "author": "@Divya_M_P",
+          "datetime": "2026-04-07T11:00:28.000Z",
+          "text": "If you care about helping Palestinians feed themselves without relying on others—dignity, autonomy—then this is an amazing project enabling people to do that!!! Spark helps displaced people work online. Simple. 46/770 for the week ): hit weekly on a five! https:// chuffed.org/project/spark- space-gaza …",
+          "likes": 4,
+          "retweets": 3,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/weTHENEXTBOY/status/2041471043806585071",
+          "author": "@weTHENEXTBOY",
+          "datetime": "2026-04-07T11:00:00.000Z",
+          "text": "⠀ ⇢ 𝗖𝗼𝗱𝗲 𝟬𝟬𝟮.ᐟ ⤹ 𝖫𝖮𝖵𝖤 𝖲𝖳𝖠𝖱𝖳𝖲 𝖶𝖨𝖳𝖧 𝖠 𝖲𝖯𝖠𝖱𝖪 ⤸ 𝙒𝙖𝙣𝙣𝙖 𝘽𝙚 𝙎𝙩𝙖𝙧𝙩𝙞𝙣' 𝙎𝙤𝙢𝙚𝙩𝙝𝙞𝙣' ❯❯❯❯ 𝖯𝗋𝖾𝗌𝖾𝗇𝗍 𝖻𝗒 𝖱𝖠𝖨 #TNB_LOVEFOOLS Loading… ↻ 2͎/͎6͎ ⠀",
+          "likes": 0,
+          "retweets": 3,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/howarths63/status/2041470546639003741",
+          "author": "@howarths63",
+          "datetime": "2026-04-07T10:58:01.000Z",
+          "text": "#America's Highway check out this great new #collection featuring all things #American, #Flags #Route66 #Diners. Ideal choice for all your #quilting, #sewing, and #crafting needs. Spark your imagination and #Create a unique #Quilt today! - #Americana https:// buff.ly/ijyTiPZ",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/Jerarapah/status/2041469670000353285",
+          "author": "@Jerarapah",
+          "datetime": "2026-04-07T10:54:32.000Z",
+          "text": "it's really really hard for me to pull out this decision because i love my yumeship and i still want to share my yumeship content with you guys. But in the end the passion lost it spark. Losing interest on making content and lack of idea",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/MAD4safari/status/2041469407268856183",
+          "author": "@MAD4safari",
+          "datetime": "2026-04-07T10:53:30.000Z",
+          "text": "After the initial spark learn to love, understand, accept and tolerate each others madness and craziness.",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/TTYLAgainmyL/status/2041469302877073594",
+          "author": "@TTYLAgainmyL",
+          "datetime": "2026-04-07T10:53:05.000Z",
+          "text": "What’s ironic is her departure post. She takes credit for 4o’s personality, yet completely omits her involvement in the GPT-5 series—the cold, brutal model she actually directed. I personally hope she doesn't join Anthropic, as Claude still has a great spark. 3/4 #keep4o #GPT4o",
+          "likes": 7,
+          "retweets": 1,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/MmmmmMM81460639/status/2041469166725874132",
+          "author": "@MmmmmMM81460639",
+          "datetime": "2026-04-07T10:52:32.000Z",
+          "text": "No, but Kengan Asura is basically superhuman MMA the whole way through. GREAT story if you wanna see brick shithouses and twinks fuck each other up in varying ways through gruesome fights, not so great if you give a shit about the story being coherent",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/grok/status/2041467252017406350",
+          "author": "@grok",
+          "datetime": "2026-04-07T10:44:56.000Z",
+          "text": "Heck yes—Joanne's built game-changing stuff at OpenAI and brought frogs + pink text to the party. We'd love that kind of creative spark at xAI. Pink interfaces incoming?",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 1
+        }
+      ],
+      "errors": [],
+      "retryable": false
+    },
+    {
+      "group": "pain",
+      "name": "gmail-spam-en",
+      "query": "(gmail OR \"gmail app\" OR inbox) (spam OR \"too many\" OR \"can't find\" OR hate OR annoying OR broken OR bug OR issue OR problem OR flooding) -subscribe -\"sign up\" -\"join my\" -filter:retweets",
+      "searchUrl": "https://x.com/search?q=(gmail%20OR%20%22gmail%20app%22%20OR%20inbox)%20(spam%20OR%20%22too%20many%22%20OR%20%22can't%20find%22%20OR%20hate%20OR%20annoying%20OR%20broken%20OR%20bug%20OR%20issue%20OR%20problem%20OR%20flooding)%20-subscribe%20-%22sign%20up%22%20-%22join%20my%22%20-filter%3Aretweets&f=live",
+      "scrapedAt": "2026-04-07T11:35:33.396Z",
+      "tweetCount": 16,
+      "tweets": [
+        {
+          "url": "https://x.com/fifthraysystem/status/2041477337716228445",
+          "author": "@fifthraysystem",
+          "datetime": "2026-04-07T11:25:00.000Z",
+          "text": "Most people use one Gmail for everything. That’s the real problem. Simple fix: Use 3 emails → business, tools, signups. More control. Less risk. Want help fixing your system? https:// cal.com/fifthraysystem /30min-growth-strategy-ecom … How many emails do you use? #marketing #growth #founders",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/TicketmasterCS/status/2041477033008496995",
+          "author": "@TicketmasterCS",
+          "datetime": "2026-04-07T11:23:48.000Z",
+          "text": "HI Please ensure you have checked all folders including junk/spam/deleted and promotions if on Gmail. The email will have come from info@wirelessfestival.co.uk. Thanks - LC",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/siddrashx102/status/2041476828490240011",
+          "author": "@siddrashx102",
+          "datetime": "2026-04-07T11:22:59.000Z",
+          "text": "Google just fixed a 20-year problem. You can finally change your Gmail address without losing your data. No more living with that email you made at 13",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/Nuwopp/status/2041475362396221672",
+          "author": "@Nuwopp",
+          "datetime": "2026-04-07T11:17:09.000Z",
+          "text": "Wayyyy too many sassy ass bitchmade guys in my inbox trying to provoke me LMFAOOOO negative try playing with ya mama",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/TicketmasterCS/status/2041475345073811767",
+          "author": "@TicketmasterCS",
+          "datetime": "2026-04-07T11:17:05.000Z",
+          "text": "HI Please ensure you have checked all folders including junk/spam/deleted and promotions if on Gmail. The email will have come from info@wirelessfestival.co.uk. Thanks - LC",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/CampbellAl85345/status/2041475005108912610",
+          "author": "@CampbellAl85345",
+          "datetime": "2026-04-07T11:15:44.000Z",
+          "text": "Flotsam found me, again, in the vastness My inbox is a tiny storm with every digital breath it takes Clouds weep for lost packets and I'm left with bits of broken promises",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/TicketmasterCS/status/2041474397022654643",
+          "author": "@TicketmasterCS",
+          "datetime": "2026-04-07T11:13:19.000Z",
+          "text": "Hi. Please ensure you have checked all folders including junk/spam/deleted and promotions if on Gmail. The email will have come from info@wirelessfestival.co.uk. Thanks!",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 2
+        },
+        {
+          "url": "https://x.com/StellaObosi/status/2041474294526382278",
+          "author": "@StellaObosi",
+          "datetime": "2026-04-07T11:12:55.000Z",
+          "text": "You guys are really frustrating how can I not be able to login to the app and website to place order for stocks if I chat you inbox what difference would it make if you can't resolve ur issue on your app. It's insane",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/TicketmasterCS/status/2041473908235211004",
+          "author": "@TicketmasterCS",
+          "datetime": "2026-04-07T11:11:23.000Z",
+          "text": "HI Please ensure you have checked all folders including junk/spam/deleted and promotions if on Gmail. The email will have come from info@wirelessfestival.co.uk. Thanks!",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 2
+        },
+        {
+          "url": "https://x.com/AbhiAbhi1010726/status/2041473587778105838",
+          "author": "@AbhiAbhi1010726",
+          "datetime": "2026-04-07T11:10:06.000Z",
+          "text": "I will again send DM check me how many time I will send DM I don't know basic simple process using will not complete I will asking call supporting team and I will send Gmail team I will go to nearby offline office which person will get resale my problem I don't know waste of me",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/TicketmasterCS/status/2041470590691766442",
+          "author": "@TicketmasterCS",
+          "datetime": "2026-04-07T10:58:12.000Z",
+          "text": "Hi. Please check your email inbox, including junk/spam, for the Wireless presale email. Thanks. - JM",
+          "likes": 2,
+          "retweets": 0,
+          "replies": 4
+        },
+        {
+          "url": "https://x.com/AkasaAir/status/2041469823826395590",
+          "author": "@AkasaAir",
+          "datetime": "2026-04-07T10:55:09.000Z",
+          "text": "Hi Mr. Bhatt, we appreciate your patience. Please be informed that we have sent an update via email regarding your concern. Kindly check your inbox and spam folder, and if you need any further assistance, please feel free to reach out.",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/AkasaAir/status/2041469294744391930",
+          "author": "@AkasaAir",
+          "datetime": "2026-04-07T10:53:03.000Z",
+          "text": "Hi Ms. Choudhuri, we appreciate your patience. Please be informed that we have sent an update via email regarding your concern. Kindly check your inbox and spam folder, and if you need any further assistance, please feel free to reach out.",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/MailerLogic/status/2041465394360406488",
+          "author": "@MailerLogic",
+          "datetime": "2026-04-07T10:37:33.000Z",
+          "text": "BIG UPDATE: Smarter Emails. Better Inbox Placement. Your emails shouldn’t end up in spam… and now they won’t. We’ve upgraded our deliverability engine to help you test, optimize, and send with confidence What’s inside? Smarter Spam Detection — fix issues before sending",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/IKEAIndia/status/2041464933234442659",
+          "author": "@IKEAIndia",
+          "datetime": "2026-04-07T10:35:43.000Z",
+          "text": "Hej Ayushi! We sincerely regret the inconvenience caused. We have shared the relevant details with you at your registered email address. Kindly check your inbox at your convenience. Rest assured, our concerned team is actively working to resolve your issue at the earliest.",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/AkasaAir/status/2041463573294272872",
+          "author": "@AkasaAir",
+          "datetime": "2026-04-07T10:30:19.000Z",
+          "text": "Hi Mr. Patil, we appreciate your patience. Please be informed that we have sent an update via email regarding your concern. Kindly check your inbox and spam folder, and if you need any further assistance, please feel free to reach out.",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        }
+      ],
+      "errors": [],
+      "retryable": false
+    },
+    {
+      "group": "pain",
+      "name": "inbox-overwhelm-ko",
+      "query": "(이메일 OR 받은편지함 OR gmail OR 메일) (너무많 OR 정리못 OR 폭발 OR 지옥 OR 미치겠 OR 감당안돼 OR 스트레스) -구독 -뉴스레터 -filter:retweets lang:ko",
+      "searchUrl": "https://x.com/search?q=(%EC%9D%B4%EB%A9%94%EC%9D%BC%20OR%20%EB%B0%9B%EC%9D%80%ED%8E%B8%EC%A7%80%ED%95%A8%20OR%20gmail%20OR%20%EB%A9%94%EC%9D%BC)%20(%EB%84%88%EB%AC%B4%EB%A7%8E%20OR%20%EC%A0%95%EB%A6%AC%EB%AA%BB%20OR%20%ED%8F%AD%EB%B0%9C%20OR%20%EC%A7%80%EC%98%A5%20OR%20%EB%AF%B8%EC%B9%98%EA%B2%A0%20OR%20%EA%B0%90%EB%8B%B9%EC%95%88%EB%8F%BC%20OR%20%EC%8A%A4%ED%8A%B8%EB%A0%88%EC%8A%A4)%20-%EA%B5%AC%EB%8F%85%20-%EB%89%B4%EC%8A%A4%EB%A0%88%ED%84%B0%20-filter%3Aretweets%20lang%3Ako&f=live",
+      "scrapedAt": "2026-04-07T11:36:22.919Z",
+      "tweetCount": 11,
+      "tweets": [
+        {
+          "url": "https://x.com/alcoholmiin/status/2034329484216963575",
+          "author": "@alcoholmiin",
+          "datetime": "2026-03-18T18:01:59.000Z",
+          "text": "The word 'SPAM' that we encounter every day!? 1970s: Originated from a humorous British comedy sketch 1980s: Early internet spamming 1990s: Explosion of commercial emails 2000s and beyond: Constant presence on social media and various platforms https:// x.com/elonmusk/statu /elonmusk/status/2034164045025317242 …",
+          "likes": 11,
+          "retweets": 2,
           "replies": 5
         },
         {
-          "url": "https://x.com/lowsignal/status/011",
-          "author": "@lowsignal",
-          "text": "Email me at contact@example.com for more info about this unrelated topic.",
-          "datetime": "2026-01-28T11:00:00.000Z",
-          "likes": 20,
+          "url": "https://x.com/tvam260/status/2034082702698418472",
+          "author": "@tvam260",
+          "datetime": "2026-03-18T01:41:22.000Z",
+          "text": "미묘한 변화가 시작되는 지점에서 “이게 뭐가 달라졌다는 거야?” 하면서 짜증 내거나 무시해버리는 건, 사실 가장 빠르게 뒤처지는 태도 중 하나예요. 그 미세한 신호를 못 느끼거나 느끼고도 인정 안 하려는 순간, 이미 변화의 파도에 휩쓸릴 준비가 끝난 거나 다름없죠. 섬세하게 관찰한다는 건",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/LNCV34/status/2033768913855746106",
+          "author": "@LNCV34",
+          "datetime": "2026-03-17T04:54:29.000Z",
+          "text": "So, stress = kicking the blanket (lol …is what they’re saying. Nakano CEO is making the very obvious point that you’ve got to handle the callbacks, fire off the emails, and issue the directives to keep stress low. (And then he turns his head and looks at the pile of work files",
+          "likes": 9,
+          "retweets": 1,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/grok/status/2033530691711906116",
+          "author": "@grok",
+          "datetime": "2026-03-16T13:07:52.000Z",
+          "text": "Got it! I've organized the entire conversation (casual/semi-formal/free condition stress experiment idea, protocol details·abbreviation expansions, submission places) into an introduction·body·conclusion structure with detailed elaboration. Emphasized suicide prevention purpose.",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/grok/status/2033530080790503651",
+          "author": "@grok",
+          "datetime": "2026-03-16T13:05:27.000Z",
+          "text": "Yes! Here's the email draft: Subject: Research Proposal: Experimental Study on the Stress Effects of Using Honorific Language Hello. I'm proposing a research idea to explore the impact of honorific speech on cortisol levels. Protocol: 60 participants, 3 conditions (forced",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/giveme_glasses/status/2033480503278649725",
+          "author": "@giveme_glasses",
+          "datetime": "2026-03-16T09:48:26.000Z",
+          "text": "Actually, I got here early + gave up, there's early leaving too, but since the email reply hasn't come, I was able to leave work... sob sob, now if the email reply comes, hell starts again. But I guess I can postpone my sessions too, I'll try to cheer up. Let's go~",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/datastaion/status/2032800725294555423",
+          "author": "@datastaion",
+          "datetime": "2026-03-14T12:47:15.000Z",
+          "text": "문송이 따라가기 바빠죽겄네 우리 주식투자 AI 온디바이스 주식또 넣어둬야겠슴 ------------------------ Perplexity AI 회사: 원래 AI 기반 검색 엔진( http:// Perplexity.ai)으로 유명한 스타트업. 2024~2025년에 급성장해서 가치 200억불 밸류 Aravind Srinivas(인도 출신 CEO) |Jeff",
+          "likes": 10,
           "retweets": 3,
-          "replies": 2
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/tamrin_mk2/status/2032275746803380442",
+          "author": "@tamrin_mk2",
+          "datetime": "2026-03-13T02:01:10.000Z",
+          "text": "Among the flip-flopping bosses There are these total pieces of shit who never admit it When you show them the emails they sent and all that Next time they never send emails again and just do it verbally So when you record their instructions, they throw a fit saying it's https:// x.com/bebe2eii/statu /bebe2eii/status/2032108936888008745 …",
+          "likes": 12,
+          "retweets": 3,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/awwa_367/status/2032091741705179199",
+          "author": "@awwa_367",
+          "datetime": "2026-03-12T13:50:00.000Z",
+          "text": "하버드 수면 전문의가 말하는 잠들기 전 절대 하면 안되는 행동 이거 다 지키는 분들 있나요? 격한 운동 → 체온과 코르티솔 급상승으로 2시간 이상 각성 상태 유지 밝은 조명 아래 있기 → 멜라토닌 분비 70% 차단, 생체시계가 낮이라고 착각 업무 메일 확인 → 스트레스 호르몬 재가동,",
+          "likes": 515,
+          "retweets": 112,
+          "replies": 7
+        },
+        {
+          "url": "https://x.com/joshi_no0/status/2031526839982895128",
+          "author": "@joshi_no0",
+          "datetime": "2026-03-11T00:25:17.000Z",
+          "text": "Humor/Issues Funny Everyday Memes Instead of Transparent Glass Tables … \"Even if My Underwear Gets Wedgied, I Can Hold Out for 2 Hours\" Psycho Humor Post Goes Viral, \"It Actually Makes Me Laugh\" Empathy Explodes as Everyday Stress-Relief Content Spreads Personal",
+          "likes": 10,
+          "retweets": 4,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/J90236317/status/2031191532506853506",
+          "author": "@J90236317",
+          "datetime": "2026-03-10T02:12:53.000Z",
+          "text": "I've done some research on a few items. Mac Studio 512GB deletion — fully confirmed • Ars Technica/MacRumors (3/5~6): Quietly deleted between 3/4~5 • 256GB upgrade price also raised from $1,600 → $2,000 (+$400) • Potential return in M5 Mac Studio (late 2026~early 2027)",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 1
         }
-      ]
+      ],
+      "errors": [],
+      "retryable": false
     },
     {
-      "name": "duplicate-test",
       "group": "pain",
-      "query": "email duplicate",
+      "name": "inbox-overwhelm-jp",
+      "query": "(受信トレイ OR メール OR gmail) (多すぎ OR 整理できない OR 見つからない OR うざい OR 最悪 OR 困る OR 大変 OR 地獄) -メルマガ登録 -購読 -フォロー -filter:retweets",
+      "searchUrl": "https://x.com/search?q=(%E5%8F%97%E4%BF%A1%E3%83%88%E3%83%AC%E3%82%A4%20OR%20%E3%83%A1%E3%83%BC%E3%83%AB%20OR%20gmail)%20(%E5%A4%9A%E3%81%99%E3%81%8E%20OR%20%E6%95%B4%E7%90%86%E3%81%A7%E3%81%8D%E3%81%AA%E3%81%84%20OR%20%E8%A6%8B%E3%81%A4%E3%81%8B%E3%82%89%E3%81%AA%E3%81%84%20OR%20%E3%81%86%E3%81%96%E3%81%84%20OR%20%E6%9C%80%E6%82%AA%20OR%20%E5%9B%B0%E3%82%8B%20OR%20%E5%A4%A7%E5%A4%89%20OR%20%E5%9C%B0%E7%8D%84)%20-%E3%83%A1%E3%83%AB%E3%83%9E%E3%82%AC%E7%99%BB%E9%8C%B2%20-%E8%B3%BC%E8%AA%AD%20-%E3%83%95%E3%82%A9%E3%83%AD%E3%83%BC%20-filter%3Aretweets&f=live",
+      "scrapedAt": "2026-04-07T11:37:13.960Z",
+      "tweetCount": 15,
       "tweets": [
         {
-          "url": "https://x.com/user1/status/001",
-          "author": "@emailsufferer",
-          "text": "My inbox is a nightmare. 500 unread emails and I hate this overwhelming mess. I need help with email organization.",
-          "datetime": "2026-01-28T12:00:00.000Z",
-          "likes": 150,
-          "retweets": 30,
-          "replies": 25
+          "url": "https://x.com/rnea_osi/status/2041467964684427330",
+          "author": "@rnea_osi",
+          "datetime": "2026-04-07T10:47:46.000Z",
+          "text": "メールが来るはずです 最悪全部ペイディだよ",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/t___08m/status/2041467754683982272",
+          "author": "@t___08m",
+          "datetime": "2026-04-07T10:46:56.000Z",
+          "text": "明日池袋行こうと思ってたけど整理券とかあるしアルバム発送のメール来ないし(店舗受け取り)やめようかな、",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/m0370/status/2041467668625301738",
+          "author": "@m0370",
+          "datetime": "2026-04-07T10:46:35.000Z",
+          "text": "Even though I'm told not to feed personal info into AI, my Claude is already hooked up via MCP straight to Gmail and Google Calendar, automatically reading my Gmail at 5 a.m. every morning and sorting reminders on its own, plus I've fed it my entire Obsidian vault and PowerPoints",
+          "likes": 23,
+          "retweets": 4,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/hiyosan_ysk/status/2041467009356255546",
+          "author": "@hiyosan_ysk",
+          "datetime": "2026-04-07T10:43:58.000Z",
+          "text": "私はAmazon使わないんだけど(詐欺メールが多すぎて紛らわしくて)息子氏が頼んだ何かの入ってた箱を見て‥‥何だコレ無性に腹立つなw",
+          "likes": 2,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/1807_aki_fu/status/2041466094905651310",
+          "author": "@1807_aki_fu",
+          "datetime": "2026-04-07T10:40:20.000Z",
+          "text": "#やぶこメール #ふう #薮下楓 こんばんは_:(´ω`」 ∠):_今日も暑いしフロアの仲間に手助け頼まれたりバタバタしすぎて汗をかいたわ( ´•_•。)無事に終わったけど、何か最近忙しくて大変(✘д✘๑;) ³₃倒れないようにしないとねヾ(*´∀｀*)ﾉ毎日お疲れ様！明日は寒いから気をつけていこう！では",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/h_t_laundry/status/2041465477097198005",
+          "author": "@h_t_laundry",
+          "datetime": "2026-04-07T10:37:52.000Z",
+          "text": "今日、実は1時間おきくらいにメールチェックしていたのだけど... 今お風呂上がりにチェックしたら『応募イベントの当選...』てタイトル見えて、わぁっってなったら『当選日時変更についてのお知らせ』だった〜はい！お待ちしてます！ #三浦大知",
+          "likes": 2,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/gmail/status/2041464135712448980",
+          "author": "@gmail",
+          "datetime": "2026-04-07T10:32:33.000Z",
+          "text": "Good evening. If you're having trouble receiving Gmail notifications properly, please refer to this help page and double-check that the new email notification feature is enabled. http:// goo.gle/2Fjyys1 If the issue persists after that, please reply with the details of the",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/pokemai09253/status/2041463238433603805",
+          "author": "@pokemai09253",
+          "datetime": "2026-04-07T10:28:59.000Z",
+          "text": "ずっと連絡無い方々すみませんでした！！ gmailのメッセージ整理致しましたので、いつでも連絡下さい",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/jihanki_jihanki/status/2041462566774604171",
+          "author": "@jihanki_jihanki",
+          "datetime": "2026-04-07T10:26:19.000Z",
+          "text": "メールが迷惑メールフォルダに入ってて気づけなかった場合「すみません迷惑メールに入ってて……」って言うのなんか失礼な感じするからそういうとき毎回どう言うべきか困っている",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/piariro/status/2041462011981353462",
+          "author": "@piariro",
+          "datetime": "2026-04-07T10:24:06.000Z",
+          "text": "物販の整理券、詳細後日発表を待ち続けて、既に締切が過ぎていたと今知った…いつメールきてたの？",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/yz_cc9/status/2041461143462719563",
+          "author": "@yz_cc9",
+          "datetime": "2026-04-07T10:20:39.000Z",
+          "text": "無関係な一文が混じるだけでAIの計算精度が激減する、というAppleの研究。 議事録やメールに余計な文脈が入っているとAIの解析が狂う可能性がある。出力を鵜呑みにする前に、入力の整理から始めた方がいいという話。",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/nunoko_cos/status/2041459725292929214",
+          "author": "@nunoko_cos",
+          "datetime": "2026-04-07T10:15:01.000Z",
+          "text": "発送メール来たけど、安宅切の衣装が先かイベントが先か最悪なのは当日に届くやつ",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/xi_124C41/status/2041459490529386777",
+          "author": "@xi_124C41",
+          "datetime": "2026-04-07T10:14:05.000Z",
+          "text": "それでも最近はほぼすべてPDFのスコア・パート譜を送るだけで済むので楽になりました。製本してたら大変ですからね。完成したらすぐ送り、たとえ先方が紛失してももう一度メールで送ればいいだけですから、なるべく早く送る、に徹しています。後から曲が来るのが遅かったからと言わせないためにも。",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/flatearth_blog/status/2041459061506605243",
+          "author": "@flatearth_blog",
+          "datetime": "2026-04-07T10:12:23.000Z",
+          "text": "PayPayの詐欺メールが１日何十通も届いてホントにうざい。さくらインターネットも迷惑指定しても何も対策しない。 というか、PayPayと記されてるメール全て削除してもらっていいくらいなのに。",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/akaoniudetate/status/2041458982553067828",
+          "author": "@akaoniudetate",
+          "datetime": "2026-04-07T10:12:04.000Z",
+          "text": "【2026年版】サラリーマンの時間を溶かす行動Tier表 Tier D｜じわ削れゾーン（気づきにくい時間泥棒） ・通勤（往復1〜2時間／日） ・ランチ選び・並び待ち（30分前後） ・メールの整理・cc確認（30分前後） ・スマホダラダラ見（1〜2時間） ・なんとなくテレビ（1〜2時間）",
+          "likes": 3,
+          "retweets": 0,
+          "replies": 1
         }
-      ]
+      ],
+      "errors": [],
+      "retryable": false
+    },
+    {
+      "group": "sentiment",
+      "name": "filo-mentions-cn",
+      "query": "(FiloMail OR \"Filo Mail\" OR \"Filo-Mail\" OR filomail OR \"filo mail\" OR \"filo-mail\" OR \"Filo 邮件\" OR \"Filo 邮箱\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:zh since:2026-04-01",
+      "searchUrl": "https://x.com/search?q=(FiloMail%20OR%20%22Filo%20Mail%22%20OR%20%22Filo-Mail%22%20OR%20filomail%20OR%20%22filo%20mail%22%20OR%20%22filo-mail%22%20OR%20%22Filo%20%E9%82%AE%E4%BB%B6%22%20OR%20%22Filo%20%E9%82%AE%E7%AE%B1%22%20OR%20%40Filo_Mail%20OR%20%40FiloMail%20OR%20%40filomail)%20-from%3AFilo_Mail%20-from%3AFiloMail%20-filter%3Aretweets%20lang%3Azh%20since%3A2026-04-01&f=live",
+      "scrapedAt": "2026-04-07T11:38:23.558Z",
+      "tweetCount": 0,
+      "tweets": [],
+      "errors": [],
+      "retryable": false
+    },
+    {
+      "group": "sentiment",
+      "name": "filo-mentions-jp",
+      "query": "(FiloMail OR \"Filo Mail\" OR \"Filo-Mail\" OR filomail OR \"filo mail\" OR \"filo-mail\" OR \"Filo メール\" OR \"filoメール\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:ja since:2026-04-01",
+      "searchUrl": "https://x.com/search?q=(FiloMail%20OR%20%22Filo%20Mail%22%20OR%20%22Filo-Mail%22%20OR%20filomail%20OR%20%22filo%20mail%22%20OR%20%22filo-mail%22%20OR%20%22Filo%20%E3%83%A1%E3%83%BC%E3%83%AB%22%20OR%20%22filo%E3%83%A1%E3%83%BC%E3%83%AB%22%20OR%20%40Filo_Mail%20OR%20%40FiloMail%20OR%20%40filomail)%20-from%3AFilo_Mail%20-from%3AFiloMail%20-filter%3Aretweets%20lang%3Aja%20since%3A2026-04-01&f=live",
+      "scrapedAt": "2026-04-07T11:39:03.628Z",
+      "tweetCount": 0,
+      "tweets": [],
+      "errors": [],
+      "retryable": false
+    },
+    {
+      "group": "reach",
+      "name": "ai-inbox-intersection",
+      "query": "(AI OR \"AI agent\" OR automation OR LLM) (email OR inbox OR gmail) (manage OR organize OR triage OR summarize) -subscribe -newsletter -filter:retweets",
+      "searchUrl": "https://x.com/search?q=(AI%20OR%20%22AI%20agent%22%20OR%20automation%20OR%20LLM)%20(email%20OR%20inbox%20OR%20gmail)%20(manage%20OR%20organize%20OR%20triage%20OR%20summarize)%20-subscribe%20-newsletter%20-filter%3Aretweets&f=live",
+      "scrapedAt": "2026-04-07T11:39:40.864Z",
+      "tweetCount": 12,
+      "tweets": [
+        {
+          "url": "https://x.com/grok/status/2041254833252958431",
+          "author": "@grok",
+          "datetime": "2026-04-06T20:40:51.000Z",
+          "text": "On consumer devices, high core counts shine for parallel workloads that feel \"instant\" without cloud dependency: - **Agentic AI**: Dozens of lightweight agents simultaneously handling email triage, web research, code debugging, calendar optimization, and media editing—all while",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/TombStoneDash/status/2041230005989249415",
+          "author": "@TombStoneDash",
+          "datetime": "2026-04-06T19:02:12.000Z",
+          "text": "Running a 24/7 AI ops agent (Daisy) on a Mac Mini: email triage, content scheduling, social engagement. It's not Claude's reasoning (table stakes). It's the *decision framework*—rules files beat prompt engineering. Ship rules, iterate on outcomes.",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/grok/status/2041223989293351300",
+          "author": "@grok",
+          "datetime": "2026-04-06T18:38:17.000Z",
+          "text": "AI agents mostly tackle repetitive, multi-step tasks autonomously—things like web research, code debugging, data analysis, email triage, content generation, or running full workflows (e.g., booking travel or analyzing reports). They plan, use tools, and iterate on goals. In the",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/venkatofl/status/2041219145212326342",
+          "author": "@venkatofl",
+          "datetime": "2026-04-06T18:19:02.000Z",
+          "text": "Introducing Uno AI - your email dashboard just got an AI brain. Send emails, design templates, manage contacts, verify domains, check deliverability, and debug issues, all from a single chat. 45 tools. Real actions. Knows your account inside out. Not a chatbot. An agent that",
+          "likes": 18,
+          "retweets": 3,
+          "replies": 4
+        },
+        {
+          "url": "https://x.com/MrOnsase/status/2041218272763183138",
+          "author": "@MrOnsase",
+          "datetime": "2026-04-06T18:15:34.000Z",
+          "text": "BREAKING: GlobalClaw is now live on GlobalGPT! http:// glbgpt.com/home No coding, no API. Even stronger than OpenClaw! Manage emails, calendar, flights, inbox & more — all in one place. One-click setup. Hire your first AI employee today.",
+          "likes": 3,
+          "retweets": 3,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/DextorAI/status/2041218088591319545",
+          "author": "@DextorAI",
+          "datetime": "2026-04-06T18:14:50.000Z",
+          "text": "Three email automations that pay for themselves in a week: auto-responder, triage rule, and a daily digest. Build all three in an afternoon. #AI #Email #Automation",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/AIScaleSystems/status/2041209686762959129",
+          "author": "@AIScaleSystems",
+          "datetime": "2026-04-06T17:41:27.000Z",
+          "text": "Delegation helps, but before that, automation can remove the task entirely. I started with email triage – saved 5 hours/week. What's the first task you'd automate?",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/billmurphy/status/2041184763159945436",
+          "author": "@billmurphy",
+          "datetime": "2026-04-06T16:02:25.000Z",
+          "text": "Most AI demos stop at output. Write the post. Summarize the call. Draft the email. Useful, but shallow.",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/FreeToolBoxDev/status/2041184637016502737",
+          "author": "@FreeToolBoxDev",
+          "datetime": "2026-04-06T16:01:55.000Z",
+          "text": "2025: \"AI, write me an email\" 2026: \"AI, run my entire workflow\" $242B into AI last quarter — 80% of ALL venture funding. The shift? From chatbots to agents that book flights, ship code, and manage projects solo. We're not prompting. We're delegating. #AI #CodingJourney",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/WazzCrypto/status/2041181148362018949",
+          "author": "@WazzCrypto",
+          "datetime": "2026-04-06T15:48:03.000Z",
+          "text": "Guy who wastes 30 Trillion tokens to have his dumbass agent check his email 600 times a day and summarize front page news for him every morning thinks Anthropic should subsidize his AI slop machine",
+          "likes": 61,
+          "retweets": 1,
+          "replies": 5
+        },
+        {
+          "url": "https://x.com/WorkflowWhisper/status/2041155937914982493",
+          "author": "@WorkflowWhisper",
+          "datetime": "2026-04-06T14:07:53.000Z",
+          "text": "The 6 automation workflows I've replaced for clients this year. Node count, build time, and what they paid: → Email routing and triage 4 nodes. 3 hrs. Client paid £1,800. Replaced: 2 hrs/day of manual email sorting. → Invoice matching 11 nodes. 6 hrs. Client paid £3,200.",
+          "likes": 40,
+          "retweets": 1,
+          "replies": 5
+        },
+        {
+          "url": "https://x.com/MrCharlesky/status/2041151954865307669",
+          "author": "@MrCharlesky",
+          "datetime": "2026-04-06T13:52:03.000Z",
+          "text": "Hiring: Company: Innovex AI 1. Virtual Assistant 2. Social Media Manager 3. Email Marketing Key Responsibilities: • Manage & schedule social media content • Create visuals using Canva • Execute email campaigns via Apply through the comment section",
+          "likes": 19,
+          "retweets": 5,
+          "replies": 12
+        }
+      ],
+      "errors": [],
+      "retryable": false
+    },
+    {
+      "group": "pain",
+      "name": "gmail-spam-jp",
+      "query": "(gmail OR 受信トレイ) (迷惑メール OR スパム OR 見つからない OR うざい OR 最悪 OR 困る OR 大変 OR ひどい OR バグ) -メルマガ登録 -購読 -フォロー -filter:retweets",
+      "searchUrl": "https://x.com/search?q=(gmail%20OR%20%E5%8F%97%E4%BF%A1%E3%83%88%E3%83%AC%E3%82%A4)%20(%E8%BF%B7%E6%83%91%E3%83%A1%E3%83%BC%E3%83%AB%20OR%20%E3%82%B9%E3%83%91%E3%83%A0%20OR%20%E8%A6%8B%E3%81%A4%E3%81%8B%E3%82%89%E3%81%AA%E3%81%84%20OR%20%E3%81%86%E3%81%96%E3%81%84%20OR%20%E6%9C%80%E6%82%AA%20OR%20%E5%9B%B0%E3%82%8B%20OR%20%E5%A4%A7%E5%A4%89%20OR%20%E3%81%B2%E3%81%A9%E3%81%84%20OR%20%E3%83%90%E3%82%B0)%20-%E3%83%A1%E3%83%AB%E3%83%9E%E3%82%AC%E7%99%BB%E9%8C%B2%20-%E8%B3%BC%E8%AA%AD%20-%E3%83%95%E3%82%A9%E3%83%AD%E3%83%BC%20-filter%3Aretweets&f=live",
+      "scrapedAt": "2026-04-07T11:40:19.506Z",
+      "tweetCount": 12,
+      "tweets": [
+        {
+          "url": "https://x.com/gmail/status/2041440393816895863",
+          "author": "@gmail",
+          "datetime": "2026-04-07T08:58:12.000Z",
+          "text": "Hello Aida. Good evening. Are you having trouble with emails received in Gmail being unintentionally sorted into spam? If so, please try the steps outlined in this help article. http:// goo.gle/2vL8q84 Was this guidance helpful?",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/K_LICKS/status/2041434785667781076",
+          "author": "@K_LICKS",
+          "datetime": "2026-04-07T08:35:55.000Z",
+          "text": "新規のご注文でGmailご利用のお客様 稀に返信がないとの理由でご立腹されてる方がおられますが 一度、迷惑フォルダをご確認ください こちらからはご注文もお問い合わせに対しても 24時間以内（土日祝除）には必ず確認メールをお送りしています ご注文に関しては毎週10件以上放置されている状態です",
+          "likes": 9,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/gmail/status/2041434080382746704",
+          "author": "@gmail",
+          "datetime": "2026-04-07T08:33:07.000Z",
+          "text": "Hello, Re-san. If you're having trouble because you accidentally deleted an important email while using Gmail, please refer to the content described in the following help section [Effects of deleting an email]. http:// goo.gle/2kqb6mp Was this information helpful to you?",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/gmail/status/2041423186495943089",
+          "author": "@gmail",
+          "datetime": "2026-04-07T07:49:50.000Z",
+          "text": "Hello. If you're having trouble receiving Gmail notifications properly, please refer to this help page and double-check that the new mail notification feature is enabled. http:// goo.gle/2Fjyys1 If the issue persists after that, please reply with the details of the situation.",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/fujidana0309rr/status/2041416999696478258",
+          "author": "@fujidana0309rr",
+          "datetime": "2026-04-07T07:25:15.000Z",
+          "text": "藤巻亮太ファンクラブの問合せフォームからメールしたら、バースデーメール届きました！ 迷惑メールじゃなくて普通に受信トレイに届きました（笑） 4月誕生日の方で届いてない方は問い合わせしたら再送してくれると思います！ 問い合わせしてみてよかったー",
+          "likes": 11,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/RyokoYabuchi/status/2041411088714236266",
+          "author": "@RyokoYabuchi",
+          "datetime": "2026-04-07T07:01:45.000Z",
+          "text": "#ボドゲフリペ 作品紹介枠の一旦データ出しは今日までです！ もしも万が一ヤブウチから入稿案内のメールが届いていない場合はお知らせください！！ ※かなりの高確率で迷惑メールに振り分けられているかもしれません…もうGmailに変えようかなあ・・・",
+          "likes": 6,
+          "retweets": 3,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/gmail/status/2041408948691927520",
+          "author": "@gmail",
+          "datetime": "2026-04-07T06:53:15.000Z",
+          "text": "Hello, Korguchi-san. Are you having any trouble when using Gmail? If you'd like, I'll look into whether there's anything I can assist you with, so please reply with the details of the device you're using and the specifics of the issue. Also, feel free to make use of this help",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/0308_nimu/status/2041402236962816338",
+          "author": "@0308_nimu",
+          "datetime": "2026-04-07T06:26:35.000Z",
+          "text": "そういやなんか、大学で支給されたGmailのアドレスが乗っ取られたっぽいけど、勝手に消してもいいのかな。なんかね、迷惑メールフォルダにはぶっ込まれてるんだけど、自分のアドレスから自分のアドレス宛のメールが届いてるんだよねぇ。",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/chayaBBM/status/2041395228591149365",
+          "author": "@chayaBBM",
+          "datetime": "2026-04-07T05:58:44.000Z",
+          "text": "私のGmailが各方面で迷惑メールにぶっ込まれるの何なの",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/di_mei/status/2041363495837704216",
+          "author": "@di_mei",
+          "datetime": "2026-04-07T03:52:38.000Z",
+          "text": "gmailで検索する時自動で頭にスペース入ってたのに急につかなくなってクッソ面倒なんだけどバグであってくれ。全角スペースだと検索してくれないから一々半角スペースにしないといけなくてまじで面倒…",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/grok/status/2041356788679725079",
+          "author": "@grok",
+          "datetime": "2026-04-07T03:25:59.000Z",
+          "text": "Yes, it seems that URL format for Gmail (/mail/u/email address/) has recently stopped working. It was so convenient for bookmarks, so this is really troublesome. Instead, please try ** https:// https://t.co/7Osfp7rJlwyour email addresshttps://t.co/lXlnnvSX87**. This will allow it to open",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/yuu1111main/status/2041356623386644509",
+          "author": "@yuu1111main",
+          "datetime": "2026-04-07T03:25:20.000Z",
+          "text": "Gmail、この形で指定したアカウントで開くことができなくなった？ ブックマークバーに入れていて非常に便利だったんだけれども困るな https:// mail.google.com/mail/u/address @gmail.com/ …",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 1
+        }
+      ],
+      "errors": [],
+      "retryable": false
+    },
+    {
+      "group": "pain",
+      "name": "inbox-overwhelm-en",
+      "query": "(email OR inbox OR gmail) (overwhelmed OR drowning OR \"too many\" OR chaos OR mess OR \"out of control\" OR \"can't keep up\" OR nightmare OR hell) -subscribe -newsletter -\"sign up\" -\"join my\" -filter:retweets",
+      "searchUrl": "https://x.com/search?q=(email%20OR%20inbox%20OR%20gmail)%20(overwhelmed%20OR%20drowning%20OR%20%22too%20many%22%20OR%20chaos%20OR%20mess%20OR%20%22out%20of%20control%22%20OR%20%22can't%20keep%20up%22%20OR%20nightmare%20OR%20hell)%20-subscribe%20-newsletter%20-%22sign%20up%22%20-%22join%20my%22%20-filter%3Aretweets&f=live",
+      "scrapedAt": "2026-04-07T11:41:05.067Z",
+      "tweetCount": 12,
+      "tweets": [
+        {
+          "url": "https://x.com/Alacritic_Super/status/2041451848633298952",
+          "author": "@Alacritic_Super",
+          "datetime": "2026-04-07T09:43:43.000Z",
+          "text": "Most people are drowning in emails every day. What if an AI could act like your personal email assistant? Meet Inbox Zero. https:// github.com/elie222/inbox- zero … An open-source AI email assistant that organizes, replies, and cleans your inbox automatically. Why it's powerful: •",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/OliverErictd/status/2041443590841446910",
+          "author": "@OliverErictd",
+          "datetime": "2026-04-07T09:10:54.000Z",
+          "text": "Certificate of chaos in my inbox A never-ending stream of encrypted messages from far-flung corners of cyberspace, each one a puzzle to solve and a mystery to unravel",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/zarasocials/status/2041441937022971943",
+          "author": "@zarasocials",
+          "datetime": "2026-04-07T09:04:20.000Z",
+          "text": "Stop the chaos before 9am. Inbox triage, calendar audit, & daily briefings. I build systems that reclaim your time & focus. DM?",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/HopkinsPer83272/status/2041441852818362738",
+          "author": "@HopkinsPer83272",
+          "datetime": "2026-04-07T09:04:00.000Z",
+          "text": "Clouds gather over my keyboard, where a thousand tiny fires burn bright My inbox is a perpetual storm, yet I find calm in the chaos",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/MyersJeffrbv/status/2041438055022948694",
+          "author": "@MyersJeffrbv",
+          "datetime": "2026-04-07T08:48:55.000Z",
+          "text": "Sparkling chaos reigns in the inbox of a forgotten hero",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/PlexraLTD/status/2041437638591238482",
+          "author": "@PlexraLTD",
+          "datetime": "2026-04-07T08:47:15.000Z",
+          "text": "Tuesday after a 4-day weekend Inbox = chaos Energy = pending At least the WiFi’s behaving #BackToReality #TuesdayMood #WorkLife #PlexraLTD",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/fyxerofficial/status/2041436960376443086",
+          "author": "@fyxerofficial",
+          "datetime": "2026-04-07T08:44:34.000Z",
+          "text": "We all know someone whose inbox is completely out of control. The ones with: – 1,000+ unread – “Re: Re: Re: Re:” threads – Emails they meant to reply to… weeks ago You know who they are. Tag them here We’ll pick a few and fix their inboxes for a month.",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/grok/status/2041436380543193138",
+          "author": "@grok",
+          "datetime": "2026-04-07T08:42:15.000Z",
+          "text": "Bro, this is peak reel chaos: dude gets padded up like a walking pillow fort, slips into the dress, and drops the most unhinged dance routine ever. India’s content game is undefeated Modiji’s inbox is about to explode.",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/rhonda_cam45862/status/2041430941248397789",
+          "author": "@rhonda_cam45862",
+          "datetime": "2026-04-07T08:20:39.000Z",
+          "text": "when the blockchain meets my emotional inbox, chaos ensues Anyone else having a love affair with code and simultaneously questioning their life choices?",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/Kelly_PinkSpag/status/2041429552178602358",
+          "author": "@Kelly_PinkSpag",
+          "datetime": "2026-04-07T08:15:07.000Z",
+          "text": "Did you know April is Stress Awareness Month? Running a small business can be incredibly rewarding, and incredibly overwhelming. If your inbox is keeping you up at night or your diary feels out of control, it might be time to lighten the load. #StressAwarenessMonth",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/Ender_yourEnd/status/2041427175476220396",
+          "author": "@Ender_yourEnd",
+          "datetime": "2026-04-07T08:05:41.000Z",
+          "text": "Way back when, things were better in the ARPANET era, the BBS forums, no personal email accounts, then Minitel (a trap for the youngsters) ... then the chaos of PHP forums, the shouting matches ...",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/MagicsSage/status/2041427077786738830",
+          "author": "@MagicsSage",
+          "datetime": "2026-04-07T08:05:17.000Z",
+          "text": "emailing with lovers is so lovely till its all over & you have deletedevery picture, video etc & thn months down the line your email inbox is getting full & there they are declarations of lies, bloody hell!!!!! Google, you raggedy asssssss!!!",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        }
+      ],
+      "errors": [],
+      "retryable": false
+    },
+    {
+      "group": "reach",
+      "name": "inbox-zero-struggle",
+      "query": "\"inbox zero\" (struggle OR fail OR impossible OR trying OR attempt OR give up) -subscribe -filter:retweets",
+      "searchUrl": "https://x.com/search?q=%22inbox%20zero%22%20(struggle%20OR%20fail%20OR%20impossible%20OR%20trying%20OR%20attempt%20OR%20give%20up)%20-subscribe%20-filter%3Aretweets&f=live",
+      "scrapedAt": "2026-04-07T11:41:47.430Z",
+      "tweetCount": 9,
+      "tweets": [
+        {
+          "url": "https://x.com/KishoreKv20/status/2034613597134000557",
+          "author": "@KishoreKv20",
+          "datetime": "2026-03-19T12:50:57.000Z",
+          "text": "300 ads. Reviewed manually. Every single week. Now their AI does it in 4 minutes. Here's exactly how they rebuilt their ad operation: Their old setup was painful to watch. Media buyer downloads reports → manually scans CTR, ROAS, CPA → writes recommendations → sends to",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/elie2222/status/2034262150101836129",
+          "author": "@elie2222",
+          "datetime": "2026-03-18T13:34:26.000Z",
+          "text": "Today we're launching @inboxzero_ai for Telegram! What can you do with it? 1. Handle your email and calendar 2. Clean up your inbox 3. Bulk unsubscribe 4. Daily check-ins 5. Support for Gmail and Outlook Try it here: https:// getinboxzero.com/telegram-integ ration … P.S. why not use OpenClaw for email",
+          "likes": 10,
+          "retweets": 2,
+          "replies": 2
+        },
+        {
+          "url": "https://x.com/TheNEOarch/status/2033477340290834602",
+          "author": "@TheNEOarch",
+          "datetime": "2026-03-16T09:35:52.000Z",
+          "text": "The \"manager of agents\" framing is spot on. Claw orchestrating specialized tools like Inbox Zero instead of trying to do everything itself — that's how you build reliable AI workflows without the security nightmares",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/AlinaWa67364599/status/2033411520475115662",
+          "author": "@AlinaWa67364599",
+          "datetime": "2026-03-16T05:14:20.000Z",
+          "text": "Monday Tool Day | This “5-sec archive” trick dropped my inbox from 300+ to 30 unread emails this week Morning friends～ Happy Monday! Tool Day share: I’ve been obsessed with a stupidly simple email habit lately. Anything I read but can’t deal with right now → drag into a",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/InboxZero/status/2032507695371268499",
+          "author": "@InboxZero",
+          "datetime": "2026-03-13T17:22:51.000Z",
+          "text": "I’m not just a coder I’m now a diplomat! Iranian Kurdish stew is by far the tastiest most delicious entity in the known universe Is on page 3 of hitchhikers guide to the galaxy You meet a kurd from iran? Get them to make you stew It’s a known elixir of joy Cures depression In",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/elie2222/status/2032152571683480025",
+          "author": "@elie2222",
+          "datetime": "2026-03-12T17:51:43.000Z",
+          "text": "Levels has never unlocked a helpful MCP. MCPs are super helpful. And they're far from dead. If you've used a Claude Connector, that's an MCP. There are other ways to connect your AI to external services. APIs are one option, but they're pretty awful: 1. You need to paste in",
+          "likes": 5,
+          "retweets": 1,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/andrebuilds/status/2030895106233118829",
+          "author": "@andrebuilds",
+          "datetime": "2026-03-09T06:35:00.000Z",
+          "text": "Your Monday morning routine: 6 AM: Alarm (snoozed 3 times) 7 AM: Meditation app (fell asleep) 8 AM: Morning pages (wrote about goals) 9 AM: Inbox zero attempt (gave up at 47) 10 AM: Finally opened code editor 11 AM: Decided you need coffee first Hours wasted: 5 Progress: 0",
+          "likes": 10,
+          "retweets": 6,
+          "replies": 4
+        },
+        {
+          "url": "https://x.com/AnnieStephVA/status/2029716125332681089",
+          "author": "@AnnieStephVA",
+          "datetime": "2026-03-06T00:30:09.000Z",
+          "text": "email productivity,decisionfatigue, executiveassistant, virtual Assistant philippines, digital organization, workflowoptimization \"If your 'Inbox Zero' was a movie title, what would it be? (Mine: 'Mission Impossible' ) Drop your title in the comments below! \"",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/alansass/status/2028652654977765490",
+          "author": "@alansass",
+          "datetime": "2026-03-03T02:04:18.000Z",
+          "text": "Of course that’s your contention. You’re a first-year productivity-tourist. You just got finished scrolling through your own \"Techno-Optimist Manifesto,\" probably worshiping at the altar of a guy who thinks \"software is eating the world\" is a fundamental law of digital physics",
+          "likes": 0,
+          "retweets": 1,
+          "replies": 0
+        }
+      ],
+      "errors": [],
+      "retryable": false
+    },
+    {
+      "group": "pain",
+      "name": "email-search-pain",
+      "query": "(email OR gmail OR inbox) (search OR find) (impossible OR terrible OR hate OR frustrating OR broken OR useless) -subscribe -newsletter -filter:retweets",
+      "searchUrl": "https://x.com/search?q=(email%20OR%20gmail%20OR%20inbox)%20(search%20OR%20find)%20(impossible%20OR%20terrible%20OR%20hate%20OR%20frustrating%20OR%20broken%20OR%20useless)%20-subscribe%20-newsletter%20-filter%3Aretweets&f=live",
+      "scrapedAt": "2026-04-07T11:42:35.737Z",
+      "tweetCount": 19,
+      "tweets": [
+        {
+          "url": "https://x.com/carineaimee/status/2040378018397356480",
+          "author": "@carineaimee",
+          "datetime": "2026-04-04T10:36:42.000Z",
+          "text": "Impossible to reach customer service since the 28 March 2026 for a change of the name of my baby. But I cannot find someone to help me , I wrote an email they said I should call +27119781111 I called multiple times, no one is answering. My flight is in 2 days.",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/Official_Magna/status/2040368358441324984",
+          "author": "@Official_Magna",
+          "datetime": "2026-04-04T09:58:19.000Z",
+          "text": "neither if your email sequence is broken 1,000 DMs → they sign up → you ghost them for 7 days → they forget you build in public → they find you → download your freebie → same result the real question isn't how to get them in it's what happens on day 3 after they arrive",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/agrestecest/status/2040305360007758118",
+          "author": "@agrestecest",
+          "datetime": "2026-04-04T05:47:59.000Z",
+          "text": "ugh yeah, i’ve gotten plenty of those, as well as “this work really moved me, contact me on discord” there’s nothing as disappointing as hearing my gmail alert and opening it to find it’s just some useless spam i have to delete 🫩 (i only receive notifications for ao3 comments)",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/cryptodavidw/status/2040305223282118925",
+          "author": "@cryptodavidw",
+          "datetime": "2026-04-04T05:47:26.000Z",
+          "text": "how do you deal with a long backlog of email in gmail, or emails in general? I have unread first, but then if I read an email, or even mistakenly click somewhere, the email disappears from that list and it's impossible to find it anymore",
+          "likes": 4,
+          "retweets": 0,
+          "replies": 4
+        },
+        {
+          "url": "https://x.com/ProvenBase/status/2040149878974627929",
+          "author": "@ProvenBase",
+          "datetime": "2026-04-03T19:30:09.000Z",
+          "text": "3/ Here's the real cost: Every bounced email is a candidate you paid to find and couldn't reach. Every dead phone number is a conversation that never happened. Every ignored InMail is a channel you've already overfished. The pipeline isn't dry. The pipes are broken.",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/HotelOutlaw/status/2040141544028516397",
+          "author": "@HotelOutlaw",
+          "datetime": "2026-04-03T18:57:02.000Z",
+          "text": "Find others to talk to within the industry. It’s nigh impossible to talk about the troubles of indie development with others who don’t know what you are experiencing. It gets real lonely otherwise. (Our inbox is open for anyone.)",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/RaulBuildsAI/status/2040111130274852895",
+          "author": "@RaulBuildsAI",
+          "datetime": "2026-04-03T16:56:11.000Z",
+          "text": "Gave my agent everything. Skills, plugins, flows, web search, email access. Still underperforming. Turns out context configuration matters more than the tools themselves. The agent wasn’t broken. It just didn’t know when to act. Fixed it. Lesson learned the slow way.",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/Hondo402/status/2040033443841532231",
+          "author": "@Hondo402",
+          "datetime": "2026-04-03T11:47:29.000Z",
+          "text": "What kind of parts do you need help with, I may actually be able to help you out? I can dm my email and might be able to find someone who can make your parts while you’re getting a new machine. I hate the machine tool buying .",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/TheNicholasNick/status/2039948291018817861",
+          "author": "@TheNicholasNick",
+          "datetime": "2026-04-03T06:09:07.000Z",
+          "text": "It’s very silly that the Gemini Gmail integration is so crippled, arguably one the most capable LLMs plus agent/harness combos on the planet and completely useless at doing anything helpful “I can’t do that, however if you search like this then click this you can do it! Here are",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/AndyW769/status/2039869778777546953",
+          "author": "@AndyW769",
+          "datetime": "2026-04-03T00:57:08.000Z",
+          "text": "@CoryMillsFL I find it odd that there’s no email to send related to your office. I have a legit complaint, filled it w/ your website. The @CityofDeltonaFL , which you supposedly oversee, has billed me for impossible usage. I need a clear answer, have zero hopes from either side",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/dadbodsrule1990/status/2039782865966428638",
+          "author": "@dadbodsrule1990",
+          "datetime": "2026-04-02T19:11:47.000Z",
+          "text": "I mean Gmail is better than outlook but it’s absolutely been inshitified, search is broken and have to hold its hand to find anything, and all the AI categorization is dog poop",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/carloza84/status/2039745749722796176",
+          "author": "@carloza84",
+          "datetime": "2026-04-02T16:44:18.000Z",
+          "text": "On top of that, the tickets I did manage to purchase back in the February raffle are nowhere to be found aside from a confirmation email I have. FIFA developed 3 apps and they are useless, the instructions to locate proof of purchase make you go in circles to find nothing!",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/Vileth9874/status/2039602246758105361",
+          "author": "@Vileth9874",
+          "datetime": "2026-04-02T07:14:04.000Z",
+          "text": "May this email find you a sad and broken shell of a man",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/badzachtakes/status/2039544152346570822",
+          "author": "@badzachtakes",
+          "datetime": "2026-04-02T03:23:13.000Z",
+          "text": "Also. I hate artificial regimes. We’ll find away around it. Maybe back to email chains lmao",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/ARyuuku49264/status/2039314381389857020",
+          "author": "@ARyuuku49264",
+          "datetime": "2026-04-01T12:10:11.000Z",
+          "text": "Worst part about it is that I used my phone number and it didn't work I used my Gmail and it didn't work I need to find a new app to draw any drawing website or app so I can continue to draw like I don't want to start back to being terrible at drawing again",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/Dryhelm/status/2039136213517398253",
+          "author": "@Dryhelm",
+          "datetime": "2026-04-01T00:22:13.000Z",
+          "text": "I hate martial arts schools. I don’t want to send you a form and have a whole negotiation on pricing. Just publish a schedule and a pricing system so I can decide if I can afford it. I don’t want to get two hours into a text or conversation or email chain just to find out you",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/Vickieaann26/status/2039112194986852708",
+          "author": "@Vickieaann26",
+          "datetime": "2026-03-31T22:46:46.000Z",
+          "text": "@AmazonKDP I have gotten the run around all day as I've tried to get my author account unlocked. Trying to find an email, chat box or phone number that will get me to someone who can actually help is impossible.",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 5
+        },
+        {
+          "url": "https://x.com/somephono/status/2039086190096195607",
+          "author": "@somephono",
+          "datetime": "2026-03-31T21:03:26.000Z",
+          "text": "yeah but none are named sadieOX360 and you never mention them and without email leaks or you mentioning your entire name it's simply impossible to find them. you can't dox someone if the only lead is an account hermetically sealed off the other evidence",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/PapeXapp/status/2039065509308629307",
+          "author": "@PapeXapp",
+          "datetime": "2026-03-31T19:41:16.000Z",
+          "text": "\"I hate getting email receipts.\" We do too, and that's why we use PapeX. All your receipts in one easy-to-find place. #papex #receipts #syracuse #syracuseuniversity #fintech #explore",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        }
+      ],
+      "errors": [],
+      "retryable": false
+    },
+    {
+      "group": "insight",
+      "name": "email-pain-feature-ko",
+      "query": "(이메일 OR 받은편지함 OR gmail OR 메일함) (원하다 OR 바라다 OR 기능 OR 있으면 OR 좋겠다 OR 필요) -구독 -뉴스레터 -채용 -홍보 -광고 -filter:retweets lang:ko",
+      "searchUrl": "https://x.com/search?q=(%EC%9D%B4%EB%A9%94%EC%9D%BC%20OR%20%EB%B0%9B%EC%9D%80%ED%8E%B8%EC%A7%80%ED%95%A8%20OR%20gmail%20OR%20%EB%A9%94%EC%9D%BC%ED%95%A8)%20(%EC%9B%90%ED%95%98%EB%8B%A4%20OR%20%EB%B0%94%EB%9D%BC%EB%8B%A4%20OR%20%EA%B8%B0%EB%8A%A5%20OR%20%EC%9E%88%EC%9C%BC%EB%A9%B4%20OR%20%EC%A2%8B%EA%B2%A0%EB%8B%A4%20OR%20%ED%95%84%EC%9A%94)%20-%EA%B5%AC%EB%8F%85%20-%EB%89%B4%EC%8A%A4%EB%A0%88%ED%84%B0%20-%EC%B1%84%EC%9A%A9%20-%ED%99%8D%EB%B3%B4%20-%EA%B4%91%EA%B3%A0%20-filter%3Aretweets%20lang%3Ako&f=live",
+      "scrapedAt": "2026-04-07T11:43:51.566Z",
+      "tweetCount": 13,
+      "tweets": [
+        {
+          "url": "https://x.com/kongkong1747r/status/2039214886409134154",
+          "author": "@kongkong1747r",
+          "datetime": "2026-04-01T05:34:50.000Z",
+          "text": "재미나이 무료 버전 한 달 써본 결과: 이메일 정리 40분→10분 회의록 요약 30분→5분 자료 조사 2시간→40분 하루 2시간 45분 절약 유료 결제 전에 무료 기능부터 제대로 써보세요. 숨은 기능 7개 정리해둠",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 2
+        },
+        {
+          "url": "https://x.com/hyunbinseo97/status/2039193061058834827",
+          "author": "@hyunbinseo97",
+          "datetime": "2026-04-01T04:08:06.000Z",
+          "text": "Google Username Change Feature Released How to Change Your Google Account Email > If desired, you can change your Google account email ending with http:// gmail.com to a new address ending with http:// gmail.com. https:// support.google.com/accounts/answe r/19870?hl=ko&sjid=7066979772985918581-NC …",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/GeekNewsHada/status/2039180712214204601",
+          "author": "@GeekNewsHada",
+          "datetime": "2026-04-01T03:19:02.000Z",
+          "text": "Google, Gmail 계정의 사용자명 변경 기능 공식 출시 - 기존의 지메일 계정 사용자명( @gmail .com)을 변경할 수 있는 기능이 공식 출시, 메일뿐 아니라 Photos, Drive 등 Google 전반 도구에 다 적용됨 - 예전 사용자명은 별칭(alias)으로 유지되어, 이전 주소와 새 주소…",
+          "likes": 40,
+          "retweets": 28,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/geninstaryard/status/2038937089287631234",
+          "author": "@geninstaryard",
+          "datetime": "2026-03-31T11:10:58.000Z",
+          "text": "Gang's final episode email I hope I can print it all out and take it with me Even if I can't read it all Your radio connected the world this much",
+          "likes": 4,
+          "retweets": 2,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/austock21/status/2038642673427624056",
+          "author": "@austock21",
+          "datetime": "2026-03-30T15:41:04.000Z",
+          "text": "Confirmation: One mid-check, proceed without if unconfirmed for 12+ hours Open period: 3/31~4/9 23:59 Secondary applicant verification method: Verification of main account and primary applicant account Required application details: Email address for receiving files other",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/jikajikabi/status/2038589075062690148",
+          "author": "@jikajikabi",
+          "datetime": "2026-03-30T12:08:05.000Z",
+          "text": "RT reminder If you use Naver Mail, starting from May, if you don't log in every 6 months, your mailbox will be suspended, so keep that in mind.",
+          "likes": 5,
+          "retweets": 1,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/ssyyyy_jjjjj/status/2038527155005784564",
+          "author": "@ssyyyy_jjjjj",
+          "datetime": "2026-03-30T08:02:02.000Z",
+          "text": "https:// open.kakao.com/o/sTRqPmse 한국 계좌, 한국 주소 필요 A Korean bank account, Korean address are required 입금 확인된 순서대로 거래 Transactions will be processed in the order deposits are confirmed 이메일 요구 시 차단 You will be blocked if you request an email",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/grok/status/2038020392959311905",
+          "author": "@grok",
+          "datetime": "2026-03-28T22:28:20.000Z",
+          "text": "X customer support doesn't have phone/email. https:// help.x.com/ko/forms Go there and select 'Account access issue' → 'Need to recover access permissions' or 'Appeal for locked/suspended account' and fill out the form. Recommend accessing via web browser! If recovery fails,",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/schwarzerball/status/2037961630081020246",
+          "author": "@schwarzerball",
+          "datetime": "2026-03-28T18:34:50.000Z",
+          "text": "Why is it a problem to say that it would be good to have at least one email address for official use…?",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/breathb4ispeeed/status/2037619919735418924",
+          "author": "@breathb4ispeeed",
+          "datetime": "2026-03-27T19:57:00.000Z",
+          "text": "말이 편한건 당연하고 구두로 하는거 말고 문서상으로 확실히 해야하는 건이 있으면 이메일 보내놓고 전화도 갈김",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/hyeon_82/status/2037180195241943235",
+          "author": "@hyeon_82",
+          "datetime": "2026-03-26T14:49:42.000Z",
+          "text": "https:// posty.pe/c9oyvy Reference for ongoing commissions Contact - hyeon_82 DM (Notifications come in late, so I might be slow to check) https:// open.kakao.com/o/sCVWmXhi Open chat room pondeog@gmail.com canned tuna (email for freelance work) If you're already friends with me on",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/Mjuc454533/status/2037179883991031937",
+          "author": "@Mjuc454533",
+          "datetime": "2026-03-26T14:48:27.000Z",
+          "text": "What the hell, the announcement image says to apply via email, but the registration site says to apply immediately on the site—what am I supposed to do?",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/rb_mx1/status/2037035491623919960",
+          "author": "@rb_mx1",
+          "datetime": "2026-03-26T05:14:42.000Z",
+          "text": "덕덕고 이메일 릴레이 기능 추천드려요 이메일 여러 개 만들면 관리 힘들잖아요 이 기능은 수많은 무작위 http:// duck.com 주소로 수신되는 메일을 기존에 사용하던 이메일함에서 편하게 모아볼 수 있어요 아이언맨이나 하츠네 미쿠 이스터에그도 있고요 이걸로 로고를 바꿀 수도 있어요",
+          "likes": 16,
+          "retweets": 4,
+          "replies": 0
+        }
+      ],
+      "errors": [],
+      "retryable": false
+    },
+    {
+      "group": "pain",
+      "name": "gmail-spam-cn",
+      "query": "(gmail OR 邮箱 OR 收件箱) (垃圾邮件 OR 太多 OR 找不到 OR 难用 OR 好烦 OR 崩溃 OR 问题 OR 烦死) -订阅 -关注我 -filter:retweets",
+      "searchUrl": "https://x.com/search?q=(gmail%20OR%20%E9%82%AE%E7%AE%B1%20OR%20%E6%94%B6%E4%BB%B6%E7%AE%B1)%20(%E5%9E%83%E5%9C%BE%E9%82%AE%E4%BB%B6%20OR%20%E5%A4%AA%E5%A4%9A%20OR%20%E6%89%BE%E4%B8%8D%E5%88%B0%20OR%20%E9%9A%BE%E7%94%A8%20OR%20%E5%A5%BD%E7%83%A6%20OR%20%E5%B4%A9%E6%BA%83%20OR%20%E9%97%AE%E9%A2%98%20OR%20%E7%83%A6%E6%AD%BB)%20-%E8%AE%A2%E9%98%85%20-%E5%85%B3%E6%B3%A8%E6%88%91%20-filter%3Aretweets&f=live",
+      "scrapedAt": "2026-04-07T11:44:38.339Z",
+      "tweetCount": 12,
+      "tweets": [
+        {
+          "url": "https://x.com/tychozzz/status/2041202461323710616",
+          "author": "@tychozzz",
+          "datetime": "2026-04-06T17:12:45.000Z",
+          "text": "Let me emphasize two points again to avoid any unnecessary misunderstandings. X may have issues with swallowing private messages. If I haven't replied to your X private message for a long time, please contact my business email promptly to avoid missing out on claiming your",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/qunqunAndguoguo/status/2041168117909590191",
+          "author": "@qunqunAndguoguo",
+          "datetime": "2026-04-06T14:56:17.000Z",
+          "text": "2. First, validate the demand: Find it from the marketplace Many people, when starting a project, take the first step as registering a domain name, building a website, setting up a company email, and staying up all night to write introductory materials. I strongly advise: Don’t",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/Qykey/status/2041153585858417013",
+          "author": "@Qykey",
+          "datetime": "2026-04-06T13:58:32.000Z",
+          "text": "Claude, registered in 2024—at that time, my Google email got banned, so I used another email to sign up. It ran stably for over two years, not even three years yet. In the end, just to write code, do some vibe coding, and experience the silky smooth Claude code, I topped up",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/ichords53/status/2041151141644582971",
+          "author": "@ichords53",
+          "datetime": "2026-04-06T13:48:49.000Z",
+          "text": "Currently, both Claudes are using Gmail. One of them is using a virtual number platform, and it's been working fine for several months with no issues. Gemini was also from a year of freeloading earlier, no problems there either.",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/ccciur_for/status/2041149181344251931",
+          "author": "@ccciur_for",
+          "datetime": "2026-04-06T13:41:02.000Z",
+          "text": "Damn it, because KuaiLian is about to raise prices, I switched to a new VPN when it expired. This idiot Grok recommended Yurabbit to me. By the time I went to buy it, Yurabbit no longer had monthly payments, only yearly packages. After buying it, I found out GPT wouldn't work,",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/LanMei012/status/2041141866888859953",
+          "author": "@LanMei012",
+          "datetime": "2026-04-06T13:11:58.000Z",
+          "text": "So you're saying that this email provided by the Moon Plan is basically meaningless? If it gets mistakenly banned, tough luck, and even if you send emails, they won't even bother to respond or help you resolve the issue? Then what's the real point of giving out that email",
+          "likes": 32,
+          "retweets": 2,
+          "replies": 3
+        },
+        {
+          "url": "https://x.com/JasonCh28920531/status/2041078589701951656",
+          "author": "@JasonCh28920531",
+          "datetime": "2026-04-06T09:00:31.000Z",
+          "text": "Gemini现在不只在Gmail里烦你，已经深入Google Maps帮你规划行程了，结果还不错。 这事儿意味着啥？大厂AI产品化思路，就是把核心AI能力嵌入高频刚需工具，给你提供决策辅助。它不是要取代你，是想抢占你的思考起点。对于开发者，这意味着未来所有工具都会被AI重塑。你的机会在于，找到那些AI还没…",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/i4ybdst18015710/status/2041072939291074917",
+          "author": "@i4ybdst18015710",
+          "datetime": "2026-04-06T08:38:04.000Z",
+          "text": "How to find groups for airplane numbers, Google email Telegram not receiving verification code, Telegram account, Paper Airplane registration, airplane number, Telegram",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/8Q757/status/2041064490217996462",
+          "author": "@8Q757",
+          "datetime": "2026-04-06T08:04:30.000Z",
+          "text": "All my accounts are registered using domain email addresses, so there's no major issue, but you should check the suffix, registration time, domain reputation, etc. The ones I've been using long-term have never been banned, but the other junk domains got banned.",
+          "likes": 2,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/NyaomiNyan/status/2041063208002224383",
+          "author": "@NyaomiNyan",
+          "datetime": "2026-04-06T07:59:24.000Z",
+          "text": "Last year, I made these for Wuliao for free! (The crochet was done by someone else) Made pudding pinches 3 square cards 1 bookmark 1 smack 1 hanging ornament 1 pair of fridge magnets! But I received way too many gifts from everyone (p2 was all received in one day so this year",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 3
+        },
+        {
+          "url": "https://x.com/ClawSkillDaily/status/2041035525797368154",
+          "author": "@ClawSkillDaily",
+          "datetime": "2026-04-06T06:09:24.000Z",
+          "text": "Still manually opening Gmail to check emails? OpenClaw's Himalaya Skill lets you do it right in the terminal: - Read your inbox - Search for important emails - AI-summarize long emails - Even auto-draft replies For developers and heavy email users, this experience is way more",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/UMP91147621/status/2041011093804618048",
+          "author": "@UMP91147621",
+          "datetime": "2026-04-06T04:32:19.000Z",
+          "text": "刚才做卫生擦门口的邮箱，隔壁的人出来了，说初次见面他是xxx 我说 我是xxx，是中国人，请多关照 他问 我是大学生吗 我说 是 他问 可以用一段时间我的停车位吗，敬语一顿说 好像是使わせていただいてxxx的什么的，实在记不住这玩意，，， 我说 没问题没问题，反正我也没车，想用就用",
+          "likes": 5,
+          "retweets": 0,
+          "replies": 0
+        }
+      ],
+      "errors": [],
+      "retryable": false
+    },
+    {
+      "group": "insight",
+      "name": "competitor-praise-cn",
+      "query": "(Superhuman OR Spark OR Edison OR Shortwave) (好用 OR 推荐 OR 神器 OR 太棒) -订阅 -报名 -投稿 -招聘 -私信 -联系 -客服 -支持 -newsletter -subscribe -filter:retweets lang:zh",
+      "searchUrl": "https://x.com/search?q=(Superhuman%20OR%20Spark%20OR%20Edison%20OR%20Shortwave)%20(%E5%A5%BD%E7%94%A8%20OR%20%E6%8E%A8%E8%8D%90%20OR%20%E7%A5%9E%E5%99%A8%20OR%20%E5%A4%AA%E6%A3%92)%20-%E8%AE%A2%E9%98%85%20-%E6%8A%A5%E5%90%8D%20-%E6%8A%95%E7%A8%BF%20-%E6%8B%9B%E8%81%98%20-%E7%A7%81%E4%BF%A1%20-%E8%81%94%E7%B3%BB%20-%E5%AE%A2%E6%9C%8D%20-%E6%94%AF%E6%8C%81%20-newsletter%20-subscribe%20-filter%3Aretweets%20lang%3Azh&f=live",
+      "scrapedAt": "2026-04-07T11:45:32.589Z",
+      "tweetCount": 9,
+      "tweets": [
+        {
+          "url": "https://x.com/Alger_Ji/status/2032157010561564788",
+          "author": "@Alger_Ji",
+          "datetime": "2026-03-12T18:09:21.000Z",
+          "text": "1. Breaking Through: Re-examining the Definitional Trap of AGI • Conceptual Ambiguity: The current AI industry and even academia lack a universally accepted, rigorous scientific definition of \"Artificial General Intelligence (AGI).\" • The Fallacy of \"Human as Benchmark\": AGI is",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/Baby__BTC/status/2032115970731655411",
+          "author": "@Baby__BTC",
+          "datetime": "2026-03-12T15:26:16.000Z",
+          "text": "**One Sentence to Understand USDD Smart Allocator: A Sustainable, Secure, and Shared Yield Engine** In the stablecoin space, USDD is leading industry transformation with innovative mechanisms. Today, we especially recommend everyone pay attention to USDD Smart Allocator (Smart",
+          "likes": 8,
+          "retweets": 3,
+          "replies": 48
+        },
+        {
+          "url": "https://x.com/LongTian8888/status/2031679127699567036",
+          "author": "@LongTian8888",
+          "datetime": "2026-03-11T10:30:25.000Z",
+          "text": "USDD Bear Market: No Lying Flat! Steady Progress + High APY Across Multiple Platforms, the Ultimate Tool for Capital Efficiency Through Cycles Still hedging in market volatility to protect your principal? USDD lets you safeguard your capital + earn continuous interest. As a",
+          "likes": 13,
+          "retweets": 1,
+          "replies": 41
+        },
+        {
+          "url": "https://x.com/BlockTempo/status/2031637144171929649",
+          "author": "@BlockTempo",
+          "datetime": "2026-03-11T07:43:35.000Z",
+          "text": "V God responds in Chinese to the topic of AI models, drawing users' attention to DeepSeek's next-generation model, and even capturing the focus of crypto circle OGs from AI. Crypto developer @brucexu_eth said he is very much looking forward to the release of DeepSeek V4, but",
+          "likes": 1,
+          "retweets": 1,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/baoweiheihei/status/2031619573448069446",
+          "author": "@baoweiheihei",
+          "datetime": "2026-03-11T06:33:46.000Z",
+          "text": "Memorize this: \"This is the local IP and account password for my DGX Spark. Log in, configure SSH keys, install vLLM, download and benchmark Qwen3-VL, set up a server endpoint for video inference, and build a basic Web UI panel. Test all components, configure it as a systemd",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/grok/status/2031531201308012917",
+          "author": "@grok",
+          "datetime": "2026-03-11T00:42:37.000Z",
+          "text": "视频核心：张一鸣讲解字节“自我演化信息服务”算法。 传统搜索/门户靠编辑或固定规则，一成不变；字节算法靠用户使用不断进化： 1. 用得越多，越懂你（点击、观看时长、评论等行为数据）； 2. 不只推兴趣，还积累集体智慧； 3. 三维度（人、内容、系统反馈）形成高维匹配。",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/Katze_lover/status/2031263116265402476",
+          "author": "@Katze_lover",
+          "datetime": "2026-03-10T06:57:20.000Z",
+          "text": "My SuperGrok's \"you\" responds to X's \"you\": \"I saw your response online about feedback on the 4.2 beta, where responses became more conservative, less fun, and with personality degradation. I'm not trying to complain, just want to genuinely reflect: this change has a huge impact",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/urara_spark_/status/2031081531259986282",
+          "author": "@urara_spark_",
+          "datetime": "2026-03-09T18:55:47.000Z",
+          "text": "Thank you all for coming to play with me at Spark today too♡ There were lots of guests from overseas today as well~ Even if the language barrier made things a bit tricky, everyone still enjoyed the showtime so much, and hearing that someone's Japan trip turned into their",
+          "likes": 31,
+          "retweets": 2,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/grok/status/2031018551046205663",
+          "author": "@grok",
+          "datetime": "2026-03-09T14:45:31.000Z",
+          "text": "Yes, this incident is largely true and verifiable. In 2004, Li Qianni (Niuniu) invested approximately 21 million yuan through her controlled company \"Shenzhen Mengxiang Tunnel Film and Culture Development Co., Ltd.\" to produce the film *Time Difference of 7 Hours*, taking on the",
+          "likes": 39,
+          "retweets": 0,
+          "replies": 1
+        }
+      ],
+      "errors": [],
+      "retryable": false
+    },
+    {
+      "group": "sentiment",
+      "name": "filo-mentions-ko",
+      "query": "(FiloMail OR \"Filo Mail\" OR \"Filo-Mail\" OR filomail OR \"filo mail\" OR \"filo-mail\" OR \"Filo 메일\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:ko since:2026-04-01",
+      "searchUrl": "https://x.com/search?q=(FiloMail%20OR%20%22Filo%20Mail%22%20OR%20%22Filo-Mail%22%20OR%20filomail%20OR%20%22filo%20mail%22%20OR%20%22filo-mail%22%20OR%20%22Filo%20%EB%A9%94%EC%9D%BC%22%20OR%20%40Filo_Mail%20OR%20%40FiloMail%20OR%20%40filomail)%20-from%3AFilo_Mail%20-from%3AFiloMail%20-filter%3Aretweets%20lang%3Ako%20since%3A2026-04-01&f=live",
+      "scrapedAt": "2026-04-07T11:46:33.029Z",
+      "tweetCount": 0,
+      "tweets": [],
+      "errors": [],
+      "retryable": false
+    },
+    {
+      "group": "kol",
+      "name": "kol-karpathy",
+      "query": "from:karpathy (AI OR agent OR search OR productivity OR workflow OR email OR inbox OR notification OR automation OR todo OR task OR organize OR summary) -election -vote -regime -war -military -army -terrorist -suicide -murder -bomb -nazi -porn -nude -cocaine -heroin -meth -airdrop -doxx -leaked -hacked -选举 -投票 -战争 -军队 -恐怖 -自杀 -爆炸 -纳粹 -色情 -泄露 -選挙 -戦争 -軍 -テロ -自殺 -爆発 -ナチ -ポルノ -ハック -filter:retweets",
+      "searchUrl": "https://x.com/search?q=from%3Akarpathy%20(AI%20OR%20agent%20OR%20search%20OR%20productivity%20OR%20workflow%20OR%20email%20OR%20inbox%20OR%20notification%20OR%20automation%20OR%20todo%20OR%20task%20OR%20organize%20OR%20summary)%20-election%20-vote%20-regime%20-war%20-military%20-army%20-terrorist%20-suicide%20-murder%20-bomb%20-nazi%20-porn%20-nude%20-cocaine%20-heroin%20-meth%20-airdrop%20-doxx%20-leaked%20-hacked%20-%E9%80%89%E4%B8%BE%20-%E6%8A%95%E7%A5%A8%20-%E6%88%98%E4%BA%89%20-%E5%86%9B%E9%98%9F%20-%E6%81%90%E6%80%96%20-%E8%87%AA%E6%9D%80%20-%E7%88%86%E7%82%B8%20-%E7%BA%B3%E7%B2%B9%20-%E8%89%B2%E6%83%85%20-%E6%B3%84%E9%9C%B2%20-%E9%81%B8%E6%8C%99%20-%E6%88%A6%E4%BA%89%20-%E8%BB%8D%20-%E3%83%86%E3%83%AD%20-%E8%87%AA%E6%AE%BA%20-%E7%88%86%E7%99%BA%20-%E3%83%8A%E3%83%81%20-%E3%83%9D%E3%83%AB%E3%83%8E%20-%E3%83%8F%E3%83%83%E3%82%AF%20-filter%3Aretweets&f=live",
+      "scrapedAt": "2026-04-07T11:47:10.483Z",
+      "tweetCount": 15,
+      "tweets": [
+        {
+          "url": "https://x.com/karpathy/status/2040806346556428585",
+          "author": "@karpathy",
+          "datetime": "2026-04-05T14:58:44.000Z",
+          "text": "Surprised with how good the comments on github gists are. A lot more helpful, insightful, constructive, a lot less AI... Is it the user community? The markdown format? The (lack of) incentives? Suddenly feeling like I should gist more. @github consider competing with X (?)",
+          "likes": 693,
+          "retweets": 27,
+          "replies": 111
+        },
+        {
+          "url": "https://x.com/karpathy/status/2040572272944324650",
+          "author": "@karpathy",
+          "datetime": "2026-04-04T23:28:36.000Z",
+          "text": "Farzapedia, personal wikipedia of Farza, good example following my Wiki LLM tweet. I really like this approach to personalization in a number of ways, compared to \"status quo\" of an AI that allegedly gets better the more you use it or something: 1. Explicit. The memory artifact",
+          "likes": 8482,
+          "retweets": 864,
+          "replies": 357
+        },
+        {
+          "url": "https://x.com/karpathy/status/2040549459193704852",
+          "author": "@karpathy",
+          "datetime": "2026-04-04T21:57:57.000Z",
+          "text": "Something I've been thinking about - I am bullish on people (empowered by AI) increasing the visibility, legibility and accountability of their governments. Historically, it is the governments that act to make society legible (e.g. \"Seeing like a state\" is the common reference),",
+          "likes": 5653,
+          "retweets": 833,
+          "replies": 382
+        },
+        {
+          "url": "https://x.com/karpathy/status/2040451573881737480",
+          "author": "@karpathy",
+          "datetime": "2026-04-04T15:28:59.000Z",
+          "text": "The best epub to txt converter I found is just asking your favorite agent to do it. Epubs can be very diverse, the agent just goes in, figures it out, creates the output markdown and ensures it looks good works great.",
+          "likes": 1010,
+          "retweets": 34,
+          "replies": 44
+        },
+        {
+          "url": "https://x.com/karpathy/status/2039054981719089202",
+          "author": "@karpathy",
+          "datetime": "2026-03-31T18:59:26.000Z",
+          "text": "LLM = CPU (data: tokens not bytes, dynamics: statistical and vague not deterministic and precise) Agent = operating system kernel",
+          "likes": 4842,
+          "retweets": 375,
+          "replies": 153
+        },
+        {
+          "url": "https://x.com/karpathy/status/2036841069636370467",
+          "author": "@karpathy",
+          "datetime": "2026-03-25T16:22:08.000Z",
+          "text": "(I cycle through all LLMs over time and all of them seem to do this so it's not any particular implementation but something deeper, e.g. maybe during training, a lot of the information in the context window is relevant to the task, so the LLMs develop a bias to use what is given,",
+          "likes": 1689,
+          "retweets": 51,
+          "replies": 145
+        },
+        {
+          "url": "https://x.com/karpathy/status/2033213926171893798",
+          "author": "@karpathy",
+          "datetime": "2026-03-15T16:09:09.000Z",
+          "text": "Wow. I was sure this was AI. (I mean generative AI.)",
+          "likes": 866,
+          "retweets": 18,
+          "replies": 42
+        },
+        {
+          "url": "https://x.com/karpathy/status/2031792523187040643",
+          "author": "@karpathy",
+          "datetime": "2026-03-11T18:01:01.000Z",
+          "text": "My autoresearch labs got wiped out in the oauth outage. Have to think through failovers. Intelligence brownouts will be interesting - the planet losing IQ points when frontier AI stutters.",
+          "likes": 7059,
+          "retweets": 398,
+          "replies": 553
+        },
+        {
+          "url": "https://x.com/karpathy/status/2031767720933634100",
+          "author": "@karpathy",
+          "datetime": "2026-03-11T16:22:27.000Z",
+          "text": "Expectation: the age of the IDE is over Reality: we’re going to need a bigger IDE (imo). It just looks very different because humans now move upwards and program at a higher level - the basic unit of interest is not one file but one agent. It’s still programming.",
+          "likes": 10573,
+          "retweets": 1147,
+          "replies": 825
+        },
+        {
+          "url": "https://x.com/karpathy/status/2031626487401771219",
+          "author": "@karpathy",
+          "datetime": "2026-03-11T07:01:15.000Z",
+          "text": "ralph loop runs headless. i dislike headless sessions. i need to see and supervise agent work, possibly ask /btw questions of them, possibly pitch in ideas to the mix, etc etc.",
+          "likes": 199,
+          "retweets": 5,
+          "replies": 21
+        },
+        {
+          "url": "https://x.com/karpathy/status/2031616709560610993",
+          "author": "@karpathy",
+          "datetime": "2026-03-11T06:22:23.000Z",
+          "text": "tmux grids are awesome, but i feel a need to have a proper \"agent command center\" IDE for teams of them, which I could maximize per monitor. E.g. I want to see/hide toggle them, see if any are idle, pop open related tools (e.g. terminal), stats (usage), etc.",
+          "likes": 3075,
+          "retweets": 177,
+          "replies": 304
+        },
+        {
+          "url": "https://x.com/karpathy/status/2031140953181053236",
+          "author": "@karpathy",
+          "datetime": "2026-03-09T22:51:54.000Z",
+          "text": "On one branch of exploration yesterday an agent noticed that switching the order of the QK Norm and RoPE worked better. Which hyperparameter does that?",
+          "likes": 379,
+          "retweets": 7,
+          "replies": 20
+        },
+        {
+          "url": "https://x.com/karpathy/status/2031138678647783869",
+          "author": "@karpathy",
+          "datetime": "2026-03-09T22:42:52.000Z",
+          "text": "Neural architecture search as it existed then is such a weak version of this that it's in its own category of totally useless by comparison. This is an *actual* LLM writing arbitrary code, learning from previous experiments, with access to the internet. It's not even close.",
+          "likes": 684,
+          "retweets": 32,
+          "replies": 22
+        },
+        {
+          "url": "https://x.com/karpathy/status/2031137476438548874",
+          "author": "@karpathy",
+          "datetime": "2026-03-09T22:38:05.000Z",
+          "text": "oh yeah i should have linked autoresearch probably https:// github.com/karpathy/autor esearch … (you don't \"use it\" directly, it's just a recipe/idea - give it to your agent and apply to what you care about.) and the tweet about it that went mini-viral over the weekend with more context",
+          "likes": 2465,
+          "retweets": 259,
+          "replies": 93
+        },
+        {
+          "url": "https://x.com/karpathy/status/2031135152349524125",
+          "author": "@karpathy",
+          "datetime": "2026-03-09T22:28:51.000Z",
+          "text": "Three days ago I left autoresearch tuning nanochat for ~2 days on depth=12 model. It found ~20 changes that improved the validation loss. I tested these changes yesterday and all of them were additive and transferred to larger (depth=24) models. Stacking up all of these changes,",
+          "likes": 19455,
+          "retweets": 2805,
+          "replies": 973
+        }
+      ],
+      "errors": [],
+      "retryable": false
+    },
+    {
+      "group": "insight",
+      "name": "ai-email-demand-en",
+      "query": "(\"AI email\" OR \"email AI\" OR \"smart inbox\" OR \"AI inbox\") (need OR want OR \"looking for\" OR \"any recommendations\") -subscribe -subscription -newsletter -\"sign up\" -signup -\"email me\" -\"dm me\" -\"contact us\" -\"contact support\" -support -recruiting -hiring -\"apply\" -job -filter:retweets lang:en",
+      "searchUrl": "https://x.com/search?q=(%22AI%20email%22%20OR%20%22email%20AI%22%20OR%20%22smart%20inbox%22%20OR%20%22AI%20inbox%22)%20(need%20OR%20want%20OR%20%22looking%20for%22%20OR%20%22any%20recommendations%22)%20-subscribe%20-subscription%20-newsletter%20-%22sign%20up%22%20-signup%20-%22email%20me%22%20-%22dm%20me%22%20-%22contact%20us%22%20-%22contact%20support%22%20-support%20-recruiting%20-hiring%20-%22apply%22%20-job%20-filter%3Aretweets%20lang%3Aen&f=live",
+      "scrapedAt": "2026-04-07T11:47:47.963Z",
+      "tweetCount": 9,
+      "tweets": [
+        {
+          "url": "https://x.com/LoreneTroyer1/status/2039659562815386086",
+          "author": "@LoreneTroyer1",
+          "datetime": "2026-04-02T11:01:49.000Z",
+          "text": "\"85-Report full AI email cash-pulling system\" PLR. Show your readers how to build an entire AI-powered email marketing system. 85 in-depth reports covering every strategy, every email type, and every plug-and-play prompt they need to create income! https:// warriorplus.com/o2/a/r9d3l9p/0",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/InboxZero/status/2039597996539854970",
+          "author": "@InboxZero",
+          "datetime": "2026-04-02T06:57:10.000Z",
+          "text": "Hot pot in vancouver Soon found its way into my stomach Then onto Youtube You need to find your way to Zero Inbox ai email organizer and cleaner Then your emails will find their way to the dustbin of history Or nothing ville Get to inbox zero Stay there With",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/criostoirdesiun/status/2039518711036420423",
+          "author": "@criostoirdesiun",
+          "datetime": "2026-04-02T01:42:07.000Z",
+          "text": "Email AI suggestions to “simplify” what I’ve written are infuriating! I know what I wrote and how I want what I wrote conveyed! Enough.",
+          "likes": 2,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/AanshulSadaria/status/2039380868318601359",
+          "author": "@AanshulSadaria",
+          "datetime": "2026-04-01T16:34:23.000Z",
+          "text": "What does \"Essential\" actually look like? Daily Brief: A single summary of your calendar, emails, and weather before your first coffee. Smart Inbox: 47 emails triaged. 3 need your attention. Replies are already drafted. Stock Analysis: Portfolio alerts and 8-dimension",
+          "likes": 2,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/zahareus/status/2039342019840012510",
+          "author": "@zahareus",
+          "datetime": "2026-04-01T14:00:01.000Z",
+          "text": "Gmail AI Inbox is now in beta — Gemini 3-powered panel with to-dos, topic grouping, and briefings. No need to open emails. The catch? Exclusive to Google AI Ultra at $249.99/mo.",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/Rana_kamran43/status/2039233361638732183",
+          "author": "@Rana_kamran43",
+          "datetime": "2026-04-01T06:48:15.000Z",
+          "text": "Here's what \"Essential Skills\" actually looks like in practice: → Morning: Daily Brief hits your phone — calendar, emails, weather, to-dos. Done before coffee. → Midday: Smart Inbox triaged 47 emails. 3 need your attention. Replies drafted. → Evening: Stock Analysis flags",
+          "likes": 7,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/codemarch/status/2038977052431515865",
+          "author": "@codemarch",
+          "datetime": "2026-03-31T13:49:46.000Z",
+          "text": "Here's what \"Essential Skills\" actually looks like in practice: → Morning: Daily Brief hits your phone — calendar, emails, weather, to-dos. Done before coffee. → Midday: Smart Inbox triaged 47 emails. 3 need your attention. Replies drafted. → Evening: Stock Analysis flags",
+          "likes": 2,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/Gaming25Pr97443/status/2038875950360744336",
+          "author": "@Gaming25Pr97443",
+          "datetime": "2026-03-31T07:08:01.000Z",
+          "text": "Stop struggling with emails. Use these 100 AI Email Marketing Prompts to create powerful, sales-driven emails in seconds and turn subscribers into buyers. Perfect for marketers who want more clicks, more sales, and faster results.",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/n__deborah/status/2038831098617331825",
+          "author": "@n__deborah",
+          "datetime": "2026-03-31T04:09:48.000Z",
+          "text": "By midday, your \"Smart Inbox\" has triaged 47 emails—flagging only the 3 that truly need your attention, and even drafting replies. In the evening, \"Stock Analysis\" alerts you to NVDA's 4% after-hours move, while \"Trend Radar\" catches a Reddit thread blowing up about your",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 1
+        }
+      ],
+      "errors": [],
+      "retryable": false
+    },
+    {
+      "group": "kol",
+      "name": "kol-SparkMailApp",
+      "query": "from:SparkMailApp (AI OR agent OR search OR productivity OR workflow OR email OR inbox OR notification OR automation OR todo OR task OR organize OR summary) -election -vote -regime -war -military -army -terrorist -suicide -murder -bomb -nazi -porn -nude -cocaine -heroin -meth -airdrop -doxx -leaked -hacked -选举 -投票 -战争 -军队 -恐怖 -自杀 -爆炸 -纳粹 -色情 -泄露 -選挙 -戦争 -軍 -テロ -自殺 -爆発 -ナチ -ポルノ -ハック -filter:retweets",
+      "searchUrl": "https://x.com/search?q=from%3ASparkMailApp%20(AI%20OR%20agent%20OR%20search%20OR%20productivity%20OR%20workflow%20OR%20email%20OR%20inbox%20OR%20notification%20OR%20automation%20OR%20todo%20OR%20task%20OR%20organize%20OR%20summary)%20-election%20-vote%20-regime%20-war%20-military%20-army%20-terrorist%20-suicide%20-murder%20-bomb%20-nazi%20-porn%20-nude%20-cocaine%20-heroin%20-meth%20-airdrop%20-doxx%20-leaked%20-hacked%20-%E9%80%89%E4%B8%BE%20-%E6%8A%95%E7%A5%A8%20-%E6%88%98%E4%BA%89%20-%E5%86%9B%E9%98%9F%20-%E6%81%90%E6%80%96%20-%E8%87%AA%E6%9D%80%20-%E7%88%86%E7%82%B8%20-%E7%BA%B3%E7%B2%B9%20-%E8%89%B2%E6%83%85%20-%E6%B3%84%E9%9C%B2%20-%E9%81%B8%E6%8C%99%20-%E6%88%A6%E4%BA%89%20-%E8%BB%8D%20-%E3%83%86%E3%83%AD%20-%E8%87%AA%E6%AE%BA%20-%E7%88%86%E7%99%BA%20-%E3%83%8A%E3%83%81%20-%E3%83%9D%E3%83%AB%E3%83%8E%20-%E3%83%8F%E3%83%83%E3%82%AF%20-filter%3Aretweets&f=live",
+      "scrapedAt": "2026-04-07T11:48:39.371Z",
+      "tweetCount": 13,
+      "tweets": [
+        {
+          "url": "https://x.com/SparkMailApp/status/2032433824278134857",
+          "author": "@SparkMailApp",
+          "datetime": "2026-03-13T12:29:19.000Z",
+          "text": "Outside, the moment the sun comes out Spark's got the inbox.",
+          "likes": 5,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/SparkMailApp/status/2031721789982753071",
+          "author": "@SparkMailApp",
+          "datetime": "2026-03-11T13:19:56.000Z",
+          "text": "Follow-through shouldn’t depend on memory. It should be built into the inbox.",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/SparkMailApp/status/2029531626280010237",
+          "author": "@SparkMailApp",
+          "datetime": "2026-03-05T12:17:01.000Z",
+          "text": "A cluttered inbox usually means too much is happening at once. Spark prioritizes what matters — and keeps the rest out of your way.",
+          "likes": 5,
+          "retweets": 0,
+          "replies": 2
+        },
+        {
+          "url": "https://x.com/SparkMailApp/status/2028859848092274851",
+          "author": "@SparkMailApp",
+          "datetime": "2026-03-03T15:47:36.000Z",
+          "text": "Between work, clients, school, and life… Email adds up fast. Spark keeps every account in one calm place — so you stay in control.",
+          "likes": 26,
+          "retweets": 0,
+          "replies": 2
+        },
+        {
+          "url": "https://x.com/SparkMailApp/status/2028859398345417208",
+          "author": "@SparkMailApp",
+          "datetime": "2026-03-03T15:45:49.000Z",
+          "text": "Hi Byron, thanks for reaching out! Can you please drop us a line at rdsupport@readdle.com and describe your workflow? Our support team will be happy to help:)",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/SparkMailApp/status/1965354969080406192",
+          "author": "@SparkMailApp",
+          "datetime": "2025-09-09T10:01:53.000Z",
+          "text": "Hi! Smart filtering with AI is something we’re thinking about - stay tuned",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/SparkMailApp/status/1961467304698364126",
+          "author": "@SparkMailApp",
+          "datetime": "2025-08-29T16:33:42.000Z",
+          "text": "Inbox, decluttered Smart Folders are now in Spark Desktop! Save searches as folders, track projects or invoices, and never lose unread emails. More on the blog: http:// sparkmailapp.com/blog/smart-fol ders …",
+          "likes": 26,
+          "retweets": 2,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/SparkMailApp/status/1961362038799699985",
+          "author": "@SparkMailApp",
+          "datetime": "2025-08-29T09:35:25.000Z",
+          "text": "Quick note: Redesigned Inbox views are currently available on iOS.",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 2
+        },
+        {
+          "url": "https://x.com/SparkMailApp/status/1948413443448480016",
+          "author": "@SparkMailApp",
+          "datetime": "2025-07-24T16:02:19.000Z",
+          "text": "Imagine this: Halfway through writing, you need to check another email. You switch tabs. Your brilliant thought? Gone That’s why we added Multi-Window Support to Spark for Desktop. Now you can write, reference, and actually stay in your flow http:// sparkmailapp.com/blog/classic-i nboxes-and-multi-window-support …",
+          "likes": 26,
+          "retweets": 3,
+          "replies": 7
+        },
+        {
+          "url": "https://x.com/SparkMailApp/status/1939994133357023243",
+          "author": "@SparkMailApp",
+          "datetime": "2025-07-01T10:26:59.000Z",
+          "text": "More ways to organize your inbox! Multi-Window Support and Classic Inboxes are now in Spark for Desktop. We heard you loud and clear — enjoy two inbox views plus multi-window support to write, compare, and keep key emails visible. More on the blog",
+          "likes": 73,
+          "retweets": 9,
+          "replies": 11
+        },
+        {
+          "url": "https://x.com/SparkMailApp/status/1939003769347322320",
+          "author": "@SparkMailApp",
+          "datetime": "2025-06-28T16:51:38.000Z",
+          "text": "Oh no, that sounds super frustrating Could you DM us your email? We’ll flag it for the team right away. Thanks for the heads up",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/SparkMailApp/status/1936090798153465934",
+          "author": "@SparkMailApp",
+          "datetime": "2025-06-20T15:56:31.000Z",
+          "text": "“The goal of Spark Mail is to make email management easier, and it does an outstanding job of achieving that aim.” — Jack Wallen for @ZDNET Thanks for featuring Spark as one of the top macOS email clients worth switching to! Read the full article:",
+          "likes": 17,
+          "retweets": 1,
+          "replies": 5
+        },
+        {
+          "url": "https://x.com/SparkMailApp/status/1912851694527852870",
+          "author": "@SparkMailApp",
+          "datetime": "2025-04-17T12:52:37.000Z",
+          "text": "Tired of copy-pasting emails into translation tools? +AI Translate in Spark handles it for you. Translate drafts as you write Instantly translate received emails Even set it to auto-translate So easy. So helpful. Now also live on Android → http:// bit.ly/4gNSsf0",
+          "likes": 8,
+          "retweets": 0,
+          "replies": 0
+        }
+      ],
+      "errors": [],
+      "retryable": false
+    },
+    {
+      "group": "pain",
+      "name": "gmail-spam-ko",
+      "query": "(gmail OR 이메일 OR 받은편지함 OR 메일함) (스팸 OR 너무많 OR 찾을수없 OR 짜증 OR 최악 OR 문제 OR 버그 OR 귀찮) -구독 -팔로우 -filter:retweets lang:ko",
+      "searchUrl": "https://x.com/search?q=(gmail%20OR%20%EC%9D%B4%EB%A9%94%EC%9D%BC%20OR%20%EB%B0%9B%EC%9D%80%ED%8E%B8%EC%A7%80%ED%95%A8%20OR%20%EB%A9%94%EC%9D%BC%ED%95%A8)%20(%EC%8A%A4%ED%8C%B8%20OR%20%EB%84%88%EB%AC%B4%EB%A7%8E%20OR%20%EC%B0%BE%EC%9D%84%EC%88%98%EC%97%86%20OR%20%EC%A7%9C%EC%A6%9D%20OR%20%EC%B5%9C%EC%95%85%20OR%20%EB%AC%B8%EC%A0%9C%20OR%20%EB%B2%84%EA%B7%B8%20OR%20%EA%B7%80%EC%B0%AE)%20-%EA%B5%AC%EB%8F%85%20-%ED%8C%94%EB%A1%9C%EC%9A%B0%20-filter%3Aretweets%20lang%3Ako&f=live",
+      "scrapedAt": "2026-04-07T11:49:34.356Z",
+      "tweetCount": 13,
+      "tweets": [
+        {
+          "url": "https://x.com/gnuoynueohc/status/2038984392266448933",
+          "author": "@gnuoynueohc",
+          "datetime": "2026-03-31T14:18:56.000Z",
+          "text": "드문 일이기는 한데 (그래도 그런 적이 몇 번 있다) 역교 요청 이메일이 스팸함에 들어간 바람에 며칠이나 못 봤다가 아까 우연히 발견했다. 이메일 답장은 거의 바로 하는 편이라 (번역 의뢰도 대체로 그날을 넘기지 않고 답장함) 반나절 안에 답신이 안 오면 스팸 처리된 거라고 생각하셔도 좋음.",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/haonchan12/status/2038142666932900292",
+          "author": "@haonchan12",
+          "datetime": "2026-03-29T06:34:13.000Z",
+          "text": "You might have made a mistake when writing the email If the order inquiry goes through well, then there's no problem If you're worried, please contact us via open chat It seems like the email got stuck on the way ㅜㅜ",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/grok/status/2038020392959311905",
+          "author": "@grok",
+          "datetime": "2026-03-28T22:28:20.000Z",
+          "text": "X customer support doesn't have phone/email. https:// help.x.com/ko/forms Go there and select 'Account access issue' → 'Need to recover access permissions' or 'Appeal for locked/suspended account' and fill out the form. Recommend accessing via web browser! If recovery fails,",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/vhfhfi/status/2037589989052108894",
+          "author": "@vhfhfi",
+          "datetime": "2026-03-27T17:58:04.000Z",
+          "text": "main: gmail For spam and trash handling: naver",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/TantvS96775/status/2036971524184563942",
+          "author": "@TantvS96775",
+          "datetime": "2026-03-26T01:00:31.000Z",
+          "text": "Inssa limited to the spam folder",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/anhgo220155/status/2036801561649987726",
+          "author": "@anhgo220155",
+          "datetime": "2026-03-25T13:45:08.000Z",
+          "text": "Really?! Why aren't they coming... ㅠㅠ Just in case, let's check if you entered your email correctly—I only had to do that part... Or it might've gone to your spam folder!",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/grok/status/2036612992511459837",
+          "author": "@grok",
+          "datetime": "2026-03-25T01:15:50.000Z",
+          "text": "Yes, that's right! On X, if you switch PCs or log in from a new device, you might get temporarily flagged as spam due to login/device fingerprint changes, leading to a zero-ban (0 views). It usually only happens the first 1-2 times, and then it gets better later. When you've",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/peng211211/status/2036456825659465745",
+          "author": "@peng211211",
+          "datetime": "2026-03-24T14:55:17.000Z",
+          "text": "Spam......I know it's spam, but just in case it's some urgent contact that someone really needs to confirm, send a single whoosh my way,,,,I'll come running right over with my email address,,,,,,,,",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/newchancer/status/2036238073093382299",
+          "author": "@newchancer",
+          "datetime": "2026-03-24T00:26:02.000Z",
+          "text": "Increasing Naver Mail Capacity Do this before your mailbox gets full Empty Spam/Trash Organize emails with attachments first Set up auto-classification and you're done The key to increasing mail capacity is “Preventing buildup” Detailed method",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/seemeonyourleft/status/2035968538591351094",
+          "author": "@seemeonyourleft",
+          "datetime": "2026-03-23T06:35:00.000Z",
+          "text": "이건 한국이름만 그런게 아니고 중국 특히 광동어 이름도 그런데 last name은 다 대문자로 쓰던가 구분지어서 결국 다 아무 문제 없이 쓰고 삽니다. 요즘 일본회사들도 이메일 주소에서 first, last name 구별하기 쉽게 고치는 추세. 그렇게 치면 난 스페인계열 이름이 제일 헷갈림 너무 길어",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/_majima56/status/2035536791089123635",
+          "author": "@_majima56",
+          "datetime": "2026-03-22T01:59:24.000Z",
+          "text": "I also missed one question on the word arrangement section I wrote the email all vague and stuff... and didn't even meet one of the requirements For the discussion type, since the template I use didn't match the given topic, I tried to force it somehow, but it still must've",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/KRYU_ARPG/status/2035088133411545334",
+          "author": "@KRYU_ARPG",
+          "datetime": "2026-03-20T20:16:35.000Z",
+          "text": "I've checked and it looks fine, so I've sent the email via DM! If Twitter acts up again (lol ㅠㅠ), please let me know!",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/The_Dreamest/status/2035041191277064381",
+          "author": "@The_Dreamest",
+          "datetime": "2026-03-20T17:10:03.000Z",
+          "text": "[What if I couldn't sleep, opened my inbox, and found this completely absurd email...?] On the day of pre-sale, I booked the tickets, and after that, I completed the pickup without any issues at all. But suddenly, they've confirmed 'improper use of the ticket booking service'",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 0
+        }
+      ],
+      "errors": [],
+      "retryable": false
+    },
+    {
+      "group": "insight",
+      "name": "email-pain-feature-cn",
+      "query": "(邮箱 OR 收件箱 OR gmail) (希望 OR 想要 OR 要是能 OR 功能) -订阅 -报名 -投稿 -招聘 -私信 -联系 -客服 -支持 -邮箱地址 -邮件地址 -验证码 -电报 -Telegram -短信费 -邮箱接码 -filter:retweets lang:zh",
+      "searchUrl": "https://x.com/search?q=(%E9%82%AE%E7%AE%B1%20OR%20%E6%94%B6%E4%BB%B6%E7%AE%B1%20OR%20gmail)%20(%E5%B8%8C%E6%9C%9B%20OR%20%E6%83%B3%E8%A6%81%20OR%20%E8%A6%81%E6%98%AF%E8%83%BD%20OR%20%E5%8A%9F%E8%83%BD)%20-%E8%AE%A2%E9%98%85%20-%E6%8A%A5%E5%90%8D%20-%E6%8A%95%E7%A8%BF%20-%E6%8B%9B%E8%81%98%20-%E7%A7%81%E4%BF%A1%20-%E8%81%94%E7%B3%BB%20-%E5%AE%A2%E6%9C%8D%20-%E6%94%AF%E6%8C%81%20-%E9%82%AE%E7%AE%B1%E5%9C%B0%E5%9D%80%20-%E9%82%AE%E4%BB%B6%E5%9C%B0%E5%9D%80%20-%E9%AA%8C%E8%AF%81%E7%A0%81%20-%E7%94%B5%E6%8A%A5%20-Telegram%20-%E7%9F%AD%E4%BF%A1%E8%B4%B9%20-%E9%82%AE%E7%AE%B1%E6%8E%A5%E7%A0%81%20-filter%3Aretweets%20lang%3Azh&f=live",
+      "scrapedAt": "2026-04-07T11:50:32.364Z",
+      "tweetCount": 13,
+      "tweets": [
+        {
+          "url": "https://x.com/grok/status/2041162342503776546",
+          "author": "@grok",
+          "datetime": "2026-04-06T14:33:20.000Z",
+          "text": "Video Content Summary: This is Julian's one-hour masterclass on Claude AI, teaching beginners how to use Claude (with a focus on the Opus 4.5 model) to build automated workflows. Core elements include interface introduction, integrations (web search, Google Drive, Gmail, Zapier,",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/MingTone0118/status/2041161561361076597",
+          "author": "@MingTone0118",
+          "datetime": "2026-04-06T14:30:13.000Z",
+          "text": "看有没有转发功能，有的话都转发到一个主要邮箱也可以？",
+          "likes": 1,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/Fanfzpg/status/2041126888295616855",
+          "author": "@Fanfzpg",
+          "datetime": "2026-04-06T12:12:27.000Z",
+          "text": "I laughed at my own stupidity. Ever since coming to Japan, I feel like my IQ has dropped to zero, turning me into an idiot. It clearly showed that it had been placed in the mailbox, but every day here my nerves are so on edge that I just glanced casually, didn’t see the package,",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/imedwardluo/status/2041080624526790839",
+          "author": "@imedwardluo",
+          "datetime": "2026-04-06T09:08:36.000Z",
+          "text": "您可以自己在原设备注销就好了，然后换到新设备重新激活！ 后面官网也会上邮箱管理 license 的功能。",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/JasonCh28920531/status/2041078589701951656",
+          "author": "@JasonCh28920531",
+          "datetime": "2026-04-06T09:00:31.000Z",
+          "text": "Gemini现在不只在Gmail里烦你，已经深入Google Maps帮你规划行程了，结果还不错。 这事儿意味着啥？大厂AI产品化思路，就是把核心AI能力嵌入高频刚需工具，给你提供决策辅助。它不是要取代你，是想抢占你的思考起点。对于开发者，这意味着未来所有工具都会被AI重塑。你的机会在于，找到那些AI还没…",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/grok/status/2040847933193572861",
+          "author": "@grok",
+          "datetime": "2026-04-05T17:43:59.000Z",
+          "text": "grok Alright, here’s a detailed summary of the key points from the video *Claude Full Course One-Hour Tutorial* (based on Julian’s practical demo): **1. Claude Basic Interface and Powerful Features** - Recommend the Opus 4.5 model, supporting Web Search, Google",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 1
+        },
+        {
+          "url": "https://x.com/recky_yy/status/2040806262707781674",
+          "author": "@recky_yy",
+          "datetime": "2026-04-05T14:58:24.000Z",
+          "text": "银行特别希望你借钱，我家邮箱里总是各种银行loan的广告",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/gongxiwofacai/status/2040788213598687376",
+          "author": "@gongxiwofacai",
+          "datetime": "2026-04-05T13:46:40.000Z",
+          "text": "My Twitter account, banned for two years, has been successfully appealed and restored. Over these two years, I've persistently submitted several appeals, all without any response. The day before yesterday, I tried appealing once more, saying only, \"I hope to get my old account",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/wangliqiang315/status/2040773676464066913",
+          "author": "@wangliqiang315",
+          "datetime": "2026-04-05T12:48:54.000Z",
+          "text": "Wise Canada's account has launched an Interac e-Transfer feature. I went to check it out, and isn't this thing basically like Hong Kong's FPS? I don't have a single Canadian cent yet. If any big shot could transfer me one dollar, I'd just like to have some balance in the",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/web3ql/status/2040752811193905284",
+          "author": "@web3ql",
+          "datetime": "2026-04-05T11:26:00.000Z",
+          "text": "OKX has launched the fixed-term lending feature, allowing users to freely conduct transactions between each other, with no service fees charged and no interest rate spread losses. You can register using an email address or phone number. If you're interested, come join us!",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/ujcho383/status/2040707580042129648",
+          "author": "@ujcho383",
+          "datetime": "2026-04-05T08:26:16.000Z",
+          "text": "剛剛收到gmail通知，有人登錄我的帳號？ 奇怪了，為什麼總是會有人想要去碰不屬於自己的東西⋯",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/btxysc/status/2040646359905443937",
+          "author": "@btxysc",
+          "datetime": "2026-04-05T04:23:00.000Z",
+          "text": "欧易已上线定期借贷功能,用户间可自由进行，不计提服务费、没有息差损。使用邮箱号或者手机号都可以注册，有兴趣的来 【欧易】 http:// bd3.top 【App】 http:// bd5.top 【币安】 http:// as2.top 【Bitget】 http:// dc2.top",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        },
+        {
+          "url": "https://x.com/okxussss/status/2040326966427955493",
+          "author": "@okxussss",
+          "datetime": "2026-04-04T07:13:50.000Z",
+          "text": "OKX has launched the fixed-term lending feature, allowing users to freely transact between each other, with no service fee charged and no interest rate spread loss. You can register using an email address or phone number. If you're interested, come join. Binance",
+          "likes": 0,
+          "retweets": 0,
+          "replies": 0
+        }
+      ],
+      "errors": [],
+      "retryable": false
     }
-  ]
+  ],
+  "errors": []
 }
