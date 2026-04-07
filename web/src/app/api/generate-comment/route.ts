@@ -244,11 +244,21 @@ ${tweetText}
     };
   }
   
-  const response = await fetch(apiUrl, {
+  let response = await fetch(apiUrl, {
     method: 'POST',
     headers,
     body: JSON.stringify(body),
   });
+
+  // Fallback once for tapsvc proxy when model alias/env is invalid.
+  if (!response.ok && apiUrl.includes('llm-proxy.tapsvc.com') && model !== 'claude-sonnet-4-6') {
+    body = { ...body, model: 'claude-sonnet-4-6' };
+    response = await fetch(apiUrl, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+    });
+  }
   
   if (!response.ok) {
     const errorText = await response.text();
@@ -343,11 +353,20 @@ ${customPrompt}
     };
   }
 
-  const response = await fetch(apiUrl, {
+  let response = await fetch(apiUrl, {
     method: 'POST',
     headers,
     body: JSON.stringify(body),
   });
+
+  if (!response.ok && apiUrl.includes('llm-proxy.tapsvc.com') && model !== 'claude-sonnet-4-6') {
+    body = { ...body, model: 'claude-sonnet-4-6' };
+    response = await fetch(apiUrl, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+    });
+  }
 
   if (!response.ok) {
     const errorText = await response.text();
