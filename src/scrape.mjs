@@ -4,10 +4,12 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { 
   log, parseEngagement, buildSearchUrl, ensureAbsoluteUrl, 
-  randomBetween, sleep, cleanText, shuffle,
+  randomBetween, sleep, cleanText,
   getTodayDate, getOutputPath, copyToLatest, getOutputDir,
   cleanOldOutputDirs, appendToArchive, logOutputPaths
 } from './utils.mjs';
+import { planQueries, persistPlannerArtifact } from './query-planner.mjs';
+import { isCustomerServiceNotice, isPromotionalContent } from './safety.mjs';
 import 'dotenv/config';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -19,7 +21,7 @@ const INFLUENCERS_FILE = 'influencers.json';
 // ============ Configuration ============
 
 // Sampling configuration (env vars)
-const MAX_SOURCES_PER_RUN = parseInt(process.env.MAX_SOURCES || '24', 10);
+const MAX_SOURCES_PER_RUN = parseInt(process.env.MAX_SOURCES || '12', 10);
 const SAMPLING_MODE = process.env.SAMPLING_MODE || 'random'; // 'random' or 'all'
 
 // Group filter (optional): e.g. ONLY_GROUPS=sentiment,reach
@@ -44,8 +46,8 @@ const SCROLL_WAIT_MIN = parseInt(process.env.SCROLL_WAIT_MIN || '2000', 10);
 const SCROLL_WAIT_MAX = parseInt(process.env.SCROLL_WAIT_MAX || '4000', 10);
 
 // Scroll configuration (increased depth for more content)
-const MAX_SCROLL_ROUNDS = parseInt(process.env.MAX_SCROLL_ROUNDS || '12', 10);
-const MIN_SCROLL_ROUNDS = parseInt(process.env.MIN_SCROLL_ROUNDS || '7', 10);
+const MAX_SCROLL_ROUNDS = parseInt(process.env.MAX_SCROLL_ROUNDS || '8', 10);
+const MIN_SCROLL_ROUNDS = parseInt(process.env.MIN_SCROLL_ROUNDS || '4', 10);
 const SCROLL_DISTANCE_MIN = 600;
 const SCROLL_DISTANCE_MAX = 1200;
 const SCROLL_BACK_CHANCE = 0.2; // 20% chance to scroll back (more human-like)
@@ -366,6 +368,10 @@ async function scrapeSource(page, source, attempt = 0) {
     group: source.group,
     name: source.name,
     query: source.query,
+    sourceIntentType: source.intentType || 'reply_opportunity',
+    strictness: source.strictness || 'medium',
+    plannerReason: source.plannerReason || null,
+    language: source.language || 'multi',
     searchUrl: source.searchUrl,
     scrapedAt: new Date().toISOString(),
     tweetCount: 0,
@@ -414,6 +420,10 @@ async function scrapeSource(page, source, attempt = 0) {
         
         // Skip if no text (likely not a real tweet)
         if (!tweet.text || tweet.text.length < 5) continue;
+
+        const promo = isPromotionalContent(tweet.text);
+        if (promo.isPromo && promo.severity === 'hard') continue;
+        if (isCustomerServiceNotice(tweet.text).isNotice) continue;
         
         result.tweets.push(tweet);
         
@@ -438,62 +448,74 @@ async function scrapeSource(page, source, attempt = 0) {
   return result;
 }
 
+function distributeByIntentCoverage(sources) {
+  if (SAMPLING_MODE === 'all' || sources.length <= MAX_SOURCES_PER_RUN) {
+    return sources.sort((a, b) => (b.priority || 0) - (a.priority || 0));
+  }
+
+  const buckets = new Map();
+  for (const source of sources) {
+    const key = `${source.group}:${source.intentType}`;
+    const current = buckets.get(key) || [];
+    current.push(source);
+    buckets.set(key, current);
+  }
+
+  const orderedBuckets = Array.from(buckets.values()).map((bucket) =>
+    bucket.sort((a, b) => (b.priority || 0) - (a.priority || 0))
+  );
+
+  const selected = [];
+  let progressed = true;
+  while (selected.length < MAX_SOURCES_PER_RUN && progressed) {
+    progressed = false;
+    for (const bucket of orderedBuckets) {
+      if (!bucket.length || selected.length >= MAX_SOURCES_PER_RUN) continue;
+      selected.push(bucket.shift());
+      progressed = true;
+    }
+  }
+
+  return selected.filter(Boolean);
+}
+
 /**
  * Build source list from queries and influencers config
- * Supports random sampling to reduce load
+ * Uses planner output plus intent-aware sampling.
  */
-function buildSourceList() {
+async function buildSourceList(runDate) {
   const allSources = [];
   
   // Load queries
   const queries = JSON.parse(readFileSync(QUERIES_FILE, 'utf-8'));
+  const plan = await planQueries(queries);
+  persistPlannerArtifact(plan, runDate);
+  const selectedQueryMap = new Map((plan.selectedQueries || []).map((row) => [row.name, row]));
   
-  // Pain queries
-  for (const q of queries.pain || []) {
-    allSources.push({
-      group: 'pain',
-      name: q.name,
-      query: q.query,
-      searchUrl: buildSearchUrl(q.query),
-      max: q.max || 30
-    });
-  }
-  
-  // Reach queries
-  for (const q of queries.reach || []) {
-    allSources.push({
-      group: 'reach',
-      name: q.name,
-      query: q.query,
-      searchUrl: buildSearchUrl(q.query),
-      max: q.max || 30
-    });
-  }
-  
-  // Sentiment queries (Filo舆情)
-  for (const q of queries.sentiment || []) {
-    const lookbackDays = Number.isNaN(SENTIMENT_LOOKBACK_DAYS) ? 7 : SENTIMENT_LOOKBACK_DAYS;
-    const sinceDays = Math.max(0, lookbackDays - 1);
-    const sinceDate = lookbackDays > 1 ? getDateDaysAgo(sinceDays) : null;
-    const sentimentQuery = sinceDate ? `${q.query} since:${sinceDate}` : q.query;
-    allSources.push({
-      group: 'sentiment',
-      name: q.name,
-      query: sentimentQuery,
-      searchUrl: buildSearchUrl(sentimentQuery),
-      max: q.max || 30
-    });
-  }
-  
-  // Insight queries (用户洞察)
-  for (const q of queries.insight || []) {
-    allSources.push({
-      group: 'insight',
-      name: q.name,
-      query: q.query,
-      searchUrl: buildSearchUrl(q.query),
-      max: q.max || 30
-    });
+  for (const [group, groupQueries] of Object.entries(queries)) {
+    if (!Array.isArray(groupQueries)) continue;
+    for (const q of groupQueries) {
+      const planned = selectedQueryMap.get(q.name);
+      if (!planned || planned.enabled === false) continue;
+
+      const lookbackDays = Number.isNaN(SENTIMENT_LOOKBACK_DAYS) ? 7 : SENTIMENT_LOOKBACK_DAYS;
+      const sinceDays = Math.max(0, lookbackDays - 1);
+      const sinceDate = group === 'sentiment' && lookbackDays > 1 ? getDateDaysAgo(sinceDays) : null;
+      const effectiveQuery = sinceDate ? `${planned.query} since:${sinceDate}` : planned.query;
+
+      allSources.push({
+        group,
+        name: planned.name,
+        query: effectiveQuery,
+        searchUrl: buildSearchUrl(effectiveQuery),
+        max: Math.min(planned.max || q.max || 20, 25),
+        intentType: planned.intentType || q.intent_type || 'reply_opportunity',
+        strictness: planned.strictness || q.strictness || 'medium',
+        priority: planned.priority || q.priority || 50,
+        plannerReason: planned.plannerReason || null,
+        language: planned.language || q.language || 'multi'
+      });
+    }
   }
   
   // KOL queries - with topic filter and denyTerms
@@ -509,7 +531,12 @@ function buildSourceList() {
         name: `kol-${handle}`,
         query: kolQuery,
         searchUrl: buildSearchUrl(kolQuery),
-        max: 15
+        max: 12,
+        intentType: 'competitor_displacement',
+        strictness: 'high',
+        priority: 72,
+        plannerReason: 'kol_curated',
+        language: 'multi'
       });
     }
     
@@ -528,64 +555,15 @@ function buildSourceList() {
     allSources.push(...filtered);
   }
   
-  // Apply sampling strategy
-  if (SAMPLING_MODE === 'all' || allSources.length <= MAX_SOURCES_PER_RUN) {
-    log('INFO', `Using all ${allSources.length} sources`);
-    return allSources;
-  }
+  const finalSources = distributeByIntentCoverage(allSources);
   
-  // Random sampling: ensure balanced selection from each group
-  const painSources = allSources.filter(s => s.group === 'pain');
-  const reachSources = allSources.filter(s => s.group === 'reach');
-  const kolSources = allSources.filter(s => s.group === 'kol');
-  const sentimentSources = allSources.filter(s => s.group === 'sentiment');
-  const insightSources = allSources.filter(s => s.group === 'insight');
-  
-  // Always include ALL sentiment and insight sources (they're usually few and important)
-  const alwaysInclude = [...sentimentSources, ...insightSources];
-  const remainingSlots = Math.max(0, MAX_SOURCES_PER_RUN - alwaysInclude.length);
-  
-  // Allocate remaining slots: ~60% pain, ~25% reach, ~15% kol (pain-first strategy)
-  let painCount = Math.max(2, Math.floor(remainingSlots * 0.6));
-  let reachCount = Math.max(1, Math.floor(remainingSlots * 0.25));
-  let kolCount = Math.max(0, remainingSlots - painCount - reachCount);
-  
-  // Backfill if a group has fewer sources
-  const painAvailable = Math.min(painCount, painSources.length);
-  const reachAvailable = Math.min(reachCount, reachSources.length);
-  const kolAvailable = Math.min(kolCount, kolSources.length);
-  
-  let remaining = remainingSlots - painAvailable - reachAvailable - kolAvailable;
-  
-  // Distribute remaining slots
-  const selectedSources = [
-    ...alwaysInclude,
-    ...shuffle(painSources).slice(0, painAvailable),
-    ...shuffle(reachSources).slice(0, reachAvailable),
-    ...shuffle(kolSources).slice(0, kolAvailable)
-  ];
-  
-  // Backfill from groups that have more sources (pain priority)
-  if (remaining > 0 && painSources.length > painAvailable) {
-    const extra = shuffle(painSources).slice(painAvailable, painAvailable + remaining);
-    selectedSources.push(...extra);
-    remaining -= extra.length;
-  }
-  if (remaining > 0 && reachSources.length > reachAvailable) {
-    const extra = shuffle(reachSources).slice(reachAvailable, reachAvailable + remaining);
-    selectedSources.push(...extra);
-    remaining -= extra.length;
-  }
-  
-  // Shuffle final selection to randomize order
-  const finalSources = shuffle(selectedSources);
-  
-  log('INFO', `Random sampling: selected ${finalSources.length} of ${allSources.length} sources`, {
+  log('INFO', `Intent-aware sampling: selected ${finalSources.length} of ${allSources.length} sources`, {
     pain: finalSources.filter(s => s.group === 'pain').length,
     reach: finalSources.filter(s => s.group === 'reach').length,
     kol: finalSources.filter(s => s.group === 'kol').length,
     sentiment: finalSources.filter(s => s.group === 'sentiment').length,
-    insight: finalSources.filter(s => s.group === 'insight').length
+    insight: finalSources.filter(s => s.group === 'insight').length,
+    intents: [...new Set(finalSources.map((s) => s.intentType))]
   });
   
   return finalSources;
@@ -610,7 +588,7 @@ async function main() {
   log('INFO', `Output directory: ${getOutputDir(runDate)}`);
   
   // Build source list
-  const sources = buildSourceList();
+  const sources = await buildSourceList(runDate);
   log('INFO', `Total sources to scrape: ${sources.length}`);
   
   if (sources.length === 0) {
@@ -717,6 +695,10 @@ async function main() {
         group: source.group,
         name: source.name,
         query: source.query,
+        sourceIntentType: source.intentType || 'reply_opportunity',
+        strictness: source.strictness || 'medium',
+        plannerReason: source.plannerReason || null,
+        language: source.language || 'multi',
         searchUrl: source.searchUrl,
         scrapedAt: new Date().toISOString(),
         tweetCount: 0,
@@ -749,6 +731,9 @@ async function main() {
     runDate,
     runAt,
     stats,
+    planner: existsSync(getOutputPath('planner.json', runDate))
+      ? JSON.parse(readFileSync(getOutputPath('planner.json', runDate), 'utf-8'))
+      : null,
     sources: results,
     errors: globalErrors
   };

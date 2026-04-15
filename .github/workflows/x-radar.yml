@@ -77,6 +77,9 @@ jobs:
         run: npm run scrape
         env:
           PLAYWRIGHT_HEADLESS: 'true'
+          LLM_API_URL: ${{ secrets.LLM_API_URL }}
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_MODEL: ${{ secrets.LLM_MODEL || 'claude-sonnet-4-6' }}
         continue-on-error: true
 
       - name: Check scraper result and notify on auth failure
@@ -104,6 +107,10 @@ jobs:
       - name: Run selector
         if: steps.scraper.outcome == 'success'
         run: npm run select
+        env:
+          LLM_API_URL: ${{ secrets.LLM_API_URL }}
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_MODEL: ${{ secrets.LLM_MODEL || 'claude-sonnet-4-6' }}
         continue-on-error: false
 
       - name: Run formatter

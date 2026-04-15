@@ -40,7 +40,10 @@ function generateMarkdown(data) {
   lines.push('');
   lines.push(`- **Total candidates:** ${data.selectionStats?.totalCandidates || 0}`);
   lines.push(`- **After dedup:** ${data.selectionStats?.uniqueAfterDedup || 0}`);
-  lines.push(`- **Selected:** ${data.top?.length || 0} (pain: ${data.selectionStats?.painSelected || 0}, reach: ${data.selectionStats?.reachSelected || 0})`);
+  lines.push(`- **Reply-now selected:** ${data.top?.length || 0}`);
+  if (data.selectionStats?.triage) {
+    lines.push(`- **AI triage:** reply_now ${data.selectionStats.triage.replyNow || 0} / watch_only ${data.selectionStats.triage.watchOnly || 0} / discard ${data.selectionStats.triage.discard || 0}`);
+  }
   if (data.selectionStats?.backfilled > 0) {
     lines.push(`- **Backfilled:** ${data.selectionStats.backfilled}`);
   }
@@ -67,6 +70,9 @@ function generateMarkdown(data) {
       lines.push(`**Engagement:** ${formatNumber(tweet.likes)} likes, ${formatNumber(tweet.retweets)} RTs, ${formatNumber(tweet.replies)} replies`);
       lines.push(`**Posted:** ${formatDatetime(tweet.datetime)}`);
       lines.push(`**Source:** ${tweet.sourceQuery || 'N/A'}`);
+      if (tweet.triageReasonZh) {
+        lines.push(`**Triage:** ${tweet.triageReasonZh}`);
+      }
       lines.push('');
       lines.push('> ' + (tweet.text || '*No text*').split('\n').join('\n> '));
       lines.push('');

@@ -1,130 +1,150 @@
 {
   "sentiment": [
     {
-      "name": "filo-mentions-en",
-      "query": "(FiloMail OR \"Filo Mail\" OR \"Filo-Mail\" OR filomail OR \"filo mail\" OR \"filo-mail\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:en",
-      "max": 70
+      "name": "filomail-mentions-en",
+      "query": "(FiloMail OR \"Filo Mail\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:en",
+      "max": 20,
+      "intent_type": "brand_sentiment",
+      "strictness": "high",
+      "priority": 96,
+      "language": "en",
+      "enabled": true
     },
     {
-      "name": "filo-mentions-cn",
-      "query": "(FiloMail OR \"Filo Mail\" OR \"Filo-Mail\" OR filomail OR \"filo mail\" OR \"filo-mail\" OR \"Filo 邮件\" OR \"Filo 邮箱\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:zh",
-      "max": 50
+      "name": "filomail-mentions-zh",
+      "query": "(FiloMail OR \"Filo Mail\" OR \"Filo 邮件\" OR \"Filo 邮箱\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:zh",
+      "max": 18,
+      "intent_type": "brand_sentiment",
+      "strictness": "high",
+      "priority": 94,
+      "language": "zh",
+      "enabled": true
     },
     {
-      "name": "filo-mentions-jp",
-      "query": "(FiloMail OR \"Filo Mail\" OR \"Filo-Mail\" OR filomail OR \"filo mail\" OR \"filo-mail\" OR \"Filo メール\" OR \"filoメール\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:ja",
-      "max": 50
+      "name": "filomail-mentions-ja",
+      "query": "(FiloMail OR \"Filo Mail\" OR \"Filo メール\" OR \"filoメール\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:ja",
+      "max": 18,
+      "intent_type": "brand_sentiment",
+      "strictness": "high",
+      "priority": 92,
+      "language": "ja",
+      "enabled": true
     },
     {
-      "name": "filo-mentions-ko",
-      "query": "(FiloMail OR \"Filo Mail\" OR \"Filo-Mail\" OR filomail OR \"filo mail\" OR \"filo-mail\" OR \"Filo 메일\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:ko",
-      "max": 50
-    }
-  ],
-  "insight": [
-    {
-      "name": "feature-wish-en",
-      "query": "(gmail OR inbox OR email) (\"wish\" OR \"hope\" OR \"want\" OR \"need\" OR \"would be great\" OR \"should have\") (feature OR function OR tool) -subscribe -subscription -newsletter -\"sign up\" -signup -\"email me\" -\"dm me\" -\"contact us\" -\"contact support\" -support -recruiting -hiring -\"apply\" -job -filter:retweets lang:en",
-      "max": 60
-    },
-    {
-      "name": "ai-email-demand-en",
-      "query": "(\"AI email\" OR \"email AI\" OR \"smart inbox\" OR \"AI inbox\") (need OR want OR \"looking for\" OR \"any recommendations\") -subscribe -subscription -newsletter -\"sign up\" -signup -\"email me\" -\"dm me\" -\"contact us\" -\"contact support\" -support -recruiting -hiring -\"apply\" -job -filter:retweets lang:en",
-      "max": 60
-    },
-    {
-      "name": "competitor-praise-en",
-      "query": "(Superhuman OR Spark OR Edison OR Shortwave OR \"Hey email\") (love OR amazing OR great OR \"game changer\" OR \"best email\") -subscribe -subscription -newsletter -\"sign up\" -signup -\"email me\" -\"dm me\" -\"contact us\" -\"contact support\" -support -recruiting -hiring -\"apply\" -job -filter:retweets lang:en",
-      "max": 60
-    },
-    {
-      "name": "email-pain-feature-cn",
-      "query": "(邮箱 OR 收件箱 OR gmail) (希望 OR 想要 OR 要是能 OR 功能) -订阅 -报名 -投稿 -招聘 -私信 -联系 -客服 -支持 -邮箱地址 -邮件地址 -验证码 -电报 -Telegram -短信费 -邮箱接码 -filter:retweets lang:zh",
-      "max": 50
-    },
-    {
-      "name": "competitor-praise-cn",
-      "query": "(Superhuman OR Spark OR Edison OR Shortwave) (好用 OR 推荐 OR 神器 OR 太棒) -订阅 -报名 -投稿 -招聘 -私信 -联系 -客服 -支持 -newsletter -subscribe -filter:retweets lang:zh",
-      "max": 50
-    },
-    {
-      "name": "email-pain-feature-ko",
-      "query": "(이메일 OR 받은편지함 OR gmail OR 메일함) (원하다 OR 바라다 OR 기능 OR 있으면 OR 좋겠다 OR 필요) -구독 -뉴스레터 -채용 -홍보 -광고 -filter:retweets lang:ko",
-      "max": 50
+      "name": "filomail-mentions-ko",
+      "query": "(FiloMail OR \"Filo Mail\" OR \"Filo 메일\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:ko",
+      "max": 18,
+      "intent_type": "brand_sentiment",
+      "strictness": "high",
+      "priority": 90,
+      "language": "ko",
+      "enabled": true
     }
   ],
   "pain": [
     {
-      "name": "gmail-spam-en",
-      "query": "(gmail OR \"gmail app\" OR inbox) (spam OR \"too many\" OR \"can't find\" OR hate OR annoying OR broken OR bug OR issue OR problem OR flooding) -subscribe -\"sign up\" -\"join my\" -filter:retweets",
-      "max": 80
+      "name": "inbox-triage-failure-en",
+      "query": "(email OR inbox OR gmail OR outlook) (triage OR \"follow up\" OR \"follow-up\" OR buried OR missed OR \"can't find\" OR \"lost track\" OR overwhelm OR overloaded) -newsletter -subscribe -hiring -job -support -\"dm me\" -\"contact us\" -filter:retweets lang:en",
+      "max": 20,
+      "intent_type": "reply_opportunity",
+      "strictness": "high",
+      "priority": 95,
+      "language": "en",
+      "enabled": true
     },
     {
-      "name": "gmail-spam-jp",
-      "query": "(gmail OR 受信トレイ) (迷惑メール OR スパム OR 見つからない OR うざい OR 最悪 OR 困る OR 大変 OR ひどい OR バグ) -メルマガ登録 -購読 -フォロー -filter:retweets",
-      "max": 70
+      "name": "inbox-overload-workflow-en",
+      "query": "(email OR inbox OR gmail) (chaos OR mess OR drowning OR overwhelmed OR \"out of control\") (work OR founder OR sales OR support OR customer OR follow-up) -newsletter -subscribe -event -webinar -filter:retweets lang:en",
+      "max": 18,
+      "intent_type": "reply_opportunity",
+      "strictness": "high",
+      "priority": 90,
+      "language": "en",
+      "enabled": true
     },
     {
-      "name": "gmail-spam-cn",
-      "query": "(gmail OR 邮箱 OR 收件箱) (垃圾邮件 OR 太多 OR 找不到 OR 难用 OR 好烦 OR 崩溃 OR 问题 OR 烦死) -订阅 -关注我 -filter:retweets",
-      "max": 70
+      "name": "search-important-email-pain-en",
+      "query": "(email OR inbox OR gmail) (\"can't find\" OR \"find important\" OR search OR buried) (important OR approval OR follow-up OR reply) -newsletter -support -filter:retweets lang:en",
+      "max": 18,
+      "intent_type": "reply_opportunity",
+      "strictness": "high",
+      "priority": 88,
+      "language": "en",
+      "enabled": true
     },
     {
-      "name": "gmail-spam-ko",
-      "query": "(gmail OR 이메일 OR 받은편지함 OR 메일함) (스팸 OR 너무많 OR 찾을수없 OR 짜증 OR 최악 OR 문제 OR 버그 OR 귀찮) -구독 -팔로우 -filter:retweets lang:ko",
-      "max": 60
+      "name": "inbox-overload-ja",
+      "query": "(受信トレイ OR メール OR Gmail) (多すぎ OR 整理できない OR 埋もれる OR 追いきれない OR 見つからない) (仕事 OR 返信 OR フォローアップ OR タスク) -メルマガ -購読 -サポート -filter:retweets",
+      "max": 16,
+      "intent_type": "reply_opportunity",
+      "strictness": "high",
+      "priority": 84,
+      "language": "ja",
+      "enabled": true
+    }
+  ],
+  "insight": [
+    {
+      "name": "email-feature-wish-en",
+      "query": "(gmail OR inbox OR email) (wish OR hope OR want OR need OR \"should have\" OR \"would be great\") (triage OR summarize OR organize OR follow-up OR task OR reminder) -newsletter -subscribe -support -recruiting -job -filter:retweets lang:en",
+      "max": 18,
+      "intent_type": "feature_request",
+      "strictness": "high",
+      "priority": 92,
+      "language": "en",
+      "enabled": true
     },
     {
-      "name": "inbox-overwhelm-en",
-      "query": "(email OR inbox OR gmail) (overwhelmed OR drowning OR \"too many\" OR chaos OR mess OR \"out of control\" OR \"can't keep up\" OR nightmare OR hell) -subscribe -newsletter -\"sign up\" -\"join my\" -filter:retweets",
-      "max": 60
+      "name": "competitor-displacement-en",
+      "query": "(Superhuman OR Spark OR Shortwave OR Outlook OR Gmail) (expensive OR switch OR leaving OR \"looking for\" OR alternative OR frustrated OR disappointed) -newsletter -subscribe -support -filter:retweets lang:en",
+      "max": 18,
+      "intent_type": "competitor_displacement",
+      "strictness": "high",
+      "priority": 90,
+      "language": "en",
+      "enabled": true
     },
     {
-      "name": "inbox-overwhelm-jp",
-      "query": "(受信トレイ OR メール OR gmail) (多すぎ OR 整理できない OR 見つからない OR うざい OR 最悪 OR 困る OR 大変 OR 地獄) -メルマガ登録 -購読 -フォロー -filter:retweets",
-      "max": 60
-    },
-    {
-      "name": "inbox-overwhelm-ko",
-      "query": "(이메일 OR 받은편지함 OR gmail OR 메일) (너무많 OR 정리못 OR 폭발 OR 지옥 OR 미치겠 OR 감당안돼 OR 스트레스) -구독 -뉴스레터 -filter:retweets lang:ko",
-      "max": 60
-    },
-    {
-      "name": "email-search-pain",
-      "query": "(email OR gmail OR inbox) (search OR find) (impossible OR terrible OR hate OR frustrating OR broken OR useless) -subscribe -newsletter -filter:retweets",
-      "max": 60
+      "name": "email-feature-wish-zh",
+      "query": "(邮箱 OR 收件箱 OR Gmail) (希望 OR 想要 OR 要是能 OR 期待 OR 需要) (总结 OR 整理 OR 跟进 OR 待办 OR 提醒 OR 自动化) -订阅 -报名 -招聘 -客服 -filter:retweets lang:zh",
+      "max": 16,
+      "intent_type": "feature_request",
+      "strictness": "high",
+      "priority": 82,
+      "language": "zh",
+      "enabled": true
     }
   ],
   "reach": [
     {
-      "name": "ai-email-en",
-      "query": "(\"AI agent\" OR \"AI assistant\" OR automation) (email OR inbox OR productivity) -subscribe -newsletter -\"sign up\" -crypto -airdrop -filter:retweets",
-      "max": 80
+      "name": "ai-inbox-triage-en",
+      "query": "(\"AI inbox\" OR \"AI email\" OR \"email AI\" OR \"AI email assistant\") (triage OR summarize OR prioritize OR organize OR follow-up) -newsletter -subscribe -crypto -airdrop -support -filter:retweets lang:en",
+      "max": 18,
+      "intent_type": "reply_opportunity",
+      "strictness": "high",
+      "priority": 88,
+      "language": "en",
+      "enabled": true
     },
     {
-      "name": "ai-email-jp",
-      "query": "(AIエージェント OR AI秘書 OR 自動化) (メール OR 受信トレイ OR 生産性) -メルマガ登録 -購読 -filter:retweets",
-      "max": 70
+      "name": "email-task-extraction-en",
+      "query": "(email OR inbox) (task OR todo OR reminder OR follow-up) (AI OR automation OR agent OR auto) -newsletter -subscribe -support -filter:retweets lang:en",
+      "max": 18,
+      "intent_type": "reply_opportunity",
+      "strictness": "high",
+      "priority": 86,
+      "language": "en",
+      "enabled": true
     },
     {
-      "name": "ai-email-ko",
-      "query": "(AI에이전트 OR AI비서 OR 자동화) (이메일 OR 받은편지함 OR 생산성 OR 메일) -구독 -뉴스레터 -filter:retweets lang:ko",
-      "max": 60
-    },
-    {
-      "name": "ai-inbox-intersection",
-      "query": "(AI OR \"AI agent\" OR automation OR LLM) (email OR inbox OR gmail) (manage OR organize OR triage OR summarize) -subscribe -newsletter -filter:retweets",
-      "max": 80
-    },
-    {
-      "name": "email-productivity-en",
-      "query": "(productivity OR workflow) (email OR inbox) (tool OR app OR better OR improve) -subscribe -newsletter -\"sign up\" -filter:retweets",
-      "max": 60
-    },
-    {
-      "name": "inbox-zero-struggle",
-      "query": "\"inbox zero\" (struggle OR fail OR impossible OR trying OR attempt OR give up) -subscribe -filter:retweets",
-      "max": 60
+      "name": "workflow-automation-email-en",
+      "query": "(workflow OR productivity) (email OR inbox) (automation OR agent OR summarize OR triage OR follow-up) -newsletter -subscribe -webinar -job -filter:retweets lang:en",
+      "max": 16,
+      "intent_type": "reply_opportunity",
+      "strictness": "medium",
+      "priority": 74,
+      "language": "en",
+      "enabled": true
     }
   ]
 }

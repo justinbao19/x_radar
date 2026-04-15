@@ -29,6 +29,6 @@
     "SaaSGrowthHacks": "SaaS growth tactics account. Our target audience follows this for tool recommendations",
     "haborossm": "Productivity/AI tools reviewer. Regular content about email and workflow tools"
   },
-  "allowedQuery": "(AI OR agent OR search OR productivity OR workflow OR email OR inbox OR notification OR automation OR todo OR task OR organize OR summary)",
+  "allowedQuery": "(email OR inbox OR gmail OR outlook OR follow-up OR triage OR summarize OR summary OR task OR todo OR reminder OR workflow automation OR inbox automation OR \"AI email\" OR \"AI inbox\")",
   "denyTerms": "-election -vote -regime -war -military -army -terrorist -suicide -murder -bomb -nazi -porn -nude -cocaine -heroin -meth -airdrop -doxx -leaked -hacked -选举 -投票 -战争 -军队 -恐怖 -自杀 -爆炸 -纳粹 -色情 -泄露 -選挙 -戦争 -軍 -テロ -自殺 -爆発 -ナチ -ポルノ -ハック"
 }

@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync, existsSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { log, getInputPath, getOutputPath, copyToLatest, getOutputDir, getTodayDate } from './utils.mjs';
+import { persistTriageArtifact, triageTweets } from './triage.mjs';
 
 // ============ Cross-Day Dedup Config ============
 // Look back N days to avoid re-pushing the same tweet
@@ -538,7 +539,43 @@ function scoreTweet(tweet, group = null) {
 /**
  * Select top tweets with quota and backfill logic
  */
-function selectTop10(rawData) {
+function buildQueryStats(allTweets, triageRows) {
+  const triageById = triageRows instanceof Map ? triageRows : new Map();
+  const stats = new Map();
+
+  for (const tweet of allTweets) {
+    const key = tweet.sourceQuery || 'unknown';
+    const current = stats.get(key) || {
+      sourceQuery: key,
+      inputCount: 0,
+      replyNowCount: 0,
+      watchOnlyCount: 0,
+      discardCount: 0,
+      topDiscardReasons: {}
+    };
+    current.inputCount += 1;
+
+    const triage = triageById.get(tweet.url);
+    if (triage?.triageDecision === 'reply_now') current.replyNowCount += 1;
+    else if (triage?.triageDecision === 'watch_only') current.watchOnlyCount += 1;
+    else if (triage?.triageDecision === 'discard') {
+      current.discardCount += 1;
+      const reason = triage.discardCategory || 'discard';
+      current.topDiscardReasons[reason] = (current.topDiscardReasons[reason] || 0) + 1;
+    }
+
+    stats.set(key, current);
+  }
+
+  return Array.from(stats.values())
+    .map((row) => ({
+      ...row,
+      replyYield: row.inputCount ? Number((row.replyNowCount / row.inputCount).toFixed(3)) : 0
+    }))
+    .sort((a, b) => b.replyYield - a.replyYield || b.replyNowCount - a.replyNowCount);
+}
+
+async function selectTop10(rawData) {
   // Merge all tweets from all sources
   const allTweets = [];
   
@@ -1085,6 +1122,7 @@ function selectTop10(rawData) {
     return {
       runDate: rawData.runDate,
       runAt: rawData.runAt,
+      planner: rawData.planner || null,
       selectionStats: {
         totalCandidates: allTweets.length,
         uniqueAfterDedup: uniqueTweets.length,
@@ -1118,17 +1156,51 @@ function selectTop10(rawData) {
   });
   
   log('INFO', `After KOL dedup (max ${MAX_PER_KOL} per KOL): ${dedupedTweets.length}`);
+
+  // ============ Post-scrape AI triage ============
+  const triageRows = await triageTweets(dedupedTweets);
+  const triagedTweets = dedupedTweets.map((tweet) => {
+    const triage = triageRows.get(tweet.url);
+    return {
+      ...tweet,
+      triageDecision: triage?.triageDecision || 'discard',
+      triageReasonZh: triage?.triageReasonZh || '未通过语义分流。',
+      triageConfidence: triage?.triageConfidence ?? 0.5,
+      discardCategory: triage?.discardCategory || null,
+      intentType: triage?.intentType || tweet.intentType || 'general'
+    };
+  });
+
+  const enrichedCandidates = {
+    runDate: rawData.runDate,
+    runAt: rawData.runAt,
+    totalCandidates: dedupedTweets.length,
+    items: triagedTweets
+  };
+  persistTriageArtifact(enrichedCandidates, rawData.runDate);
+
+  const triageCounts = triagedTweets.reduce((acc, tweet) => {
+    if (tweet.triageDecision === 'reply_now') acc.replyNow += 1;
+    else if (tweet.triageDecision === 'watch_only') acc.watchOnly += 1;
+    else acc.discard += 1;
+    return acc;
+  }, { replyNow: 0, watchOnly: 0, discard: 0 });
+
+  log('INFO', 'After AI triage', triageCounts);
   
   // ============ Final Selection - All Qualified Tweets ============
-  // Sort by score, mark top N as AI-picked
-  const sortedTweets = dedupedTweets.sort((a, b) => b.finalScore - a.finalScore);
+  // Only reply_now enters public output. watch_only is kept in enriched artifact only.
+  const sortedTweets = triagedTweets
+    .filter((tweet) => tweet.triageDecision === 'reply_now')
+    .sort((a, b) => b.finalScore - a.finalScore);
   
   const finalSelection = sortedTweets.map((t, idx) => ({
     rank: idx + 1,
-    aiPicked: idx < QUALITY_CONFIG.aiPickTopN, // Top N are AI-picked
+    aiPicked: true,
     group: t.group,
     originalGroup: t.originalGroup,
     sourceQuery: t.sourceQuery,
+    intentType: t.intentType || null,
     url: t.url,
     author: t.author,
     datetime: t.datetime,
@@ -1161,6 +1233,10 @@ function selectTop10(rawData) {
     isCSReply: t.isCSReply || false,                  // NEW: is customer service reply
     promoPenalty: t.promoPenalty || false,            // NEW: promotional content penalty
     promoPattern: t.promoPattern || null,             // NEW: detected promo pattern
+    triageDecision: t.triageDecision,
+    triageReasonZh: t.triageReasonZh,
+    triageConfidence: t.triageConfidence,
+    discardCategory: t.discardCategory,
     // Sentiment label (for sentiment group)
     ...(t.sentimentLabel && { sentimentLabel: t.sentimentLabel }),
     // Insight type (for insight group)
@@ -1205,6 +1281,8 @@ function selectTop10(rawData) {
     ...filterStats,
     qualified: finalSelection.length,
     aiPicked: aiPickedCount,
+    triage: triageCounts,
+    queryStats: buildQueryStats(dedupedTweets, triageRows),
     byGroup: {
       pain: painCount,
       reach: reachCount,
@@ -1230,8 +1308,18 @@ function selectTop10(rawData) {
   return {
     runDate: rawData.runDate,
     runAt: rawData.runAt,
+    planner: rawData.planner || null,
     selectionStats: stats,
     qualityConfig: QUALITY_CONFIG,
+    watch: triagedTweets.filter((tweet) => tweet.triageDecision === 'watch_only').map((tweet) => ({
+      url: tweet.url,
+      author: tweet.author,
+      group: tweet.group,
+      sourceQuery: tweet.sourceQuery,
+      triageReasonZh: tweet.triageReasonZh,
+      intentType: tweet.intentType,
+      finalScore: tweet.finalScore
+    })),
     top: finalSelection
   };
 }
@@ -1346,7 +1434,7 @@ async function main() {
   const outputFile = getOutputPath('top10.json', runDate);
   
   // Select top 10
-  const result = selectTop10(rawData);
+  const result = await selectTop10(rawData);
   
   // Add aggregation info if applicable
   if (aggregationInfo) {
@@ -1367,6 +1455,10 @@ async function main() {
   copyToLatest(getOutputDir(runDate));
   log('INFO', 'Copied to out/latest/');
 }
+
+export {
+  selectTop10
+};
 
 main().catch(err => {
   log('ERROR', 'Selection failed', { error: err.message });

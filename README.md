@@ -1,14 +1,17 @@
 # X Radar
 
-自动抓取 X (Twitter) 上与邮件痛点和 AI 趋势相关的推文，并生成回复建议。
+自动抓取 X (Twitter) 上与 FiloMail 相关的高价值机会推文，并在 X Radar 内部完成第一轮高精度语义筛选。
 
 ## 功能
 
-- **Pain Track**: 抓取邮件/Gmail/收件箱相关的痛点推文（多语言）
-- **Reach Track**: 抓取 AI/生产力/自动化等趋势话题
+- **高精度 Query Taxonomy**: 按 `reply_opportunity / feature_request / competitor_displacement / brand_sentiment` 收紧搜索入口
+- **Pre-Query Planner**: 可选用 LLM 从静态 query 模板集中挑选本轮最值得跑的 source/query
+- **Post-Scrape AI Triage**: 在 `select` 阶段前移语义分流，输出 `reply_now / watch_only / discard`
+- **Pain Track**: 抓取明确邮件/Gmail/收件箱工作流痛点（多语言）
+- **Reach Track**: 抓取 AI inbox triage / task extraction / follow-up automation 等高意图趋势
 - **KOL 追踪**: 监控指定 KOL 的相关推文（带主题过滤）
 - **Brand Safety**: 三级过滤系统确保内容安全
-- **智能评分**: 基于互动量和关键词匹配度进行排序
+- **智能评分**: relevance-first，互动量只做次级排序信号
 - **评论生成**: 使用 LLM API 为每条推文生成 3 个回复选项
 
 ## 设计原则
@@ -30,12 +33,15 @@
 ```
 x-radar/
 ├── package.json           # 依赖和脚本
-├── queries.json           # 搜索查询配置
+├── queries.json           # 高精度 query 模板集
 ├── influencers.json       # KOL 账号列表 + 过滤规则
 ├── denylist.json          # 三级品牌安全过滤词库
 ├── src/
-│   ├── scrape.mjs         # Playwright 抓取（低风险模式）
-│   ├── select.mjs         # Top10 筛选 + Brand Safety Gate
+│   ├── scrape.mjs         # Playwright 抓取 + planner source 选择
+│   ├── select.mjs         # 规则预筛 + AI triage + reply_now 产出
+│   ├── query-planner.mjs  # query/source planner
+│   ├── triage.mjs         # post-scrape AI triage
+│   ├── llm.mjs            # LLM 调用与 JSON 输出
 │   ├── format.mjs         # Markdown 格式化
 │   ├── commenter.mjs      # LLM 评论生成 + SKIP 机制
 │   ├── safety.mjs         # 品牌安全检查模块
@@ -53,7 +59,7 @@ x-radar/
 | `LLM_API_KEY` | ✅ | - | LLM API Key |
 | `LLM_API_URL` | ❌ | `https://llm-proxy.tapsvc.com/v1/chat/completions` | LLM API 端点 |
 | `LLM_MODEL` | ❌ | `claude-sonnet-4-6` | 模型名称（Sonnet 4.6） |
-| `MAX_SOURCES` | ❌ | `8` | 每次运行抓取的源数量 |
+| `MAX_SOURCES` | ❌ | `12` | 每次运行抓取的源数量上限 |
 | `SAMPLING_MODE` | ❌ | `random` | 抽样模式：`random` 或 `all` |
 | `MIN_FILO_FIT` | ❌ | `2` | 最低 FiloFit 关键词匹配数 |
 | `PLAYWRIGHT_HEADLESS` | ❌ | `false` | 是否无头模式运行 |
@@ -92,11 +98,35 @@ npm run run
 或分步运行：
 
 ```bash
-npm run scrape   # 抓取 → out/raw.json
-npm run select   # 筛选 → out/top10.json
+npm run scrape   # 抓取 + planner → out/raw.json + planner.json
+npm run select   # 规则预筛 + AI triage → out/top10.json + candidates_enriched.json
 npm run format   # 格式化 → out/top10.md
 npm run comment  # 生成评论 → out/top10_with_comments.*
 ```
+
+## 当前筛选架构
+
+```
+queries.json (高精度模板集)
+  ↓
+query-planner.mjs
+  ↓
+scrape.mjs
+  ↓
+规则预筛 (Brand Safety / promo / support / low relevance)
+  ↓
+triage.mjs
+  ├─ reply_now   → top10.json
+  ├─ watch_only  → top10.json.watch + candidates_enriched.json
+  └─ discard     → candidates_enriched.json
+```
+
+设计原则：
+
+- 优先高精度，不追求高召回
+- 接受很多 batch 最终 `reply_now = 0`
+- X Radar 负责第一轮“是否值得公开回复”的语义筛选
+- Operations Desk 只做二次更严格验收，不再承担主要脏活
 
 ## Brand Safety 系统
 
@@ -193,6 +223,16 @@ base64 -w 0 auth/state.json | gh secret set X_STORAGE_STATE_B64
 - **Webhook**: 发送到 Slack/Discord/飞书
 
 ## 输出说明
+
+### out/candidates_enriched.json
+
+抓取候选的语义分流工件，包含：
+
+- `triageDecision`
+- `triageReasonZh`
+- `triageConfidence`
+- `discardCategory`
+- `intentType`
 
 ### out/top10_with_comments.md
 

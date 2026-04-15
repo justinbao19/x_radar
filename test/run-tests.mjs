@@ -50,7 +50,9 @@ const testSuites = [
   { name: 'Data Loader', file: 'test/data-loader.test.mjs' },
   { name: 'Feedback Learning', file: 'test/feedback.test.mjs' },
   { name: 'Scrape Module', file: 'test/scrape.test.mjs' },
-  { name: 'Performance', file: 'test/performance.test.mjs' }
+  { name: 'Performance', file: 'test/performance.test.mjs' },
+  { name: 'Query Planner', file: 'test/query-planner.test.mjs' },
+  { name: 'AI Triage', file: 'test/triage.test.mjs' }
 ];
 
 async function runTest(testFile) {
