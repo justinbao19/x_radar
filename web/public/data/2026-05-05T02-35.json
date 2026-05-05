@@ -1,0 +1,758 @@
+{
+  "runDate": "2026-05-05",
+  "runAt": "2026-05-05T02:35:28.200Z",
+  "planner": {
+    "mode": "heuristic",
+    "generatedAt": "2026-05-05T02:35:29.448Z",
+    "notes": "Fallback high-precision query plan selected without LLM assistance.",
+    "selectedQueries": [
+      {
+        "name": "inbox-triage-failure-en",
+        "group": "pain",
+        "query": "(email OR inbox OR gmail OR outlook) (triage OR \"follow up\" OR \"follow-up\" OR buried OR missed OR \"can't find\" OR \"lost track\" OR overwhelm OR overloaded) -newsletter -subscribe -hiring -job -support -\"dm me\" -\"contact us\" -filter:retweets lang:en",
+        "max": 20,
+        "intentType": "reply_opportunity",
+        "strictness": "high",
+        "language": "en",
+        "priority": 95,
+        "enabled": true,
+        "plannerReason": "heuristic_top_choice"
+      },
+      {
+        "name": "search-important-email-pain-en",
+        "group": "pain",
+        "query": "(email OR inbox OR gmail) (\"can't find\" OR \"find important\" OR search OR buried) (important OR approval OR follow-up OR reply) -newsletter -support -filter:retweets lang:en",
+        "max": 18,
+        "intentType": "reply_opportunity",
+        "strictness": "high",
+        "language": "en",
+        "priority": 88,
+        "enabled": true,
+        "plannerReason": "heuristic_high_precision_backfill"
+      },
+      {
+        "name": "inbox-overload-workflow-en",
+        "group": "pain",
+        "query": "(email OR inbox OR gmail) (chaos OR mess OR drowning OR overwhelmed OR \"out of control\") (work OR founder OR sales OR support OR customer OR follow-up) -newsletter -subscribe -event -webinar -filter:retweets lang:en",
+        "max": 18,
+        "intentType": "reply_opportunity",
+        "strictness": "high",
+        "language": "en",
+        "priority": 90,
+        "enabled": true,
+        "plannerReason": "heuristic_high_precision_backfill"
+      },
+      {
+        "name": "inbox-overload-ja",
+        "group": "pain",
+        "query": "(受信トレイ OR メール OR Gmail) (多すぎ OR 整理できない OR 埋もれる OR 追いきれない OR 見つからない) (仕事 OR 返信 OR フォローアップ OR タスク) -メルマガ -購読 -サポート -filter:retweets",
+        "max": 16,
+        "intentType": "reply_opportunity",
+        "strictness": "high",
+        "language": "ja",
+        "priority": 84,
+        "enabled": true,
+        "plannerReason": "heuristic_high_precision_backfill"
+      },
+      {
+        "name": "competitor-displacement-en",
+        "group": "insight",
+        "query": "(Superhuman OR Spark OR Shortwave OR Outlook OR Gmail) (expensive OR switch OR leaving OR \"looking for\" OR alternative OR frustrated OR disappointed) -newsletter -subscribe -support -filter:retweets lang:en",
+        "max": 18,
+        "intentType": "competitor_displacement",
+        "strictness": "high",
+        "language": "en",
+        "priority": 90,
+        "enabled": true,
+        "plannerReason": "heuristic_top_choice"
+      },
+      {
+        "name": "email-feature-wish-en",
+        "group": "insight",
+        "query": "(gmail OR inbox OR email) (wish OR hope OR want OR need OR \"should have\" OR \"would be great\") (triage OR summarize OR organize OR follow-up OR task OR reminder) -newsletter -subscribe -support -recruiting -job -filter:retweets lang:en",
+        "max": 18,
+        "intentType": "feature_request",
+        "strictness": "high",
+        "language": "en",
+        "priority": 92,
+        "enabled": true,
+        "plannerReason": "heuristic_high_precision_backfill"
+      },
+      {
+        "name": "email-feature-wish-zh",
+        "group": "insight",
+        "query": "(邮箱 OR 收件箱 OR Gmail) (希望 OR 想要 OR 要是能 OR 期待 OR 需要) (总结 OR 整理 OR 跟进 OR 待办 OR 提醒 OR 自动化) -订阅 -报名 -招聘 -客服 -filter:retweets lang:zh",
+        "max": 16,
+        "intentType": "feature_request",
+        "strictness": "high",
+        "language": "zh",
+        "priority": 82,
+        "enabled": true,
+        "plannerReason": "heuristic_high_precision_backfill"
+      },
+      {
+        "name": "ai-inbox-triage-en",
+        "group": "reach",
+        "query": "(\"AI inbox\" OR \"AI email\" OR \"email AI\" OR \"AI email assistant\") (triage OR summarize OR prioritize OR organize OR follow-up) -newsletter -subscribe -crypto -airdrop -support -filter:retweets lang:en",
+        "max": 18,
+        "intentType": "reply_opportunity",
+        "strictness": "high",
+        "language": "en",
+        "priority": 88,
+        "enabled": true,
+        "plannerReason": "heuristic_top_choice"
+      },
+      {
+        "name": "email-task-extraction-en",
+        "group": "reach",
+        "query": "(email OR inbox) (task OR todo OR reminder OR follow-up) (AI OR automation OR agent OR auto) -newsletter -subscribe -support -filter:retweets lang:en",
+        "max": 18,
+        "intentType": "reply_opportunity",
+        "strictness": "high",
+        "language": "en",
+        "priority": 86,
+        "enabled": true,
+        "plannerReason": "heuristic_high_precision_backfill"
+      },
+      {
+        "name": "workflow-automation-email-en",
+        "group": "reach",
+        "query": "(workflow OR productivity) (email OR inbox) (automation OR agent OR summarize OR triage OR follow-up) -newsletter -subscribe -webinar -job -filter:retweets lang:en",
+        "max": 16,
+        "intentType": "reply_opportunity",
+        "strictness": "medium",
+        "language": "en",
+        "priority": 74,
+        "enabled": true,
+        "plannerReason": "heuristic_high_precision_backfill"
+      },
+      {
+        "name": "filomail-mentions-ja",
+        "group": "sentiment",
+        "query": "(FiloMail OR \"Filo Mail\" OR \"Filo メール\" OR \"filoメール\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:ja",
+        "max": 18,
+        "intentType": "brand_sentiment",
+        "strictness": "high",
+        "language": "ja",
+        "priority": 92,
+        "enabled": true,
+        "plannerReason": "heuristic_top_choice"
+      },
+      {
+        "name": "filomail-mentions-en",
+        "group": "sentiment",
+        "query": "(FiloMail OR \"Filo Mail\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:en",
+        "max": 20,
+        "intentType": "brand_sentiment",
+        "strictness": "high",
+        "language": "en",
+        "priority": 96,
+        "enabled": true,
+        "plannerReason": "heuristic_high_precision_backfill"
+      },
+      {
+        "name": "filomail-mentions-ko",
+        "group": "sentiment",
+        "query": "(FiloMail OR \"Filo Mail\" OR \"Filo 메일\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:ko",
+        "max": 18,
+        "intentType": "brand_sentiment",
+        "strictness": "high",
+        "language": "ko",
+        "priority": 90,
+        "enabled": true,
+        "plannerReason": "heuristic_high_precision_backfill"
+      },
+      {
+        "name": "filomail-mentions-zh",
+        "group": "sentiment",
+        "query": "(FiloMail OR \"Filo Mail\" OR \"Filo 邮件\" OR \"Filo 邮箱\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:zh",
+        "max": 18,
+        "intentType": "brand_sentiment",
+        "strictness": "high",
+        "language": "zh",
+        "priority": 94,
+        "enabled": true,
+        "plannerReason": "heuristic_high_precision_backfill"
+      }
+    ],
+    "historySummary": [
+      {
+        "name": "filomail-mentions-en",
+        "group": "sentiment",
+        "intentType": "brand_sentiment",
+        "strictness": "high",
+        "language": "en",
+        "priority": 96,
+        "appearances": 12,
+        "replyNow": 0,
+        "watchOnly": 12,
+        "aiPicked": 0
+      },
+      {
+        "name": "filomail-mentions-zh",
+        "group": "sentiment",
+        "intentType": "brand_sentiment",
+        "strictness": "high",
+        "language": "zh",
+        "priority": 94,
+        "appearances": 27,
+        "replyNow": 0,
+        "watchOnly": 27,
+        "aiPicked": 0
+      },
+      {
+        "name": "filomail-mentions-ja",
+        "group": "sentiment",
+        "intentType": "brand_sentiment",
+        "strictness": "high",
+        "language": "ja",
+        "priority": 92,
+        "appearances": 0,
+        "replyNow": 0,
+        "watchOnly": 0,
+        "aiPicked": 0
+      },
+      {
+        "name": "filomail-mentions-ko",
+        "group": "sentiment",
+        "intentType": "brand_sentiment",
+        "strictness": "high",
+        "language": "ko",
+        "priority": 90,
+        "appearances": 0,
+        "replyNow": 0,
+        "watchOnly": 0,
+        "aiPicked": 0
+      },
+      {
+        "name": "inbox-triage-failure-en",
+        "group": "pain",
+        "intentType": "reply_opportunity",
+        "strictness": "high",
+        "language": "en",
+        "priority": 95,
+        "appearances": 36,
+        "replyNow": 0,
+        "watchOnly": 36,
+        "aiPicked": 0
+      },
+      {
+        "name": "inbox-overload-workflow-en",
+        "group": "pain",
+        "intentType": "reply_opportunity",
+        "strictness": "high",
+        "language": "en",
+        "priority": 90,
+        "appearances": 45,
+        "replyNow": 0,
+        "watchOnly": 45,
+        "aiPicked": 0
+      },
+      {
+        "name": "search-important-email-pain-en",
+        "group": "pain",
+        "intentType": "reply_opportunity",
+        "strictness": "high",
+        "language": "en",
+        "priority": 88,
+        "appearances": 0,
+        "replyNow": 0,
+        "watchOnly": 0,
+        "aiPicked": 0
+      },
+      {
+        "name": "inbox-overload-ja",
+        "group": "pain",
+        "intentType": "reply_opportunity",
+        "strictness": "high",
+        "language": "ja",
+        "priority": 84,
+        "appearances": 0,
+        "replyNow": 0,
+        "watchOnly": 0,
+        "aiPicked": 0
+      },
+      {
+        "name": "email-feature-wish-en",
+        "group": "insight",
+        "intentType": "feature_request",
+        "strictness": "high",
+        "language": "en",
+        "priority": 92,
+        "appearances": 107,
+        "replyNow": 0,
+        "watchOnly": 107,
+        "aiPicked": 0
+      },
+      {
+        "name": "competitor-displacement-en",
+        "group": "insight",
+        "intentType": "competitor_displacement",
+        "strictness": "high",
+        "language": "en",
+        "priority": 90,
+        "appearances": 12,
+        "replyNow": 0,
+        "watchOnly": 12,
+        "aiPicked": 0
+      },
+      {
+        "name": "email-feature-wish-zh",
+        "group": "insight",
+        "intentType": "feature_request",
+        "strictness": "high",
+        "language": "zh",
+        "priority": 82,
+        "appearances": 0,
+        "replyNow": 0,
+        "watchOnly": 0,
+        "aiPicked": 0
+      },
+      {
+        "name": "ai-inbox-triage-en",
+        "group": "reach",
+        "intentType": "reply_opportunity",
+        "strictness": "high",
+        "language": "en",
+        "priority": 88,
+        "appearances": 9,
+        "replyNow": 0,
+        "watchOnly": 9,
+        "aiPicked": 0
+      },
+      {
+        "name": "email-task-extraction-en",
+        "group": "reach",
+        "intentType": "reply_opportunity",
+        "strictness": "high",
+        "language": "en",
+        "priority": 86,
+        "appearances": 101,
+        "replyNow": 0,
+        "watchOnly": 101,
+        "aiPicked": 0
+      },
+      {
+        "name": "workflow-automation-email-en",
+        "group": "reach",
+        "intentType": "reply_opportunity",
+        "strictness": "medium",
+        "language": "en",
+        "priority": 74,
+        "appearances": 0,
+        "replyNow": 0,
+        "watchOnly": 0,
+        "aiPicked": 0
+      }
+    ]
+  },
+  "selectionStats": {
+    "totalCandidates": 105,
+    "uniqueAfterDedup": 105,
+    "crossDayFiltered": 0,
+    "freshAfterAgeFilter": 61,
+    "tooOldFiltered": 44,
+    "feedbackUrlFiltered": 0,
+    "learnedRulePenalized": 2,
+    "hardFiltered": 5,
+    "hardReasons": {
+      "politics": 2,
+      "privacy_hacking": 1,
+      "violence_crime_selfharm": 2
+    },
+    "softFiltered": 4,
+    "softReasons": {
+      "law_enforcement": 3,
+      "disasters_victims": 1
+    },
+    "lowSignalPenalized": 2,
+    "filoFitFiltered": 20,
+    "relevanceFiltered": 0,
+    "sentimentNoBrandFiltered": 1,
+    "sentimentMinScoreFiltered": 0,
+    "insightNoiseFiltered": 0,
+    "insightWeakSignalFiltered": 0,
+    "insightCompetitorFiltered": 0,
+    "insightMinScoreFiltered": 1,
+    "emailActionOnlyFiltered": 0,
+    "noEmotionPenalized": 2,
+    "customerServiceFiltered": 0,
+    "customerServicePenalized": 0,
+    "competitorPenalized": 0,
+    "viralTemplateFiltered": 1,
+    "promoFiltered": 0,
+    "promoPenalized": 0,
+    "kolAuthorMismatch": 0,
+    "kolRelevanceFiltered": 0,
+    "qualified": 0,
+    "aiPicked": 0,
+    "triage": {
+      "replyNow": 0,
+      "watchOnly": 29,
+      "discard": 1
+    },
+    "queryStats": [
+      {
+        "sourceQuery": "filomail-mentions-en",
+        "inputCount": 1,
+        "replyNowCount": 0,
+        "watchOnlyCount": 1,
+        "discardCount": 0,
+        "topDiscardReasons": {},
+        "replyYield": 0
+      },
+      {
+        "sourceQuery": "inbox-triage-failure-en",
+        "inputCount": 1,
+        "replyNowCount": 0,
+        "watchOnlyCount": 1,
+        "discardCount": 0,
+        "topDiscardReasons": {},
+        "replyYield": 0
+      },
+      {
+        "sourceQuery": "email-feature-wish-en",
+        "inputCount": 7,
+        "replyNowCount": 0,
+        "watchOnlyCount": 7,
+        "discardCount": 0,
+        "topDiscardReasons": {},
+        "replyYield": 0
+      },
+      {
+        "sourceQuery": "competitor-displacement-en",
+        "inputCount": 3,
+        "replyNowCount": 0,
+        "watchOnlyCount": 3,
+        "discardCount": 0,
+        "topDiscardReasons": {},
+        "replyYield": 0
+      },
+      {
+        "sourceQuery": "filomail-mentions-zh",
+        "inputCount": 3,
+        "replyNowCount": 0,
+        "watchOnlyCount": 3,
+        "discardCount": 0,
+        "topDiscardReasons": {},
+        "replyYield": 0
+      },
+      {
+        "sourceQuery": "inbox-overload-workflow-en",
+        "inputCount": 6,
+        "replyNowCount": 0,
+        "watchOnlyCount": 5,
+        "discardCount": 1,
+        "topDiscardReasons": {
+          "viral_template": 1
+        },
+        "replyYield": 0
+      },
+      {
+        "sourceQuery": "email-task-extraction-en",
+        "inputCount": 9,
+        "replyNowCount": 0,
+        "watchOnlyCount": 9,
+        "discardCount": 0,
+        "topDiscardReasons": {},
+        "replyYield": 0
+      }
+    ],
+    "byGroup": {
+      "pain": 0,
+      "reach": 0,
+      "kol": 0,
+      "sentiment": 0,
+      "insight": 0
+    },
+    "bySentiment": {
+      "positive": 0,
+      "negative": 0,
+      "neutral": 0
+    },
+    "byInsightType": {
+      "feature_request": 0,
+      "competitor_praise": 0,
+      "ai_demand": 0
+    },
+    "distinctKOLs": 0
+  },
+  "qualityConfig": {
+    "aiPickTopN": 20,
+    "kolMinFiloFitScore": 40,
+    "minFinalScore": 50,
+    "insightMinFinalScore": 40,
+    "insightMinFiloFitScore": 20,
+    "sentimentMinFinalScore": 15,
+    "noEmotionPenalty": 0.5,
+    "filoFitMultiplier": 20,
+    "viralityMultiplier": 20,
+    "strongEmotionBonus": 30,
+    "weakEmotionBonus": 10,
+    "requestSignalBonus": 25
+  },
+  "watch": [
+    {
+      "url": "https://x.com/JustinBao_/status/2049735979473498171",
+      "author": "@JustinBao_",
+      "group": "sentiment",
+      "sourceQuery": "filomail-mentions-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 80.8
+    },
+    {
+      "url": "https://x.com/luckylitkie/status/2051479998171865118",
+      "author": "@luckylitkie",
+      "group": "pain",
+      "sourceQuery": "inbox-triage-failure-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 105
+    },
+    {
+      "url": "https://x.com/mattyapro/status/2051392824923291666",
+      "author": "@mattyapro",
+      "group": "insight",
+      "sourceQuery": "email-feature-wish-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 83
+    },
+    {
+      "url": "https://x.com/sgulam749/status/2051368793532690630",
+      "author": "@sgulam749",
+      "group": "insight",
+      "sourceQuery": "email-feature-wish-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 75
+    },
+    {
+      "url": "https://x.com/PavelSnajdr/status/2051354215453176001",
+      "author": "@PavelSnajdr",
+      "group": "insight",
+      "sourceQuery": "email-feature-wish-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 63
+    },
+    {
+      "url": "https://x.com/garyseconom30d4/status/2051340817948922215",
+      "author": "@garyseconom30d4",
+      "group": "insight",
+      "sourceQuery": "email-feature-wish-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 75
+    },
+    {
+      "url": "https://x.com/prodrecruit/status/2051322942089302432",
+      "author": "@prodrecruit",
+      "group": "insight",
+      "sourceQuery": "email-feature-wish-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 75
+    },
+    {
+      "url": "https://x.com/NyangLLP/status/2051311897522196605",
+      "author": "@NyangLLP",
+      "group": "insight",
+      "sourceQuery": "email-feature-wish-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 115
+    },
+    {
+      "url": "https://x.com/GHS_Hornets/status/2051305922455130245",
+      "author": "@GHS_Hornets",
+      "group": "insight",
+      "sourceQuery": "email-feature-wish-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 75
+    },
+    {
+      "url": "https://x.com/oliinykdm/status/2051419472414617917",
+      "author": "@oliinykdm",
+      "group": "insight",
+      "sourceQuery": "competitor-displacement-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 103
+    },
+    {
+      "url": "https://x.com/HOTKOOLVICIOUS/status/2051406231986684132",
+      "author": "@HOTKOOLVICIOUS",
+      "group": "insight",
+      "sourceQuery": "competitor-displacement-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 95
+    },
+    {
+      "url": "https://x.com/MohMaya97/status/2051405444199952385",
+      "author": "@MohMaya97",
+      "group": "insight",
+      "sourceQuery": "competitor-displacement-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 138.1
+    },
+    {
+      "url": "https://x.com/lostinabc/status/2051143284286701933",
+      "author": "@lostinabc",
+      "group": "sentiment",
+      "sourceQuery": "filomail-mentions-zh",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 98
+    },
+    {
+      "url": "https://x.com/DemosYeung/status/2050187384915104050",
+      "author": "@DemosYeung",
+      "group": "sentiment",
+      "sourceQuery": "filomail-mentions-zh",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 80
+    },
+    {
+      "url": "https://x.com/DemosYeung/status/2050185997481345036",
+      "author": "@DemosYeung",
+      "group": "sentiment",
+      "sourceQuery": "filomail-mentions-zh",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 108
+    },
+    {
+      "url": "https://x.com/ezinneh_/status/2051261076956704940",
+      "author": "@ezinneh_",
+      "group": "pain",
+      "sourceQuery": "inbox-overload-workflow-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 348.8
+    },
+    {
+      "url": "https://x.com/coderchrisdean/status/2051184796974334434",
+      "author": "@coderchrisdean",
+      "group": "pain",
+      "sourceQuery": "inbox-overload-workflow-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 443.9
+    },
+    {
+      "url": "https://x.com/shyamfuturetech/status/2051157369434890365",
+      "author": "@shyamfuturetech",
+      "group": "pain",
+      "sourceQuery": "inbox-overload-workflow-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 420
+    },
+    {
+      "url": "https://x.com/IAmAaronWill/status/2050529220565037337",
+      "author": "@IAmAaronWill",
+      "group": "pain",
+      "sourceQuery": "inbox-overload-workflow-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 446.4
+    },
+    {
+      "url": "https://x.com/automatedvr/status/2050470409892471288",
+      "author": "@automatedvr",
+      "group": "pain",
+      "sourceQuery": "inbox-overload-workflow-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 135
+    },
+    {
+      "url": "https://x.com/sme_scale/status/2051366329941385258",
+      "author": "@sme_scale",
+      "group": "reach",
+      "sourceQuery": "email-task-extraction-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 90
+    },
+    {
+      "url": "https://x.com/irentdumpsters/status/2051365507274588171",
+      "author": "@irentdumpsters",
+      "group": "reach",
+      "sourceQuery": "email-task-extraction-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 78
+    },
+    {
+      "url": "https://x.com/ChainsavvyIO/status/2051340084696273007",
+      "author": "@ChainsavvyIO",
+      "group": "reach",
+      "sourceQuery": "email-task-extraction-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 90
+    },
+    {
+      "url": "https://x.com/AutomationArch_/status/2051334285504729178",
+      "author": "@AutomationArch_",
+      "group": "reach",
+      "sourceQuery": "email-task-extraction-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 70
+    },
+    {
+      "url": "https://x.com/codyschneider/status/2051331026417340537",
+      "author": "@codyschneider",
+      "group": "reach",
+      "sourceQuery": "email-task-extraction-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 146.7
+    },
+    {
+      "url": "https://x.com/Sir__Odey/status/2051324309231022548",
+      "author": "@Sir__Odey",
+      "group": "reach",
+      "sourceQuery": "email-task-extraction-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 79.5
+    },
+    {
+      "url": "https://x.com/thedanielbudai/status/2051324067740008806",
+      "author": "@thedanielbudai",
+      "group": "reach",
+      "sourceQuery": "email-task-extraction-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 70
+    },
+    {
+      "url": "https://x.com/boardyai/status/2051320211681468866",
+      "author": "@boardyai",
+      "group": "reach",
+      "sourceQuery": "email-task-extraction-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 85.6
+    },
+    {
+      "url": "https://x.com/bernardobelchi1/status/2051315027383091334",
+      "author": "@bernardobelchi1",
+      "group": "reach",
+      "sourceQuery": "email-task-extraction-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 80
+    }
+  ],
+  "top": []
+}
