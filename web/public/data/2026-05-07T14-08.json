@@ -1,9 +1,9 @@
 {
-  "runDate": "2026-04-30",
-  "runAt": "2026-04-30T13:50:33.859Z",
+  "runDate": "2026-05-07",
+  "runAt": "2026-05-07T14:08:43.780Z",
   "planner": {
     "mode": "heuristic",
-    "generatedAt": "2026-04-30T13:50:34.570Z",
+    "generatedAt": "2026-05-07T14:08:45.350Z",
     "notes": "Fallback high-precision query plan selected without LLM assistance.",
     "selectedQueries": [
       {
@@ -127,18 +127,6 @@
         "plannerReason": "heuristic_high_precision_backfill"
       },
       {
-        "name": "filomail-mentions-zh",
-        "group": "sentiment",
-        "query": "(FiloMail OR \"Filo Mail\" OR \"Filo 邮件\" OR \"Filo 邮箱\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:zh",
-        "max": 18,
-        "intentType": "brand_sentiment",
-        "strictness": "high",
-        "language": "zh",
-        "priority": 94,
-        "enabled": true,
-        "plannerReason": "heuristic_top_choice"
-      },
-      {
         "name": "filomail-mentions-ja",
         "group": "sentiment",
         "query": "(FiloMail OR \"Filo Mail\" OR \"Filo メール\" OR \"filoメール\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:ja",
@@ -148,7 +136,7 @@
         "language": "ja",
         "priority": 92,
         "enabled": true,
-        "plannerReason": "heuristic_high_precision_backfill"
+        "plannerReason": "heuristic_top_choice"
       },
       {
         "name": "filomail-mentions-en",
@@ -173,6 +161,18 @@
         "priority": 90,
         "enabled": true,
         "plannerReason": "heuristic_high_precision_backfill"
+      },
+      {
+        "name": "filomail-mentions-zh",
+        "group": "sentiment",
+        "query": "(FiloMail OR \"Filo Mail\" OR \"Filo 邮件\" OR \"Filo 邮箱\" OR @Filo_Mail OR @FiloMail OR @filomail) -from:Filo_Mail -from:FiloMail -filter:retweets lang:zh",
+        "max": 18,
+        "intentType": "brand_sentiment",
+        "strictness": "high",
+        "language": "zh",
+        "priority": 94,
+        "enabled": true,
+        "plannerReason": "heuristic_high_precision_backfill"
       }
     ],
     "historySummary": [
@@ -183,9 +183,9 @@
         "strictness": "high",
         "language": "en",
         "priority": 96,
-        "appearances": 1,
+        "appearances": 14,
         "replyNow": 0,
-        "watchOnly": 1,
+        "watchOnly": 14,
         "aiPicked": 0
       },
       {
@@ -195,9 +195,9 @@
         "strictness": "high",
         "language": "zh",
         "priority": 94,
-        "appearances": 0,
+        "appearances": 35,
         "replyNow": 0,
-        "watchOnly": 0,
+        "watchOnly": 35,
         "aiPicked": 0
       },
       {
@@ -231,9 +231,9 @@
         "strictness": "high",
         "language": "en",
         "priority": 95,
-        "appearances": 35,
+        "appearances": 30,
         "replyNow": 0,
-        "watchOnly": 35,
+        "watchOnly": 30,
         "aiPicked": 0
       },
       {
@@ -243,9 +243,9 @@
         "strictness": "high",
         "language": "en",
         "priority": 90,
-        "appearances": 47,
+        "appearances": 50,
         "replyNow": 0,
-        "watchOnly": 47,
+        "watchOnly": 50,
         "aiPicked": 0
       },
       {
@@ -279,9 +279,9 @@
         "strictness": "high",
         "language": "en",
         "priority": 92,
-        "appearances": 106,
+        "appearances": 107,
         "replyNow": 0,
-        "watchOnly": 106,
+        "watchOnly": 107,
         "aiPicked": 0
       },
       {
@@ -291,9 +291,9 @@
         "strictness": "high",
         "language": "en",
         "priority": 90,
-        "appearances": 30,
+        "appearances": 17,
         "replyNow": 0,
-        "watchOnly": 30,
+        "watchOnly": 17,
         "aiPicked": 0
       },
       {
@@ -315,9 +315,9 @@
         "strictness": "high",
         "language": "en",
         "priority": 88,
-        "appearances": 42,
+        "appearances": 1,
         "replyNow": 0,
-        "watchOnly": 42,
+        "watchOnly": 1,
         "aiPicked": 0
       },
       {
@@ -327,9 +327,9 @@
         "strictness": "high",
         "language": "en",
         "priority": 86,
-        "appearances": 105,
+        "appearances": 108,
         "replyNow": 0,
-        "watchOnly": 105,
+        "watchOnly": 108,
         "aiPicked": 0
       },
       {
@@ -347,33 +347,36 @@
     ]
   },
   "selectionStats": {
-    "totalCandidates": 99,
-    "uniqueAfterDedup": 98,
+    "totalCandidates": 110,
+    "uniqueAfterDedup": 110,
     "crossDayFiltered": 0,
-    "freshAfterAgeFilter": 70,
-    "tooOldFiltered": 28,
+    "freshAfterAgeFilter": 76,
+    "tooOldFiltered": 34,
     "feedbackUrlFiltered": 0,
-    "learnedRulePenalized": 1,
-    "hardFiltered": 0,
-    "hardReasons": {},
-    "softFiltered": 2,
-    "softReasons": {
-      "law_enforcement": 2
+    "learnedRulePenalized": 0,
+    "hardFiltered": 3,
+    "hardReasons": {
+      "promotional": 1,
+      "violence_crime_selfharm": 2
     },
-    "lowSignalPenalized": 7,
-    "filoFitFiltered": 24,
+    "softFiltered": 3,
+    "softReasons": {
+      "law_enforcement": 3
+    },
+    "lowSignalPenalized": 1,
+    "filoFitFiltered": 23,
     "relevanceFiltered": 0,
-    "sentimentNoBrandFiltered": 0,
+    "sentimentNoBrandFiltered": 1,
     "sentimentMinScoreFiltered": 0,
-    "insightNoiseFiltered": 1,
+    "insightNoiseFiltered": 4,
     "insightWeakSignalFiltered": 0,
     "insightCompetitorFiltered": 0,
-    "insightMinScoreFiltered": 3,
+    "insightMinScoreFiltered": 2,
     "emailActionOnlyFiltered": 0,
-    "noEmotionPenalized": 4,
+    "noEmotionPenalized": 3,
     "customerServiceFiltered": 0,
     "customerServicePenalized": 0,
-    "competitorPenalized": 3,
+    "competitorPenalized": 0,
     "viralTemplateFiltered": 0,
     "promoFiltered": 0,
     "promoPenalized": 0,
@@ -383,8 +386,8 @@
     "aiPicked": 0,
     "triage": {
       "replyNow": 0,
-      "watchOnly": 35,
-      "discard": 2
+      "watchOnly": 39,
+      "discard": 1
     },
     "queryStats": [
       {
@@ -398,6 +401,35 @@
       },
       {
         "sourceQuery": "inbox-triage-failure-en",
+        "inputCount": 3,
+        "replyNowCount": 0,
+        "watchOnlyCount": 3,
+        "discardCount": 0,
+        "topDiscardReasons": {},
+        "replyYield": 0
+      },
+      {
+        "sourceQuery": "email-feature-wish-en",
+        "inputCount": 7,
+        "replyNowCount": 0,
+        "watchOnlyCount": 7,
+        "discardCount": 0,
+        "topDiscardReasons": {},
+        "replyYield": 0
+      },
+      {
+        "sourceQuery": "competitor-displacement-en",
+        "inputCount": 10,
+        "replyNowCount": 0,
+        "watchOnlyCount": 9,
+        "discardCount": 1,
+        "topDiscardReasons": {
+          "weak_signal": 1
+        },
+        "replyYield": 0
+      },
+      {
+        "sourceQuery": "ai-inbox-triage-en",
         "inputCount": 4,
         "replyNowCount": 0,
         "watchOnlyCount": 4,
@@ -406,48 +438,28 @@
         "replyYield": 0
       },
       {
-        "sourceQuery": "email-feature-wish-en",
-        "inputCount": 10,
+        "sourceQuery": "filomail-mentions-zh",
+        "inputCount": 3,
         "replyNowCount": 0,
-        "watchOnlyCount": 10,
-        "discardCount": 0,
-        "topDiscardReasons": {},
-        "replyYield": 0
-      },
-      {
-        "sourceQuery": "competitor-displacement-en",
-        "inputCount": 4,
-        "replyNowCount": 0,
-        "watchOnlyCount": 2,
-        "discardCount": 2,
-        "topDiscardReasons": {
-          "weak_signal": 2
-        },
-        "replyYield": 0
-      },
-      {
-        "sourceQuery": "ai-inbox-triage-en",
-        "inputCount": 5,
-        "replyNowCount": 0,
-        "watchOnlyCount": 5,
+        "watchOnlyCount": 3,
         "discardCount": 0,
         "topDiscardReasons": {},
         "replyYield": 0
       },
       {
         "sourceQuery": "inbox-overload-workflow-en",
-        "inputCount": 2,
+        "inputCount": 6,
         "replyNowCount": 0,
-        "watchOnlyCount": 2,
+        "watchOnlyCount": 6,
         "discardCount": 0,
         "topDiscardReasons": {},
         "replyYield": 0
       },
       {
         "sourceQuery": "email-task-extraction-en",
-        "inputCount": 11,
+        "inputCount": 6,
         "replyNowCount": 0,
-        "watchOnlyCount": 11,
+        "watchOnlyCount": 6,
         "discardCount": 0,
         "topDiscardReasons": {},
         "replyYield": 0
@@ -488,53 +500,53 @@
   },
   "watch": [
     {
-      "url": "https://x.com/JustinBao_/status/2049735979473498171",
-      "author": "@JustinBao_",
+      "url": "https://x.com/blogcious/status/2052009006273839136",
+      "author": "@blogcious",
       "group": "sentiment",
       "sourceQuery": "filomail-mentions-en",
       "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
       "intentType": "general",
-      "finalScore": 79.1
+      "finalScore": 59.5
     },
     {
-      "url": "https://x.com/tamir_eden/status/2049840238881615937",
-      "author": "@tamir_eden",
+      "url": "https://x.com/mute_spam/status/2052380680366268443",
+      "author": "@mute_spam",
       "group": "pain",
       "sourceQuery": "inbox-triage-failure-en",
       "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
       "intentType": "general",
-      "finalScore": 300
+      "finalScore": 135
     },
     {
-      "url": "https://x.com/X0_prince21/status/2049838430566400148",
-      "author": "@X0_prince21",
+      "url": "https://x.com/KadiaDialUGC/status/2052380656466866487",
+      "author": "@KadiaDialUGC",
       "group": "pain",
       "sourceQuery": "inbox-triage-failure-en",
       "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
       "intentType": "general",
-      "finalScore": 105
+      "finalScore": 165
     },
     {
-      "url": "https://x.com/Letz_Startup/status/2049828768684847458",
-      "author": "@Letz_Startup",
+      "url": "https://x.com/tabtablabs/status/2052380435179577855",
+      "author": "@tabtablabs",
       "group": "pain",
       "sourceQuery": "inbox-triage-failure-en",
       "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
       "intentType": "general",
-      "finalScore": 119.3
+      "finalScore": 195
     },
     {
-      "url": "https://x.com/Smylers2/status/2049826396940234802",
-      "author": "@Smylers2",
-      "group": "pain",
-      "sourceQuery": "inbox-triage-failure-en",
+      "url": "https://x.com/AriJanis09/status/2052280715145011352",
+      "author": "@AriJanis09",
+      "group": "insight",
+      "sourceQuery": "email-feature-wish-en",
       "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
       "intentType": "general",
-      "finalScore": 117
+      "finalScore": 75
     },
     {
-      "url": "https://x.com/Axionis_io/status/2049837674073149930",
-      "author": "@Axionis_io",
+      "url": "https://x.com/AmosRojter/status/2052262770184511654",
+      "author": "@AmosRojter",
       "group": "insight",
       "sourceQuery": "email-feature-wish-en",
       "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
@@ -542,233 +554,260 @@
       "finalScore": 95
     },
     {
-      "url": "https://x.com/ZizkaAI/status/2049823643664797786",
-      "author": "@ZizkaAI",
+      "url": "https://x.com/minaurin/status/2052229366155804937",
+      "author": "@minaurin",
       "group": "insight",
       "sourceQuery": "email-feature-wish-en",
       "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
       "intentType": "general",
-      "finalScore": 104.5
+      "finalScore": 104.4
     },
     {
-      "url": "https://x.com/jeremie_strand/status/2049801220181590324",
-      "author": "@jeremie_strand",
+      "url": "https://x.com/NotYourXAndy/status/2052220729056461196",
+      "author": "@NotYourXAndy",
       "group": "insight",
       "sourceQuery": "email-feature-wish-en",
       "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
       "intentType": "general",
-      "finalScore": 123
+      "finalScore": 121.9
     },
     {
-      "url": "https://x.com/TeamYouTube/status/2049775059393188158",
-      "author": "@TeamYouTube",
+      "url": "https://x.com/PoltFan69/status/2052190536942141806",
+      "author": "@PoltFan69",
       "group": "insight",
       "sourceQuery": "email-feature-wish-en",
       "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
       "intentType": "general",
-      "finalScore": 75
+      "finalScore": 107.1
     },
     {
-      "url": "https://x.com/scalingmail/status/2049762755788394787",
-      "author": "@scalingmail",
+      "url": "https://x.com/MBonvoyAssist/status/2052149418883797115",
+      "author": "@MBonvoyAssist",
       "group": "insight",
       "sourceQuery": "email-feature-wish-en",
       "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
       "intentType": "general",
-      "finalScore": 84.5
+      "finalScore": 105
     },
     {
-      "url": "https://x.com/skl_thotachaari/status/2049750206791795078",
-      "author": "@skl_thotachaari",
+      "url": "https://x.com/caredscared_/status/2052146645366645043",
+      "author": "@caredscared_",
       "group": "insight",
       "sourceQuery": "email-feature-wish-en",
       "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
       "intentType": "general",
-      "finalScore": 89
+      "finalScore": 105.9
     },
     {
-      "url": "https://x.com/skl_thotachaari/status/2049749788804182196",
-      "author": "@skl_thotachaari",
-      "group": "insight",
-      "sourceQuery": "email-feature-wish-en",
-      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
-      "intentType": "general",
-      "finalScore": 75
-    },
-    {
-      "url": "https://x.com/hridoyreh/status/2049740394251125177",
-      "author": "@hridoyreh",
-      "group": "insight",
-      "sourceQuery": "email-feature-wish-en",
-      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
-      "intentType": "general",
-      "finalScore": 108.1
-    },
-    {
-      "url": "https://x.com/TeamYouTube/status/2049707075475812485",
-      "author": "@TeamYouTube",
-      "group": "insight",
-      "sourceQuery": "email-feature-wish-en",
-      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
-      "intentType": "general",
-      "finalScore": 75
-    },
-    {
-      "url": "https://x.com/AnishKapoo84778/status/2049693167721599308",
-      "author": "@AnishKapoo84778",
-      "group": "insight",
-      "sourceQuery": "email-feature-wish-en",
-      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
-      "intentType": "general",
-      "finalScore": 143
-    },
-    {
-      "url": "https://x.com/ChillflixO/status/2049818089194422371",
-      "author": "@ChillflixO",
+      "url": "https://x.com/xnfatimx/status/2052383727423295912",
+      "author": "@xnfatimx",
       "group": "insight",
       "sourceQuery": "competitor-displacement-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 115
+    },
+    {
+      "url": "https://x.com/xnfatimx/status/2052383691046085095",
+      "author": "@xnfatimx",
+      "group": "insight",
+      "sourceQuery": "competitor-displacement-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 115
+    },
+    {
+      "url": "https://x.com/xnfatimx/status/2052383659408437293",
+      "author": "@xnfatimx",
+      "group": "insight",
+      "sourceQuery": "competitor-displacement-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 115
+    },
+    {
+      "url": "https://x.com/xnfatimx/status/2052383459449200953",
+      "author": "@xnfatimx",
+      "group": "insight",
+      "sourceQuery": "competitor-displacement-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 115
+    },
+    {
+      "url": "https://x.com/xnfatimx/status/2052383417757794470",
+      "author": "@xnfatimx",
+      "group": "insight",
+      "sourceQuery": "competitor-displacement-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 115
+    },
+    {
+      "url": "https://x.com/xnfatimx/status/2052383384270417930",
+      "author": "@xnfatimx",
+      "group": "insight",
+      "sourceQuery": "competitor-displacement-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 124.5
+    },
+    {
+      "url": "https://x.com/xnfatimx/status/2052383299251945887",
+      "author": "@xnfatimx",
+      "group": "insight",
+      "sourceQuery": "competitor-displacement-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 115
+    },
+    {
+      "url": "https://x.com/thegreatestz247/status/2052383025262989757",
+      "author": "@thegreatestz247",
+      "group": "insight",
+      "sourceQuery": "competitor-displacement-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 85
+    },
+    {
+      "url": "https://x.com/WhoKnowsWhat___/status/2052369671605584283",
+      "author": "@WhoKnowsWhat___",
+      "group": "insight",
+      "sourceQuery": "competitor-displacement-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 128.1
+    },
+    {
+      "url": "https://x.com/Sabrina_Ramonov/status/2051765126689099827",
+      "author": "@Sabrina_Ramonov",
+      "group": "reach",
+      "sourceQuery": "ai-inbox-triage-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 109.5
+    },
+    {
+      "url": "https://x.com/shailajanatara1/status/2051756851578978747",
+      "author": "@shailajanatara1",
+      "group": "reach",
+      "sourceQuery": "ai-inbox-triage-en",
       "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
       "intentType": "general",
       "finalScore": 70
     },
     {
-      "url": "https://x.com/LalaKhan386062/status/2049816924960510336",
-      "author": "@LalaKhan386062",
-      "group": "insight",
-      "sourceQuery": "competitor-displacement-en",
-      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
-      "intentType": "general",
-      "finalScore": 125
-    },
-    {
-      "url": "https://x.com/InboxZero/status/2049228199448703342",
-      "author": "@InboxZero",
+      "url": "https://x.com/krshishir_/status/2051637710323106218",
+      "author": "@krshishir_",
       "group": "reach",
       "sourceQuery": "ai-inbox-triage-en",
       "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
       "intentType": "general",
-      "finalScore": 90
+      "finalScore": 119.5
     },
     {
-      "url": "https://x.com/InboxZero/status/2048987199371366697",
-      "author": "@InboxZero",
+      "url": "https://x.com/boardyai/status/2051320211681468866",
+      "author": "@boardyai",
       "group": "reach",
       "sourceQuery": "ai-inbox-triage-en",
-      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
-      "intentType": "general",
-      "finalScore": 90
-    },
-    {
-      "url": "https://x.com/RevhuntCGA/status/2048973480805138791",
-      "author": "@RevhuntCGA",
-      "group": "reach",
-      "sourceQuery": "ai-inbox-triage-en",
-      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
-      "intentType": "general",
-      "finalScore": 150
-    },
-    {
-      "url": "https://x.com/amazeeai/status/2048858722928107699",
-      "author": "@amazeeai",
-      "group": "reach",
-      "sourceQuery": "ai-inbox-triage-en",
-      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
-      "intentType": "general",
-      "finalScore": 70
-    },
-    {
-      "url": "https://x.com/InboxZero/status/2048821442247303241",
-      "author": "@InboxZero",
-      "group": "reach",
-      "sourceQuery": "ai-inbox-triage-en",
-      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
-      "intentType": "general",
-      "finalScore": 90
-    },
-    {
-      "url": "https://x.com/Smailorapp/status/2049561221100142810",
-      "author": "@Smailorapp",
-      "group": "pain",
-      "sourceQuery": "inbox-overload-workflow-en",
-      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
-      "intentType": "general",
-      "finalScore": 350.7
-    },
-    {
-      "url": "https://x.com/Ramsenthil_/status/2049508932574740604",
-      "author": "@Ramsenthil_",
-      "group": "pain",
-      "sourceQuery": "inbox-overload-workflow-en",
-      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
-      "intentType": "general",
-      "finalScore": 398.9
-    },
-    {
-      "url": "https://x.com/ATSResumeFixr/status/2049755853306081520",
-      "author": "@ATSResumeFixr",
-      "group": "reach",
-      "sourceQuery": "email-task-extraction-en",
-      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
-      "intentType": "general",
-      "finalScore": 110
-    },
-    {
-      "url": "https://x.com/sky_opvc/status/2049739014308044932",
-      "author": "@sky_opvc",
-      "group": "reach",
-      "sourceQuery": "email-task-extraction-en",
-      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
-      "intentType": "general",
-      "finalScore": 106.9
-    },
-    {
-      "url": "https://x.com/robertcodesai/status/2049658123548332483",
-      "author": "@robertcodesai",
-      "group": "reach",
-      "sourceQuery": "email-task-extraction-en",
-      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
-      "intentType": "general",
-      "finalScore": 90
-    },
-    {
-      "url": "https://x.com/ConnieGreen/status/2049644482552119735",
-      "author": "@ConnieGreen",
-      "group": "reach",
-      "sourceQuery": "email-task-extraction-en",
-      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
-      "intentType": "general",
-      "finalScore": 90
-    },
-    {
-      "url": "https://x.com/HandoffAI/status/2049625968378077358",
-      "author": "@HandoffAI",
-      "group": "reach",
-      "sourceQuery": "email-task-extraction-en",
       "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
       "intentType": "general",
       "finalScore": 83.1
     },
     {
-      "url": "https://x.com/akcushman/status/2049622622460350772",
-      "author": "@akcushman",
+      "url": "https://x.com/lostinabc/status/2051143284286701933",
+      "author": "@lostinabc",
+      "group": "sentiment",
+      "sourceQuery": "filomail-mentions-zh",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 103.1
+    },
+    {
+      "url": "https://x.com/DemosYeung/status/2050187384915104050",
+      "author": "@DemosYeung",
+      "group": "sentiment",
+      "sourceQuery": "filomail-mentions-zh",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 80
+    },
+    {
+      "url": "https://x.com/DemosYeung/status/2050185997481345036",
+      "author": "@DemosYeung",
+      "group": "sentiment",
+      "sourceQuery": "filomail-mentions-zh",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 108
+    },
+    {
+      "url": "https://x.com/cobblemedia/status/2052173339406250410",
+      "author": "@cobblemedia",
+      "group": "pain",
+      "sourceQuery": "inbox-overload-workflow-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 518.9
+    },
+    {
+      "url": "https://x.com/InstinctClarity/status/2052104528418177424",
+      "author": "@InstinctClarity",
+      "group": "pain",
+      "sourceQuery": "inbox-overload-workflow-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 300
+    },
+    {
+      "url": "https://x.com/theBCAslan/status/2052027992931512613",
+      "author": "@theBCAslan",
+      "group": "pain",
+      "sourceQuery": "inbox-overload-workflow-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 360
+    },
+    {
+      "url": "https://x.com/Natebuildsai/status/2052011078784029003",
+      "author": "@Natebuildsai",
+      "group": "pain",
+      "sourceQuery": "inbox-overload-workflow-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 300
+    },
+    {
+      "url": "https://x.com/faraday_email/status/2051993295216369928",
+      "author": "@faraday_email",
+      "group": "pain",
+      "sourceQuery": "inbox-overload-workflow-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 300
+    },
+    {
+      "url": "https://x.com/cpansherry1777/status/2051903275788612088",
+      "author": "@cpansherry1777",
+      "group": "pain",
+      "sourceQuery": "inbox-overload-workflow-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 420
+    },
+    {
+      "url": "https://x.com/schneiderb/status/2052178934918176973",
+      "author": "@schneiderb",
       "group": "reach",
       "sourceQuery": "email-task-extraction-en",
       "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
       "intentType": "general",
-      "finalScore": 152.9
+      "finalScore": 79.5
     },
     {
-      "url": "https://x.com/LeoSanada/status/2049621046329020516",
-      "author": "@LeoSanada",
-      "group": "reach",
-      "sourceQuery": "email-task-extraction-en",
-      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
-      "intentType": "general",
-      "finalScore": 128
-    },
-    {
-      "url": "https://x.com/robertcodesai/status/2049612727417454751",
-      "author": "@robertcodesai",
+      "url": "https://x.com/SalesNexus/status/2052131839859630566",
+      "author": "@SalesNexus",
       "group": "reach",
       "sourceQuery": "email-task-extraction-en",
       "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
@@ -776,8 +815,8 @@
       "finalScore": 70
     },
     {
-      "url": "https://x.com/mattjvalenta/status/2049610148453191785",
-      "author": "@mattjvalenta",
+      "url": "https://x.com/mayabuildsai/status/2052129946915713331",
+      "author": "@mayabuildsai",
       "group": "reach",
       "sourceQuery": "email-task-extraction-en",
       "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
@@ -785,17 +824,26 @@
       "finalScore": 70
     },
     {
-      "url": "https://x.com/MarkJKeith/status/2049601589875503454",
-      "author": "@MarkJKeith",
+      "url": "https://x.com/mylifcc/status/2052107330494619795",
+      "author": "@mylifcc",
       "group": "reach",
       "sourceQuery": "email-task-extraction-en",
       "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
       "intentType": "general",
-      "finalScore": 83.1
+      "finalScore": 70
     },
     {
-      "url": "https://x.com/hirefortuna/status/2049584377349484739",
-      "author": "@hirefortuna",
+      "url": "https://x.com/RHaney47085/status/2052086789666402485",
+      "author": "@RHaney47085",
+      "group": "reach",
+      "sourceQuery": "email-task-extraction-en",
+      "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
+      "intentType": "general",
+      "finalScore": 139.5
+    },
+    {
+      "url": "https://x.com/JoRoan/status/2052078192878559479",
+      "author": "@JoRoan",
       "group": "reach",
       "sourceQuery": "email-task-extraction-en",
       "triageReasonZh": "LLM 分流失败，临时保留为观察项。",
